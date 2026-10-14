@@ -1,0 +1,33 @@
+import Link from "next/link";
+import { ListeningIcon } from "./listening-icon";
+
+const banners = {
+  library: { eyebrow: "Chào mừng bạn đến với thư viện của em!", title: "Hôm nay, em muốn mở cuốn sách nào?", description: "Những câu chuyện nhỏ, mang đến những bài học lớn. Chọn một cuốn sách và bắt đầu hành trình đọc song ngữ Việt – Anh thật thú vị nhé!", href: "#books", action: "Chọn sách để đọc", icon: "book", ticket: "Thử đọc hôm nay", goal: "5 phút", benefit: "cho một điều hay!", tip: "Chậm lại một chút. Đọc thêm một trang. Thế giới sẽ rộng mở hơn!" },
+  audio: { eyebrow: "Cùng lắng nghe những câu chuyện hay", title: "Một câu chuyện, hai ngôn ngữ!", description: "Chọn một câu chuyện, chạm nút nghe và cùng theo dõi từng câu. Em có thể nghe lại với tốc độ vừa sức mình.", href: "#books", action: "Chọn truyện để nghe", icon: "headphones", ticket: "Lắng nghe hôm nay", goal: "5 phút", benefit: "cho đôi tai nhỏ!", tip: "Nghe một câu. Đọc theo một chút. Mỗi lần nghe là một điều mới!" },
+  quiz: { eyebrow: "Đọc xong rồi, cùng thử tài nhé!", title: "Em nhớ gì từ câu chuyện?", description: "Chọn truyện có câu hỏi, tìm đáp án hoặc sắp xếp diễn biến. Em cứ thử sức, đọc lại và khám phá theo cách của mình nhé!", href: "#books", action: "Chọn truyện thử tài", icon: "tip", ticket: "Thử sức hôm nay", goal: "Một câu", benefit: "một khám phá!", tip: "Đọc kỹ câu hỏi. Suy nghĩ một chút. Em làm được mà!" },
+  vocabulary: { eyebrow: "Mỗi từ mới là một khám phá nhỏ", title: "Cùng em mở vườn từ mới!", description: "Khám phá từ tiếng Việt và tiếng Anh trong các câu chuyện. Cùng học nghĩa, xem ví dụ và lưu những từ em yêu thích nhé!", href: "#vocabulary-catalog", action: "Khám phá từ mới", icon: "sprout", ticket: "Học từ hôm nay", goal: "Một từ", benefit: "thêm một ý hay!", tip: "Đọc từ mới. Xem một ví dụ. Thử dùng từ để kể chuyện!" },
+  journal: { eyebrow: "Góc nhỏ để em kể lại điều đã đọc", title: "Câu chuyện hôm nay của em!", description: "Nhớ lại nhân vật yêu thích, kể điều em học được và vẽ một bức tranh. Mỗi trang nhật ký giữ lại một khám phá nhỏ của em.", href: "#journal-form", action: "Viết nhật ký", icon: "pencil", ticket: "Kể chuyện hôm nay", goal: "Một trang", benefit: "một kỷ niệm!", tip: "Viết một điều hay. Vẽ một điều em nhớ. Cùng lớn lên qua từng câu chuyện!" },
+  journey: { eyebrow: "Mỗi bước khám phá đều đáng quý", title: "Cùng nhìn lại hành trình đọc!", description: "Những câu chuyện đã đọc, những bài thử tài đã làm và những huy hiệu nhỏ đang chờ em. Cứ đọc theo nhịp của mình nhé!", href: "#journey-summary", action: "Xem hành trình", icon: "book", ticket: "Cùng đọc mỗi ngày", goal: "Từng bước", benefit: "thêm tự tin!", tip: "Em không cần đọc thật nhanh. Mỗi lần mở sách là một bước tiến nhỏ!" },
+} as const;
+
+export function CatalogBanner({ kind }: { kind: keyof typeof banners }) {
+  const banner = banners[kind];
+  return <section className={`shelf-welcome collection-banner banner-${kind}`} aria-labelledby={`${kind}-banner-title`}>
+    <div className="hero">
+      <p className="eyebrow">{banner.eyebrow}</p>
+      <h1 id={`${kind}-banner-title`}>{banner.title}</h1>
+      <p>{banner.description}</p>
+      <div className="hero-actions">
+        <Link href={banner.href} className="button"><ListeningIcon name={banner.icon} />{banner.action}<ListeningIcon name="arrow-right" /></Link>
+        <Link href={kind === "library" ? "/nghe-sach" : "/"} className="button secondary"><ListeningIcon name={kind === "library" ? "headphones" : "book"} />{kind === "library" ? "Nghe sách" : "Về tủ sách"}</Link>
+      </div>
+    </div>
+    <div className="shelf-welcome-art" aria-hidden="true" />
+    <aside className="reading-ticket" aria-label={banner.ticket}>
+      <span className="reading-ticket-sun" aria-hidden="true">☀</span>
+      <p className="eyebrow">{banner.ticket}</p>
+      <h2><strong>{banner.goal}</strong>{" "}<span>{banner.benefit}</span></h2>
+      <p>{banner.tip}</p>
+    </aside>
+  </section>;
+}

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" fill="none">
+  <defs>
+    <linearGradient id="sky" x1="180" y1="25" x2="180" y2="224" gradientUnits="userSpaceOnUse"><stop stop-color="#EAF5FF"/><stop offset="1" stop-color="#F4F8EB"/></linearGradient>
+    <linearGradient id="pages" x1="180" y1="122" x2="180" y2="208" gradientUnits="userSpaceOnUse"><stop stop-color="#FFFEF8"/><stop offset="1" stop-color="#FFF1CE"/></linearGradient>
+  </defs>
+  <path d="M37 152C20 100 62 57 114 54c37-41 112-38 142 5 63 2 96 65 62 115-40 49-235 48-281-22Z" fill="url(#sky)"/>
+  <circle cx="270" cy="66" r="25" fill="#FFDD7C"/>
+  <path d="M270 31v-6m0 82v-6m35-35h6m-82 0h6m60-25 5-5m-60 60 5-5m50 0 5 5m-60-60 5 5" stroke="#EFC465" stroke-width="3" stroke-linecap="round"/>
+  <path d="M63 80c-8-13 5-27 18-21 9-22 40-17 43 3 15-3 23 13 14 21H63Z" fill="white"/>
+  <path d="M205 100c-6-9 3-18 12-14 6-15 27-11 29 2 10-2 15 9 9 14h-50Z" fill="white" opacity=".9"/>
+  <ellipse cx="180" cy="215" rx="121" ry="11" fill="#D9DFBB" opacity=".5"/>
+  <path d="M74 212c1-29-7-52-25-72m25 57c-13-1-28-12-24-25 14-1 24 11 24 25m-6-21c2-13 13-21 24-17 0 13-12 18-24 17" fill="#B2CF9D"/>
+  <path d="M286 212c-2-31 6-55 25-74m-25 58c14-1 29-13 25-26-15-1-25 11-25 26m6-23c-2-13-13-21-24-17 0 13 12 19 24 17" fill="#A2C7A1"/>
+  <path d="M76 200v-77c38-17 72-16 104 5 32-21 66-22 104-5v77c-38-14-72-13-104 6-32-19-66-20-104-6Z" fill="#E4AF58" stroke="#AA6827" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M84 194v-79c35-13 66-11 96 9 30-20 61-22 96-9v79c-35-12-66-10-96 9-30-19-61-21-96-9Z" fill="url(#pages)" stroke="#BD813E" stroke-width="3" stroke-linejoin="round"/>
+  <path d="M180 124v78m-79-62c20-4 39 0 61 11m-61 9c20-4 39 0 61 11m-61 9c20-4 39 0 61 11m37-40c22-11 41-15 61-11m-61 31c22-11 41-15 61-11m-61 31c22-11 41-15 61-11" stroke="#DCBA78" stroke-width="4" stroke-linecap="round"/>
+  <path d="m212 120 17-8v43l-9-4-8 13v-44Z" fill="#7DB9DF"/>
+  <path d="m54 106 3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Zm96-73 3 7 7 3-7 3-3 7-3-7-7-3 7-3 3-7Z" fill="#E7B95E"/>
+  <circle cx="319" cy="117" r="4" fill="#A2C6E2"/><circle cx="114" cy="85" r="3" fill="#A2C6E2"/>
+</svg>

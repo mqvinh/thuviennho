@@ -1,0 +1,70 @@
+/* Ten additional Archivo color palettes, 04–13. */
+body[data-theme="04-san-ho"] {
+  --primary: #BE4B35; --primary-dark: #963B2A; --accent: #FBE8B9; --accent-ink: #6F4C17;
+  --paper: #FFF8F2; --soft: #FFE8DF; --text: #542F29; --muted: #79584C; --line: #F0D6C8;
+  --cover-1: #FFDACD; --cover-2: #FAEDBF; --cover-3: #DCEEDF; --cover-4: #E8E2F5;
+  --shadow: 0 12px 28px #BE4B3512;
+}
+
+body[data-theme="05-dai-duong"] {
+  --primary: #0369A1; --primary-dark: #075985; --accent: #FDE68A; --accent-ink: #664B0C;
+  --paper: #F3FAFF; --soft: #E0F2FE; --text: #183D50; --muted: #4C6579; --line: #CFE4EF;
+  --cover-1: #CFE9FA; --cover-2: #FFF0B7; --cover-3: #D3F0E5; --cover-4: #FFDCD0;
+  --shadow: 0 12px 28px #0369A112;
+}
+
+body[data-theme="06-la-non"] {
+  --primary: #3F6212; --primary-dark: #365314; --accent: #FFD7BA; --accent-ink: #713D1F;
+  --paper: #F8FBF0; --soft: #EDF4D7; --text: #2E3D22; --muted: #5C6949; --line: #DEE7C9;
+  --cover-1: #E4EDBB; --cover-2: #FFDEC7; --cover-3: #D9EAF5; --cover-4: #F6E8BD;
+  --shadow: 0 12px 28px #3F621212;
+}
+
+body[data-theme="07-dau-sua"] {
+  --primary: #BE185D; --primary-dark: #9D174D; --accent: #CFF3E0; --accent-ink: #255943;
+  --paper: #FFF6F9; --soft: #FCE7F0; --text: #53283A; --muted: #79566A; --line: #F0D6E1;
+  --cover-1: #F9D8E5; --cover-2: #D5F2E2; --cover-3: #FFEBC0; --cover-4: #DEE7FB;
+  --shadow: 0 12px 28px #BE185D12;
+}
+
+body[data-theme="08-cham-mo"] {
+  --primary: #4338CA; --primary-dark: #3730A3; --accent: #FBCDAF; --accent-ink: #6B3F24;
+  --paper: #F7F7FF; --soft: #EAE9FF; --text: #302B60; --muted: #625E80; --line: #DDDDF2;
+  --cover-1: #DFDEFB; --cover-2: #FFDDC8; --cover-3: #D8EEE6; --cover-4: #F9E9B8;
+  --shadow: 0 12px 28px #4338CA12;
+}
+
+body[data-theme="09-mat-ong"] {
+  --primary: #92400E; --primary-dark: #78350F; --accent: #D7EBFF; --accent-ink: #294E72;
+  --paper: #FFFBF1; --soft: #FCECC3; --text: #553817; --muted: #786344; --line: #EEDDB6;
+  --cover-1: #FFE5AB; --cover-2: #D8EAFE; --cover-3: #E0ECD0; --cover-4: #F8D9D4;
+  --shadow: 0 12px 28px #92400E12;
+}
+
+body[data-theme="10-rung-xanh"] {
+  --primary: #166534; --primary-dark: #14532D; --accent: #E7DBFF; --accent-ink: #503775;
+  --paper: #F3FBF5; --soft: #DDF3E1; --text: #244534; --muted: #536C5B; --line: #CFE5D5;
+  --cover-1: #D5EBCF; --cover-2: #E8DDFA; --cover-3: #FFE9BC; --cover-4: #F6DBCF;
+  --shadow: 0 12px 28px #16653412;
+}
+
+body[data-theme="11-ngoc-lam"] {
+  --primary: #0E7490; --primary-dark: #155E75; --accent: #FFD5D9; --accent-ink: #74394A;
+  --paper: #F2FCFC; --soft: #DDF5F6; --text: #22444D; --muted: #4C6C73; --line: #CDE7E9;
+  --cover-1: #CDEDEF; --cover-2: #FFD9DF; --cover-3: #F8EABF; --cover-4: #E2DEF6;
+  --shadow: 0 12px 28px #0E749012;
+}
+
+body[data-theme="12-hoa-ca"] {
+  --primary: #A21CAF; --primary-dark: #86198F; --accent: #EDF3BC; --accent-ink: #4C5B20;
+  --paper: #FDF7FF; --soft: #F7E4FA; --text: #4E2A57; --muted: #785E7D; --line: #EBD6F0;
+  --cover-1: #EED8F5; --cover-2: #EDF0C2; --cover-3: #D9EAF7; --cover-4: #FADCCB;
+  --shadow: 0 12px 28px #A21CAF12;
+}
+
+body[data-theme="13-nang-cam"] {
+  --primary: #C2410C; --primary-dark: #9A3412; --accent: #C7EDE8; --accent-ink: #265951;
+  --paper: #FFF8F1; --soft: #FFEBDB; --text: #533428; --muted: #795E4C; --line: #F0DACA;
+  --cover-1: #FFDBBD; --cover-2: #CFECE5; --cover-3: #FFEABB; --cover-4: #DEE6F7;
+  --shadow: 0 12px 28px #C2410C12;
+}
