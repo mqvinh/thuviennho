@@ -4,7 +4,7 @@ import {
   verifyPassword,
   createSession,
 } from "@/lib/auth";
-import { getDb } from "@/lib/db";
+import { getDb, type SqlStatement } from "@/lib/db";
 import { isValidPassword, PASSWORD_HELP } from "@/lib/password-policy";
 import {
   sameOrigin,
@@ -30,7 +30,7 @@ async function avatar(value: unknown, teacher: Awaited<ReturnType<typeof require
   if (!path) return null;
   if (!/^\/media\/[a-f0-9-]+\.(png|jpg|webp)$/.test(path))
     throw new HttpError(400, "Chọn ảnh đại diện đã tải lên.");
-  const found = await db.query("select 1 from media_files where path=$1 and ($2::boolean or owner_id=$3 or exists(select 1 from teacher_users where id=$3 and avatar_path=$1))", [path, teacher.role === "admin", teacher.id]);
+  const found = await db.query("select 1 from media_files where path=?1 and (?2 or owner_id=?3 or exists(select 1 from teacher_users where id=?3 and avatar_path=?1))", [path, teacher.role === "admin", teacher.id]);
   if (!found.rows.length) throw new HttpError(403, "Ảnh không tồn tại hoặc không thuộc quyền sử dụng của bạn.");
   return path;
 }
@@ -58,151 +58,79 @@ export async function POST(request: Request) {
   try {
     sameOrigin(request);
     const teacher = await requireTeacher();
-    const body = await readJson(request, 2000);
-    if (typeof body.action !== "string")
-      throw new HttpError(400, "Thao tác không hợp lệ.");
+    const body = await readJson(request,2000);
+    if (typeof body.action !== "string") throw new HttpError(400,"Thao tác không hợp lệ.");
     const db = await getDb();
-    if (body.action === "profile") {
-      const { fullName, email } = profile(body);
-      const nextAvatar = await avatar(body.avatar_path, teacher, db);
-      if (body.changePassword !== undefined && typeof body.changePassword !== "boolean") throw new HttpError(400, "Lựa chọn đổi mật khẩu không hợp lệ.");
-      const nextHash = body.changePassword ? hashPassword(password(body.password)) : null;
-      await db.transaction(async tx => {
-        if (nextHash) {
-          if (typeof body.currentPassword !== "string" || body.currentPassword.length > 200) throw new HttpError(400, "Nhập mật khẩu hiện tại.");
-          const current = (await tx.query<{ password_hash: string }>("select password_hash from teacher_users where id=$1 for update", [teacher.id])).rows[0];
-          if (!verifyPassword(body.currentPassword, current.password_hash)) throw new HttpError(400, "Mật khẩu hiện tại chưa đúng.");
-        }
-        await tx.query("update teacher_users set full_name=$1,email=$2,password_hash=coalesce($4,password_hash),avatar_path=case when $5::boolean then $6::text else avatar_path end where id=$3", [fullName, email, teacher.id, nextHash, nextAvatar !== undefined, nextAvatar ?? null]);
-        if (nextHash) await tx.query("delete from teacher_sessions where user_id=$1", [teacher.id]);
-      });
+    const actorGuard: SqlStatement = {sql:"exists(select 1 from teacher_users where id=?1 and role=?2 and is_active=true)",values:[teacher.id,teacher.role]};
+    if (body.action === "profile" || body.action === "password") {
+      const changePassword = body.action === "password" || body.changePassword === true;
+      if (body.changePassword !== undefined && typeof body.changePassword !== "boolean") throw new HttpError(400,"Lựa chọn đổi mật khẩu không hợp lệ.");
+      const guards = [actorGuard];
+      let nextHash: string | null = null;
+      if (changePassword) {
+        if (typeof body.currentPassword !== "string" || body.currentPassword.length>200) throw new HttpError(400,"Nhập mật khẩu hiện tại.");
+        const current = (await db.query<{password_hash:string}>("select password_hash from teacher_users where id=?1",[teacher.id])).rows[0];
+        if (!current || !(await verifyPassword(body.currentPassword,current.password_hash))) throw new HttpError(400,"Mật khẩu hiện tại chưa đúng.");
+        nextHash = await hashPassword(password(body.password));
+        guards.push({sql:"exists(select 1 from teacher_users where id=?1 and password_hash=?2)",values:[teacher.id,current.password_hash]});
+      }
+      const statements: SqlStatement[] = [];
+      if (body.action === "profile") {
+        const {fullName,email} = profile(body);
+        const nextAvatar = await avatar(body.avatar_path,teacher,db);
+        statements.push({sql:"update teacher_users set full_name=?1,email=?2,password_hash=coalesce(?4,password_hash),avatar_path=case when ?5 then ?6 else avatar_path end where id=?3",values:[fullName,email,teacher.id,nextHash,nextAvatar !== undefined,nextAvatar ?? null]});
+      } else statements.push({sql:"update teacher_users set password_hash=?1 where id=?2",values:[nextHash,teacher.id]});
+      if (nextHash) statements.push({sql:"delete from teacher_sessions where user_id=?1",values:[teacher.id]});
+      await db.batch(statements,guards);
       if (nextHash) await createSession(teacher.id);
-      return Response.json({ ok: true });
+      return Response.json({ok:true});
     }
-    if (body.action === "password") {
-      if (
-        typeof body.currentPassword !== "string" ||
-        body.currentPassword.length > 200
-      )
-        throw new HttpError(400, "Nhập mật khẩu hiện tại.");
-      const current = (
-        await db.query<{ password_hash: string }>(
-          "select password_hash from teacher_users where id=$1",
-          [teacher.id],
-        )
-      ).rows[0];
-      if (!verifyPassword(body.currentPassword, current.password_hash))
-        throw new HttpError(400, "Mật khẩu hiện tại chưa đúng.");
-      const hash = hashPassword(password(body.password));
-      await db.transaction(async (tx) => {
-        await tx.query(
-          "update teacher_users set password_hash=$1 where id=$2",
-          [hash, teacher.id],
-        );
-        await tx.query("delete from teacher_sessions where user_id=$1", [
-          teacher.id,
-        ]);
-      });
-      await createSession(teacher.id);
-      return Response.json({ ok: true });
-    }
-    if (teacher.role !== "admin")
-      throw new HttpError(403, "Chỉ quản trị viên quản lý tài khoản.");
+    if (teacher.role !== "admin") throw new HttpError(403,"Chỉ quản trị viên quản lý tài khoản.");
     if (body.action === "create") {
-      const username = text(body.username, 40);
-      if (
-        !/^[a-z0-9_-]{3,40}$/.test(username) ||
-        typeof body.role !== "string" ||
-        !["teacher", "admin"].includes(body.role)
-      )
-        throw new HttpError(
-          400,
-          "Tên đăng nhập gồm 3–40 chữ thường, số, _ hoặc -. Chọn quyền hợp lệ.",
-        );
-      const hash = hashPassword(password(body.password));
-      const { fullName, email } = profile(body);
-      const nextAvatar = await avatar(body.avatar_path, teacher, db);
-      const rows = (
-        await db.query(
-          "insert into teacher_users(username,password_hash,role,full_name,email,avatar_path) values($1,$2,$3,$4,$5,$6) on conflict(username) do nothing returning id",
-          [username, hash, body.role, fullName, email, nextAvatar ?? null],
-        )
-      ).rows;
-      if (!rows.length) throw new HttpError(409, "Tên đăng nhập đã tồn tại.");
-      return Response.json({ ok: true });
+      const username = text(body.username,40);
+      const role = body.role;
+      if (!/^[a-z0-9_-]{3,40}$/.test(username) || typeof role !== "string" || !["teacher","admin"].includes(role)) throw new HttpError(400,"Tên đăng nhập gồm 3–40 chữ thường, số, _ hoặc -. Chọn quyền hợp lệ.");
+      const hash = await hashPassword(password(body.password));
+      const {fullName,email} = profile(body);
+      const nextAvatar = await avatar(body.avatar_path,teacher,db);
+      const result = await db.query("insert into teacher_users(username,password_hash,role,full_name,email,avatar_path) values(?1,?2,?3,?4,?5,?6) on conflict(username) do nothing returning id",[username,hash,role,fullName,email,nextAvatar ?? null]);
+      if (!result.rows.length) throw new HttpError(409,"Tên đăng nhập đã tồn tại.");
+      return Response.json({ok:true});
     }
-    const id = text(body.id, 36);
-    if (
-      !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(
-        id,
-      )
-    )
-      throw new HttpError(400, "Tài khoản không hợp lệ.");
+    const id = text(body.id,36);
+    if (!/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id)) throw new HttpError(400,"Tài khoản không hợp lệ.");
+    const user = (await db.query<{username:string;role:string;password_hash:string}>("select username,role,password_hash from teacher_users where id=?1",[id])).rows[0];
+    if (!user) throw new HttpError(404,"Không tìm thấy tài khoản.");
+    const guards: SqlStatement[] = [actorGuard,{sql:"exists(select 1 from teacher_users where id=?1 and username=?2 and role=?3 and password_hash=?4)",values:[id,user.username,user.role,user.password_hash]}];
+    const statements: SqlStatement[] = [];
+    let renewSession = false;
     if (body.action === "update") {
-      const username = text(body.username, 40);
-      const { fullName, email } = profile(body);
-      const nextAvatar = await avatar(body.avatar_path, teacher, db);
-      if (!/^[a-z0-9_-]{3,40}$/.test(username) || typeof body.role !== "string" || !["teacher", "admin"].includes(body.role) || typeof body.active !== "boolean")
-        throw new HttpError(400, "Kiểm tra lại tên đăng nhập, vai trò và trạng thái.");
-      if (id === teacher.id && (body.active === false || body.role !== teacher.role))
-        throw new HttpError(400, "Không thể khóa hoặc đổi quyền tài khoản đang sử dụng.");
-      const nextHash = body.password === undefined || body.password === "" ? null : hashPassword(password(body.password));
-      if (nextHash && id === teacher.id) throw new HttpError(400, "Đổi mật khẩu của bạn tại trang Tài khoản để xác nhận mật khẩu hiện tại.");
-      let renewSession = false;
-      await db.transaction(async tx => {
-        const user = (await tx.query<{ username: string; role: string }>("select username,role from teacher_users where id=$1 for update", [id])).rows[0];
-        if (!user) throw new HttpError(404, "Không tìm thấy tài khoản.");
-        await tx.query("update teacher_users set username=$1,full_name=$2,email=$3,role=$4,is_active=$5,password_hash=coalesce($7,password_hash),avatar_path=case when $8::boolean then $9::text else avatar_path end where id=$6", [username, fullName, email, body.role, body.active, id, nextHash, nextAvatar !== undefined, nextAvatar ?? null]);
-        if (nextHash || user.username !== username || user.role !== body.role || body.active === false) {
-          await tx.query("delete from teacher_sessions where user_id=$1", [id]);
-          renewSession = id === teacher.id;
-        }
-        await tx.query("delete from login_attempts where key in ($1,$2)", [`login:${user.username}`, `login:${username}`]);
-      });
-      if (renewSession) await createSession(teacher.id);
-      return Response.json({ ok: true });
+      const username = text(body.username,40);
+      const {fullName,email} = profile(body);
+      const nextAvatar = await avatar(body.avatar_path,teacher,db);
+      const role = body.role;
+      if (!/^[a-z0-9_-]{3,40}$/.test(username) || typeof role !== "string" || !["teacher","admin"].includes(role) || typeof body.active !== "boolean") throw new HttpError(400,"Kiểm tra lại tên đăng nhập, vai trò và trạng thái.");
+      if (id === teacher.id && (body.active === false || role !== teacher.role)) throw new HttpError(400,"Không thể khóa hoặc đổi quyền tài khoản đang sử dụng.");
+      const nextHash = body.password === undefined || body.password === "" ? null : await hashPassword(password(body.password));
+      if (nextHash && id === teacher.id) throw new HttpError(400,"Đổi mật khẩu của bạn tại trang Tài khoản để xác nhận mật khẩu hiện tại.");
+      statements.push({sql:"update teacher_users set username=?1,full_name=?2,email=?3,role=?4,is_active=?5,password_hash=coalesce(?7,password_hash),avatar_path=case when ?8 then ?9 else avatar_path end where id=?6",values:[username,fullName,email,role,body.active,id,nextHash,nextAvatar !== undefined,nextAvatar ?? null]});
+      if (nextHash || user.username !== username || user.role !== role || body.active === false) {
+        statements.push({sql:"delete from teacher_sessions where user_id=?1",values:[id]});
+        renewSession = id === teacher.id;
+      }
+      statements.push({sql:"delete from login_attempts where key in (?1,?2)",values:["login:"+user.username,"login:"+username]});
+    } else {
+      if (!["active","reset"].includes(body.action)) throw new HttpError(400,"Thao tác không hợp lệ.");
+      if (body.action === "active" && typeof body.active !== "boolean") throw new HttpError(400,"Trạng thái không hợp lệ.");
+      if (id === teacher.id && body.action === "active" && body.active === false) throw new HttpError(400,"Không thể khóa tài khoản đang sử dụng.");
+      if (id === teacher.id && body.action === "reset") throw new HttpError(400,"Hãy dùng Đổi mật khẩu của tôi cho tài khoản đang sử dụng.");
+      const hash = body.action === "reset" ? await hashPassword(password(body.password)) : null;
+      statements.push(hash ? {sql:"update teacher_users set password_hash=?1 where id=?2",values:[hash,id]} : {sql:"update teacher_users set is_active=?1 where id=?2",values:[body.active as boolean,id]});
+      if (hash || body.active === false) statements.push({sql:"delete from teacher_sessions where user_id=?1",values:[id]});
+      statements.push({sql:"delete from login_attempts where key=?1",values:["login:"+user.username]});
     }
-    if (body.action === "active" && typeof body.active !== "boolean")
-      throw new HttpError(400, "Trạng thái không hợp lệ.");
-    if (body.action === "active" && id === teacher.id && body.active === false)
-      throw new HttpError(400, "Không thể khóa tài khoản đang sử dụng.");
-    if (!["active", "reset"].includes(String(body.action)))
-      throw new HttpError(400, "Thao tác không hợp lệ.");
-    if (body.action === "reset" && id === teacher.id)
-      throw new HttpError(
-        400,
-        "Hãy dùng Đổi mật khẩu của tôi cho tài khoản đang sử dụng.",
-      );
-    const hash =
-      body.action === "reset" ? hashPassword(password(body.password)) : null;
-    await db.transaction(async (tx) => {
-      const user = (
-        await tx.query<{ username: string }>(
-          "select username from teacher_users where id=$1",
-          [id],
-        )
-      ).rows[0];
-      if (!user) throw new HttpError(404, "Không tìm thấy tài khoản.");
-      if (hash)
-        await tx.query(
-          "update teacher_users set password_hash=$1 where id=$2",
-          [hash, id],
-        );
-      else
-        await tx.query("update teacher_users set is_active=$1 where id=$2", [
-          body.active,
-          id,
-        ]);
-      if (hash || body.active === false)
-        await tx.query("delete from teacher_sessions where user_id=$1", [id]);
-      await tx.query("delete from login_attempts where key=$1", [
-        `login:${user.username}`,
-      ]);
-    });
-    return Response.json({ ok: true });
-  } catch (error) {
-    if (error && typeof error === "object" && "code" in error && error.code === "23505")
-      return Response.json({ error: "Tên đăng nhập đã tồn tại." }, { status: 409 });
-    return errorResponse(error);
-  }
+    await db.batch(statements,guards);
+    if (renewSession) await createSession(teacher.id);
+    return Response.json({ok:true});
+  } catch (error) { return errorResponse(error); }
 }

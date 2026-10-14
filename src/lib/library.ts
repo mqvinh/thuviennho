@@ -26,7 +26,7 @@ export type Sentence = {
 const storyQuery = `select s.slug, s.title_vi, s.title_en, s.summary_vi, s.summary_en,
   s.reading_level, s.estimated_minutes, s.cover_image_path,
   coalesce(t.name_vi, 'Chưa phân chủ đề') as theme_vi, t.slug as theme_slug,
-  (select count(*)::int from story_sentences where story_id = s.id) as sentence_count
+  (select count(*) from story_sentences where story_id = s.id) as sentence_count
   from stories s left join reading_themes t on t.id = s.theme_id where s.is_published = true and s.is_visible = true`;
 export async function getThemes() {
   return (await (await getDb()).query<Theme>(
@@ -48,7 +48,7 @@ export async function getLibrary(activity?: LibraryActivity) {
 export async function getStory(slug: string) {
   const db = await getDb();
   return (
-    (await db.query<Story>(`${storyQuery} and s.slug = $1`, [slug])).rows[0] ??
+    (await db.query<Story>(`${storyQuery} and s.slug = ?1`, [slug])).rows[0] ??
     null
   );
 }
@@ -58,7 +58,7 @@ export async function getSentences(slug: string) {
     await db.query<Sentence>(
       `select ss.sequence_no, ss.text_vi, ss.text_en, ss.audio_vi_path, ss.audio_en_path
     from story_sentences ss join stories s on s.id = ss.story_id
-    where s.slug = $1 and s.is_published = true and s.is_visible = true order by ss.sequence_no`,
+    where s.slug = ?1 and s.is_published = true and s.is_visible = true order by ss.sequence_no`,
       [slug],
     )
   ).rows;
@@ -86,7 +86,7 @@ export async function getWords(slug?: string) {
   const db = await getDb();
   return (
     await db.query<Word>(
-      `select v.id, s.slug as story_slug, s.title_vi as story_title, v.word_vi, v.word_en, v.meaning_vi, v.example_vi, v.pronunciation_path, v.illustration_path from vocabulary v join stories s on s.id = v.story_id where s.is_published = true and s.is_visible = true and ($1::text is null or s.slug = $1) order by s.title_vi, v.sequence_no`,
+      `select v.id, s.slug as story_slug, s.title_vi as story_title, v.word_vi, v.word_en, v.meaning_vi, v.example_vi, v.pronunciation_path, v.illustration_path from vocabulary v join stories s on s.id = v.story_id where s.is_published = true and s.is_visible = true and (?1 is null or s.slug = ?1) order by s.title_vi, v.sequence_no`,
       [slug ?? null],
     )
   ).rows;
@@ -95,7 +95,7 @@ export async function getQuestions(slug: string) {
   const db = await getDb();
   return (
     await db.query<Question>(
-      `select q.id, q.question_vi, q.question_en, q.options, q.kind from reading_questions q join stories s on s.id = q.story_id where s.slug = $1 and s.is_published = true and s.is_visible = true order by q.sequence_no`,
+      `select q.id, q.question_vi, q.question_en, q.options, q.kind from reading_questions q join stories s on s.id = q.story_id where s.slug = ?1 and s.is_published = true and s.is_visible = true order by q.sequence_no`,
       [slug],
     )
   ).rows;

@@ -1,6 +1,5 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import path from "node:path";
 import { randomUUID } from "node:crypto";
+import { putMedia } from "@/lib/media-storage";
 import { requireTeacher } from "@/lib/auth";
 import { sameOrigin, errorResponse, HttpError } from "@/lib/http";
 import { getDb } from "@/lib/db";
@@ -68,12 +67,10 @@ export async function POST(request: Request) {
         "Chỉ nhận ảnh PNG/JPG/WebP và audio MP3/WAV/OGG hợp lệ.",
       );
     const name = `${randomUUID()}.${extension}`;
-    const dir = path.join(process.cwd(), ".data", "media");
-    await mkdir(dir, { recursive: true });
-    await writeFile(path.join(dir, name), bytes, { flag: "wx" });
+    await putMedia(name, bytes, type || "application/octet-stream");
     await (
       await getDb()
-    ).query("insert into media_files(path,owner_id) values($1,$2)", [
+    ).query("insert into media_files(path,owner_id) values(?1,?2)", [
       `/media/${name}`,
       teacher.id,
     ]);

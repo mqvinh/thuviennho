@@ -31,13 +31,14 @@ export async function POST(request: Request) {
     };
     const icon = image(body.icon_path), logo = image(body.logo_path);
     const db = await getDb();
-    await db.transaction(async tx => {
-      for (const media of [icon, logo].filter(Boolean)) {
-        if (!(await tx.query("select 1 from media_files where path=$1", [media])).rows.length)
-          throw new HttpError(400, "Ảnh đã chọn không tồn tại. Hãy tải ảnh lên lại.");
-      }
-      await tx.query("update site_settings set site_name=$1,icon_path=$2,logo_path=$3,site_description=coalesce($4,site_description) where id=true", [name, icon, logo, description]);
-    });
+    const paths = [icon, logo].filter(Boolean);
+    for (const media of paths) {
+      if (!(await db.query("select 1 from media_files where path=?1", [media])).rows.length)
+        throw new HttpError(400, "Ảnh đã chọn không tồn tại. Hãy tải ảnh lên lại.");
+    }
+    await db.batch([
+      { sql: "update site_settings set site_name=?1,icon_path=?2,logo_path=?3,site_description=coalesce(?4,site_description) where id=true", values: [name, icon, logo, description] },
+    ], paths.map(media => ({ sql: "exists(select 1 from media_files where path=?1)", values: [media] })));
     revalidatePath("/", "layout");
     return Response.json({ ok: true });
   } catch (error) { return errorResponse(error); }

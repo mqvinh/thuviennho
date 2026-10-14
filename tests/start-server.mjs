@@ -1,12 +1,15 @@
 import { PGlite } from "@electric-sql/pglite";
 import { readFile, mkdir, rm } from "node:fs/promises";
 import { scryptSync } from "node:crypto";
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import path from "node:path";
-const dir = path.join(process.cwd(), ".data", "automated-tests");
+const dir = path.resolve(process.cwd(), ".data", "automated-tests");
+if (path.dirname(dir) !== path.resolve(process.cwd(), ".data") || path.basename(dir) !== "automated-tests") throw new Error("Unsafe test cleanup path.");
+const stateDir = path.join(dir,"d1-state");
+const legacyDir = path.join(dir,"legacy");
 await rm(dir, { recursive: true, force: true });
 await mkdir(dir, { recursive: true });
-const db = new PGlite(dir);
+const db = new PGlite(legacyDir);
 await db.waitReady;
 await db.exec("create table if not exists library_migrations (name text primary key)");
 for (const file of [
@@ -43,14 +46,24 @@ for (const [username, role] of [
 const legacySalt = "legacy-test-only-salt";
 await db.query("insert into teacher_users(username,password_hash,role) values($1,$2,'teacher')", ["legacy-teacher", `${legacySalt}:${scryptSync("test-password-123", legacySalt, 64).toString("hex")}`]);
 await db.close();
+await mkdir(path.join(dir,"media"),{recursive:true});
+const transferDir=path.join(dir,"transfer");
+const result=spawnSync(process.execPath,["scripts/export-legacy-data.mjs","--database",legacyDir,"--media",path.join(dir,"media"),"--out",transferDir],{stdio:"inherit"});
+if(result.status!==0) throw new Error("Test data export failed.");
+const {openLocalPlatform}=await import("../scripts/lib/local-platform.mjs");
+const {applyMigrations,importTransfer}=await import("../scripts/lib/data-transfer.mjs");
+const platform=await openLocalPlatform(stateDir);
+try {await applyMigrations(platform.env.DB);await importTransfer(platform.env,transferDir);} finally {await platform.dispose();}
 const child = spawn(
   process.execPath,
-  ["node_modules/next/dist/bin/next", "dev", "--port", "3100"],
+  process.env.LITTLE_READERS_TEST_RUNTIME === "workers"
+    ? ["node_modules/wrangler/bin/wrangler.js", "dev", "--port", "3100", "--persist-to", stateDir]
+    : ["node_modules/next/dist/bin/next", "dev", "--port", "3100"],
   {
     stdio: "inherit",
     env: {
       ...process.env,
-      LITTLE_READERS_DATA_DIR: dir,
+      LITTLE_READERS_STATE_DIR: stateDir,
       LITTLE_READERS_TEST: "1",
       OPENAI_API_KEY: "",
       OPENAI_MODEL: "",

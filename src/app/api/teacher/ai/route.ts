@@ -33,19 +33,19 @@ export async function POST(request: Request) {
       throw new HttpError(400, "Mã truyện không hợp lệ.");
     const db = await getDb();
     if (
-      (await db.query("select 1 from stories where slug=$1", [slug])).rows
+      (await db.query("select 1 from stories where slug=?1", [slug])).rows
         .length
     )
       throw new HttpError(409, "Mã truyện đã tồn tại. Chọn mã mới.");
     const key = `ai:${teacher.id}`;
     await db.query(
-      "insert into login_attempts(key,attempts,reset_at) values($1,0,now()+interval '24 hours') on conflict(key) do update set attempts=case when login_attempts.reset_at<now() then 0 else login_attempts.attempts end,reset_at=case when login_attempts.reset_at<now() then now()+interval '24 hours' else login_attempts.reset_at end",
+      "insert into login_attempts(key,attempts,reset_at) values(?1,0,strftime('%Y-%m-%dT%H:%M:%fZ','now','+24 hours')) on conflict(key) do update set attempts=case when login_attempts.reset_at<strftime('%Y-%m-%dT%H:%M:%fZ','now') then 0 else login_attempts.attempts end,reset_at=case when login_attempts.reset_at<strftime('%Y-%m-%dT%H:%M:%fZ','now') then strftime('%Y-%m-%dT%H:%M:%fZ','now','+24 hours') else login_attempts.reset_at end",
       [key],
     );
     if (
       !(
         await db.query(
-          "update login_attempts set attempts=attempts+1 where key=$1 and attempts<5 returning key",
+          "update login_attempts set attempts=attempts+1 where key=?1 and attempts<5 returning key",
           [key],
         )
       ).rows.length

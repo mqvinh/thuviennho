@@ -13,6 +13,6 @@ export default defineConfig({
     command: "node tests/start-server.mjs",
     url: "http://localhost:3100",
     reuseExistingServer: false,
-    timeout: 120_000,
+    timeout: 300_000,
   },
 });

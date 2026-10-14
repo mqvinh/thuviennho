@@ -1,5 +1,5 @@
 import "server-only";
-import { getDb } from "./db";
+import { getDb, type SqlStatement } from "./db";
 import { HttpError, text } from "./http";
 import type { Teacher } from "./auth";
 export type ContentDraft = {
@@ -144,119 +144,39 @@ export function validateDraft(body: Record<string, unknown>): ContentDraft {
 }
 export async function saveDraft(d: ContentDraft, teacher: Teacher) {
   const db = await getDb();
-  return db.transaction(async (tx) => {
-    const theme = d.theme_slug ? (
-      await tx.query<{ id: string }>(
-        "select id from reading_themes where slug=$1",
-        [d.theme_slug],
-      )
-    ).rows[0] : null;
-    if (d.theme_slug && !theme) throw new HttpError(400, "Chủ đề không còn tồn tại. Hãy chọn chủ đề khác hoặc để trống.");
-    const paths = [
-      d.cover_image_path,
-      ...d.sentences.flatMap((s) => [s.audio_vi_path, s.audio_en_path]),
-      ...d.vocabulary.flatMap((v) => [
-        v.pronunciation_path,
-        v.illustration_path,
-      ]),
-    ].filter(Boolean);
-    for (const mediaPath of paths) {
-      const found = await tx.query(
-        "select 1 from media_files where path=$1 and ($2::boolean or owner_id=$3)",
-        [mediaPath, teacher.role === "admin", teacher.id],
-      );
-      if (!found.rows.length)
-        throw new HttpError(
-          403,
-          "Tệp không tồn tại hoặc không thuộc quyền sử dụng của bạn.",
-        );
-    }
-    const existing = (
-      await tx.query<{ id: string; owner_id: string | null }>(
-        "select id,owner_id from stories where slug=$1",
-        [d.slug],
-      )
-    ).rows[0];
-    if (
-      existing &&
-      teacher.role !== "admin" &&
-      existing.owner_id !== teacher.id
-    )
-      throw new HttpError(
-        403,
-        "Truyện này không thuộc quyền chỉnh sửa của bạn.",
-      );
-    const { rows } = await tx.query<{ id: string }>(
-      `insert into stories(theme_id,slug,title_vi,title_en,summary_vi,summary_en,reading_level,estimated_minutes,source_note,license_note,cover_image_path,owner_id,review_status,is_published) values($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,'draft',false) on conflict(slug) do update set theme_id=excluded.theme_id,title_vi=excluded.title_vi,title_en=excluded.title_en,summary_vi=excluded.summary_vi,summary_en=excluded.summary_en,reading_level=excluded.reading_level,estimated_minutes=excluded.estimated_minutes,source_note=excluded.source_note,license_note=excluded.license_note,cover_image_path=excluded.cover_image_path,review_status='draft',is_published=false returning id`,
-      [
-        theme?.id ?? null,
-        d.slug,
-        d.title_vi,
-        d.title_en,
-        d.summary_vi,
-        d.summary_en,
-        d.reading_level,
-        d.estimated_minutes,
-        d.source_note,
-        d.license_note,
-        d.cover_image_path || null,
-        teacher.id,
-      ],
-    );
-    const id = rows[0].id;
-    await tx.query("delete from story_sentences where story_id=$1", [id]);
-    await tx.query("delete from vocabulary where story_id=$1", [id]);
-    await tx.query("delete from reading_questions where story_id=$1", [id]);
-    for (const [i, s] of d.sentences.entries())
-      await tx.query(
-        "insert into story_sentences(story_id,sequence_no,text_vi,text_en,audio_vi_path,audio_en_path) values($1,$2,$3,$4,$5,$6)",
-        [
-          id,
-          i + 1,
-          s.text_vi,
-          s.text_en,
-          s.audio_vi_path || null,
-          s.audio_en_path || null,
-        ],
-      );
-    for (const [i, v] of d.vocabulary.entries())
-      await tx.query(
-        "insert into vocabulary(story_id,sequence_no,word_vi,word_en,meaning_vi,example_vi,pronunciation_path,illustration_path) values($1,$2,$3,$4,$5,$6,$7,$8)",
-        [
-          id,
-          i + 1,
-          v.word_vi,
-          v.word_en,
-          v.meaning_vi,
-          v.example_vi,
-          v.pronunciation_path || null,
-          v.illustration_path || null,
-        ],
-      );
-    for (const [i, q] of d.questions.entries()) {
-      const question = (
-        await tx.query<{ id: string }>(
-          "insert into reading_questions(story_id,sequence_no,question_vi,question_en,kind,options) values($1,$2,$3,$4,$5,$6) returning id",
-          [
-            id,
-            i + 1,
-            q.question_vi,
-            q.question_en,
-            q.kind,
-            JSON.stringify(q.options),
-          ],
-        )
-      ).rows[0];
-      await tx.query(
-        "insert into reading_answers(question_id,correct_option,correct_order,explanation_vi) values($1,$2,$3,$4)",
-        [
-          question.id,
-          q.correct_option,
-          JSON.stringify(q.correct_order),
-          q.explanation_vi,
-        ],
-      );
-    }
-    return id;
+  const theme = d.theme_slug ? (await db.query<{ id: string }>("select id from reading_themes where slug=?1", [d.theme_slug])).rows[0] : null;
+  if (d.theme_slug && !theme) throw new HttpError(400, "Chủ đề không còn tồn tại. Hãy chọn chủ đề khác hoặc để trống.");
+  const paths = [...new Set([d.cover_image_path, ...d.sentences.flatMap(s => [s.audio_vi_path,s.audio_en_path]), ...d.vocabulary.flatMap(v => [v.pronunciation_path,v.illustration_path])].filter(Boolean))];
+  for (const mediaPath of paths) {
+    if (!(await db.query("select 1 from media_files where path=?1 and (?2 or owner_id=?3)", [mediaPath, teacher.role === "admin", teacher.id])).rows.length)
+      throw new HttpError(403, "Tệp không tồn tại hoặc không thuộc quyền sử dụng của bạn.");
+  }
+  const existing = (await db.query<{id:string;owner_id:string|null}>("select id,owner_id from stories where slug=?1", [d.slug])).rows[0];
+  if (existing && teacher.role !== "admin" && existing.owner_id !== teacher.id) throw new HttpError(403, "Truyện này không thuộc quyền chỉnh sửa của bạn.");
+  const id = existing?.id ?? crypto.randomUUID();
+  const statements: SqlStatement[] = [{
+    sql: "insert into stories(id,theme_id,slug,title_vi,title_en,summary_vi,summary_en,reading_level,estimated_minutes,source_note,license_note,cover_image_path,owner_id,review_status,is_published) values(?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,?12,?13,'draft',false) on conflict(slug) do update set theme_id=excluded.theme_id,title_vi=excluded.title_vi,title_en=excluded.title_en,summary_vi=excluded.summary_vi,summary_en=excluded.summary_en,reading_level=excluded.reading_level,estimated_minutes=excluded.estimated_minutes,source_note=excluded.source_note,license_note=excluded.license_note,cover_image_path=excluded.cover_image_path,review_status='draft',is_published=false",
+    values: [id,theme?.id ?? null,d.slug,d.title_vi,d.title_en,d.summary_vi,d.summary_en,d.reading_level,d.estimated_minutes,d.source_note,d.license_note,d.cover_image_path || null,teacher.id],
+  }];
+  for (const table of ["story_sentences","vocabulary","reading_questions"]) statements.push({sql: "delete from " + table + " where story_id=?1", values:[id]});
+  for (const [i,s] of d.sentences.entries()) statements.push({
+    sql: "insert into story_sentences(story_id,sequence_no,text_vi,text_en,audio_vi_path,audio_en_path) values(?1,?2,?3,?4,?5,?6)",
+    values: [id,i+1,s.text_vi,s.text_en,s.audio_vi_path || null,s.audio_en_path || null],
   });
+  for (const [i,v] of d.vocabulary.entries()) statements.push({
+    sql: "insert into vocabulary(story_id,sequence_no,word_vi,word_en,meaning_vi,example_vi,pronunciation_path,illustration_path) values(?1,?2,?3,?4,?5,?6,?7,?8)",
+    values: [id,i+1,v.word_vi,v.word_en,v.meaning_vi,v.example_vi,v.pronunciation_path || null,v.illustration_path || null],
+  });
+  for (const [i,q] of d.questions.entries()) {
+    const questionId = crypto.randomUUID();
+    statements.push({sql:"insert into reading_questions(id,story_id,sequence_no,question_vi,question_en,kind,options) values(?1,?2,?3,?4,?5,?6,?7)", values:[questionId,id,i+1,q.question_vi,q.question_en,q.kind,JSON.stringify(q.options)]});
+    statements.push({sql:"insert into reading_answers(question_id,correct_option,correct_order,explanation_vi) values(?1,?2,?3,?4)", values:[questionId,q.correct_option,JSON.stringify(q.correct_order),q.explanation_vi]});
+  }
+  const guards: SqlStatement[] = [{sql:"exists(select 1 from teacher_users where id=?1 and role=?2 and is_active=true)",values:[teacher.id,teacher.role]}];
+  guards.push(existing
+    ? {sql:"exists(select 1 from stories where id=?1 and slug=?2 and (?3 or owner_id=?4))",values:[id,d.slug,teacher.role === "admin",teacher.id]}
+    : {sql:"not exists(select 1 from stories where slug=?1)",values:[d.slug]});
+  for (const mediaPath of paths) guards.push({sql:"exists(select 1 from media_files where path=?1 and (?2 or owner_id=?3))",values:[mediaPath,teacher.role === "admin",teacher.id]});
+  await db.batch(statements,guards);
+  return id;
 }

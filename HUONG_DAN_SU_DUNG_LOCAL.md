@@ -2,10 +2,10 @@
 
 ## Chạy và đăng nhập
 
-- Chạy `npm run dev`, mở http://localhost:3000.
+- Cài lần đầu bằng `npm ci`, chạy `npm run local:setup`, sau đó `npm run dev`, mở http://localhost:3000. Database D1 và tệp R2 local lưu bền vững ở `.wrangler/state/`.
 - Khu vực giáo viên: http://localhost:3000/admin.
 - Tài khoản quản trị local đầu tiên đã được tạo. Thông tin nằm trong `.data/teacher-login.txt`, được Git bỏ qua. Không chia sẻ tệp này.
-- Trên một bản cài mới, dừng server rồi chạy `node scripts/setup-local-admin.mjs` để tạo quản trị với mật khẩu ngẫu nhiên. Lệnh không thay đổi quản trị đã tồn tại.
+- Trên một bản cài mới không có snapshot, chạy `node scripts/setup-local-admin.mjs` để tạo quản trị với mật khẩu ngẫu nhiên. Đường dẫn tệp mật khẩu mới được in ở terminal. Lệnh không thay đổi quản trị đã tồn tại; snapshot chuyển đổi giữ nguyên tài khoản và mật khẩu cũ.
 - Muốn cấp thêm tài khoản, dừng server rồi chạy `node scripts/create-teacher.mjs ten-dang-nhap teacher` (hoặc `admin`). Mật khẩu nhập trong terminal, từ 6 đến 200 ký tự và có chữ hoa, chữ thường, số, ký tự đặc biệt.
 - Giáo viên chỉnh sửa truyện của mình, lưu nháp và gửi duyệt. Quản trị viên quản lý chủ đề, chỉnh sửa mọi học liệu, duyệt và xuất bản. Tài khoản giáo viên không thể tự xuất bản.
 - Phiên đăng nhập hết hạn sau 8 giờ. Đăng xuất hủy phiên ở server. Đăng nhập sai quá 8 lượt/tên tài khoản bị hạn chế trong 15 phút.
@@ -32,11 +32,11 @@ Trong **Cài đặt website**, quản trị viên có thể đổi tên, mô t�
 ## Audio và hình
 
 - Giáo viên tải ảnh PNG/JPG/WebP hoặc audio MP3/WAV/OGG, tối đa 5 MB/tệp, tại trường tương ứng trong biểu mẫu.
-- Tệp được lưu local ở `.data/media/`; tên do server tạo. Đường dẫn gắn theo câu/ngôn ngữ, từ vựng hoặc bìa.
+- Tệp được lưu trong R2 local ở `.wrangler/state/`; tên do server tạo. Đường dẫn `/media/...` gắn theo câu/ngôn ngữ, từ vựng hoặc bìa và được giữ nguyên khi chuyển sang hosted R2.
 - Tệp của bản nháp không được đọc công khai; tệp thuộc truyện đã xuất bản mới được mở công khai. Tệp chưa gắn vào truyện chỉ chủ sở hữu hoặc quản trị viên xem được.
 - Bộ phát có lưới nút chọn câu ở bên trái, mặc định chọn câu đầu tiên. Bên phải có **Nghe truyện / Dừng nghe** và **Nghe lại câu**. Chọn **Tiếng Việt** hoặc **Tiếng Anh** bằng nút lớn; câu đang chọn và câu đang phát được tô sáng. Tốc độ và nguồn giọng đọc dùng các nút chọn, với nguồn giọng đọc đặt dưới tốc độ.
 - Mặc định **Tự chọn** ưu tiên bản thu âm của từng câu/ngôn ngữ; nếu chưa có, dùng giọng đọc trên thiết bị. Chọn **Bản thu âm** hoặc **Giọng máy** để dùng riêng một nguồn. Chất lượng và ngôn ngữ giọng thiết bị tùy trình duyệt/hệ điều hành. Thiếu audio hoặc tải lỗi không cản trở đọc truyện.
-- Khi triển khai hosted cần chuyển tệp sang Storage, chốt quyền truy cập, nguồn/giấy phép và sản xuất bộ audio đã duyệt. PGlite và `.data` không phù hợp để lưu production trên Vercel.
+- Khi triển khai hosted phải nhập cả metadata D1 và object R2; dùng ZIP từ `npm run package:sites` và [hướng dẫn triển khai](HUONG_DAN_TRIEN_KHAI_SITES.md). ZIP giữ nguyên nội dung và checksum ảnh/audio.
 
 ## Học sinh trên thiết bị
 
@@ -76,6 +76,7 @@ Tài liệu API tham khảo: https://developers.openai.com/api/docs/guides/struc
 ```bash
 npm run lint
 npm run build
+npm run build:sites
 npm test
 ```
 
@@ -86,7 +87,7 @@ Cache Turbopack ghi ra filesystem đã tắt vì máy gần hết dung lượng;
 ## Phần còn cần quyết định/dịch vụ bên ngoài
 
 - Bản local đã chốt lưu học sinh trên thiết bị và tài khoản giáo viên có mật khẩu. Mã lớp/định danh giả danh và quyền xem sản phẩm chỉ xem xét khi mở rộng. Chưa có luồng tham gia/rời lớp hoặc báo cáo lớp.
-- Supabase hosted và RLS tách lớp: cần tài khoản/dự án hosted và phương án quyền được chấp thuận.
+- Hosting thật: cần tài nguyên D1/R2 và công cụ triển khai; xem giới hạn đối tượng của GPT Sites trong hướng dẫn triển khai trước khi chọn nền tảng.
 - Nguồn audio và người duyệt; 20 bản thảo cần rà soát trước thử nghiệm.
 - AI: cấu hình key/model và kiểm chứng dịch vụ thật.
 - Thử nghiệm tại trường: thực hiện buổi đọc, thu phản hồi và viết báo cáo thực tế theo `KE_HOACH_THU_NGHIEM.md`.

@@ -352,10 +352,12 @@ test("teacher ownership, review workflow, draft isolation, uploads and AI config
   await page.goto("/admin");
   await page.getByLabel("Tên đăng nhập").fill("test-admin");
   await page.getByLabel("Mật khẩu", { exact: true }).fill(password);
+  const browserLogin = page.waitForResponse(response => response.url().endsWith("/api/teacher/login") && response.request().method() === "POST");
   await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
+  expect((await browserLogin).status()).toBe(200);
   await expect(
     page.getByRole("heading", { name: "Truyện của tôi" }),
-  ).toBeVisible();
+  ).toBeVisible({timeout:30_000});
   await page.getByLabel("Tên truyện", { exact: true }).fill(draft.title_vi);
   await page.getByRole("button", { name: `Thao tác ${draft.title_vi}`, exact: true }).click();
   await page

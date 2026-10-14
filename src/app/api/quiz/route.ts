@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       correct_order: number[] | null;
       explanation_vi: string;
     }>(
-      `select q.id, q.kind, q.options, a.correct_option, a.correct_order, a.explanation_vi from reading_questions q join reading_answers a on a.question_id=q.id join stories s on s.id=q.story_id where s.slug=$1 and s.is_published=true and s.is_visible=true order by q.sequence_no`,
+      `select q.id, q.kind, q.options, a.correct_option, a.correct_order, a.explanation_vi from reading_questions q join reading_answers a on a.question_id=q.id join stories s on s.id=q.story_id where s.slug=?1 and s.is_published=true and s.is_visible=true order by q.sequence_no`,
       [body.slug],
     );
     if (!rows.length || body.answers.length !== rows.length)

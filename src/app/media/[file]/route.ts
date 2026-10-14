@@ -1,5 +1,4 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
+import { readMedia } from "@/lib/media-storage";
 import { getDb } from "@/lib/db";
 import { getTeacher } from "@/lib/auth";
 export async function GET(
@@ -14,7 +13,7 @@ export async function GET(
   const publicMedia =
     (
       await db.query(
-        `select 1 where exists(select 1 from site_settings where icon_path=$1 or logo_path=$1) or exists(select 1 from reading_themes where icon_path=$1) or exists(select 1 from stories s where s.is_published=true and s.is_visible=true and (s.cover_image_path=$1 or exists(select 1 from story_sentences ss where ss.story_id=s.id and (ss.audio_vi_path=$1 or ss.audio_en_path=$1)) or exists(select 1 from vocabulary v where v.story_id=s.id and (v.pronunciation_path=$1 or v.illustration_path=$1))))`,
+        `select 1 where exists(select 1 from site_settings where icon_path=?1 or logo_path=?1) or exists(select 1 from reading_themes where icon_path=?1) or exists(select 1 from stories s where s.is_published=true and s.is_visible=true and (s.cover_image_path=?1 or exists(select 1 from story_sentences ss where ss.story_id=s.id and (ss.audio_vi_path=?1 or ss.audio_en_path=?1)) or exists(select 1 from vocabulary v where v.story_id=s.id and (v.pronunciation_path=?1 or v.illustration_path=?1))))`,
         [media],
       )
     ).rows.length > 0;
@@ -25,7 +24,7 @@ export async function GET(
       teacher.role !== "admin" &&
       !(
         await db.query(
-          "select 1 from media_files where path=$1 and (owner_id=$2 or exists(select 1 from teacher_users where id=$2 and avatar_path=$1))",
+          "select 1 from media_files where path=?1 and (owner_id=?2 or exists(select 1 from teacher_users where id=?2 and avatar_path=?1))",
           [media, teacher.id],
         )
       ).rows.length
@@ -33,9 +32,8 @@ export async function GET(
       return new Response("Not found", { status: 404 });
   }
   try {
-    const data = await readFile(
-      path.join(process.cwd(), ".data", "media", file),
-    );
+    const data = await readMedia(file);
+    if (!data) return new Response("Not found", { status: 404 });
     const types: Record<string, string> = {
       png: "image/png",
       jpg: "image/jpeg",
@@ -44,7 +42,7 @@ export async function GET(
       wav: "audio/wav",
       ogg: "audio/ogg",
     };
-    return new Response(data, {
+    return new Response(data.body as unknown as ReadableStream, {
       headers: {
         "Content-Type": types[file.split(".").pop()!],
         "Cache-Control": "private, no-store",

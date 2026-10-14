@@ -2,12 +2,11 @@ import "server-only";
 import { cookies } from "next/headers";
 import {
   createHash,
-  scryptSync,
-  timingSafeEqual,
   randomBytes,
 } from "node:crypto";
 import { getDb } from "./db";
 import { HttpError } from "./http";
+export { hashPassword, verifyPassword } from "./password-crypto";
 export type Teacher = {
   id: string;
   username: string;
@@ -25,7 +24,7 @@ export async function getTeacher(): Promise<Teacher | null> {
   return (
     (
       await db.query<Teacher>(
-        `select u.id,u.username,u.role,u.full_name,u.email,u.avatar_path from teacher_users u join teacher_sessions s on s.user_id=u.id where s.token_hash=$1 and s.expires_at>now() and u.is_active=true`,
+        `select u.id,u.username,u.role,u.full_name,u.email,u.avatar_path from teacher_users u join teacher_sessions s on s.user_id=u.id where s.token_hash=?1 and s.expires_at>strftime('%Y-%m-%dT%H:%M:%fZ','now') and u.is_active=true`,
         [hashToken(token)],
       )
     ).rows[0] ?? null
@@ -36,19 +35,12 @@ export async function requireTeacher() {
   if (!teacher) throw new HttpError(401, "Hãy đăng nhập tài khoản giáo viên.");
   return teacher;
 }
-export function verifyPassword(password: string, stored: string) {
-  const [salt, hash] = stored.split(":");
-  if (!salt || !hash) return false;
-  const actual = scryptSync(password, salt, 64);
-  const expected = Buffer.from(hash, "hex");
-  return expected.length === actual.length && timingSafeEqual(actual, expected);
-}
 export async function createSession(id: string) {
   const token = randomBytes(32).toString("hex");
   const db = await getDb();
-  await db.query("delete from teacher_sessions where expires_at<now()");
+  await db.query("delete from teacher_sessions where expires_at<strftime('%Y-%m-%dT%H:%M:%fZ','now')");
   await db.query(
-    "insert into teacher_sessions(token_hash,user_id,expires_at) values($1,$2,now()+interval '8 hours')",
+    "insert into teacher_sessions(token_hash,user_id,expires_at) values(?1,?2,strftime('%Y-%m-%dT%H:%M:%fZ','now','+8 hours'))",
     [hashToken(token), id],
   );
   (await cookies()).set("library_teacher", token, {
@@ -58,9 +50,4 @@ export async function createSession(id: string) {
     path: "/",
     maxAge: 8 * 3600,
   });
-}
-
-export function hashPassword(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  return `${salt}:${scryptSync(password, salt, 64).toString("hex")}`;
 }

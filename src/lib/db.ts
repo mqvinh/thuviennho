@@ -1,70 +1,51 @@
-import { mkdir, readFile } from "node:fs/promises";
-import path from "node:path";
-import { PGlite } from "@electric-sql/pglite";
+import "server-only";
+import { connection } from "next/server";
+import type { D1Database, D1PreparedStatement } from "@cloudflare/workers-types";
+import { getLibraryBindings } from "./cloudflare";
+import { HttpError } from "./http";
 
-const dataDir =
-  process.env.LITTLE_READERS_DATA_DIR ||
-  path.join(process.cwd(), ".data", "little-readers");
-type DatabaseState = typeof globalThis & {
-  littleReadersDb?: PGlite;
-  littleReadersDbReady?: Promise<PGlite>;
-};
-const state = globalThis as DatabaseState;
-export async function getDb(): Promise<PGlite> {
-  if (state.littleReadersDb) return state.littleReadersDb;
-  if (state.littleReadersDbReady) return state.littleReadersDbReady;
-  state.littleReadersDbReady = (async () => {
-    await mkdir(path.dirname(dataDir), { recursive: true });
-    const db = new PGlite(dataDir);
+export type SqlValue = string | number | boolean | null;
+export type SqlStatement = { sql: string; values?: SqlValue[] };
+const booleanColumns = new Set(["is_active", "is_published", "is_visible"]);
+const jsonColumns = new Set(["options", "correct_order"]);
+
+function decodeRow(row: Record<string, unknown>) {
+  return Object.fromEntries(Object.entries(row).map(([name, value]) => [name,
+    booleanColumns.has(name) && value !== null ? value === 1 :
+    jsonColumns.has(name) && typeof value === "string" ? JSON.parse(value) : value,
+  ]));
+}
+
+export class LibraryDatabase {
+  constructor(private binding: D1Database) {}
+  private prepare({ sql, values = [] }: SqlStatement): D1PreparedStatement {
+    return this.binding.prepare(sql).bind(...values.map(value => typeof value === "boolean" ? Number(value) : value));
+  }
+  async query<T = Record<string, unknown>>(sql: string, values: SqlValue[] = []): Promise<{ rows: T[] }> {
+    const result = await this.prepare({ sql, values }).all<Record<string, unknown>>();
+    return { rows: (result.results ?? []).map(row => decodeRow(row) as T) };
+  }
+  async batch(statements: SqlStatement[], guards: SqlStatement[] = []) {
+    if (!statements.length) return;
+    const guardIds = guards.map(() => crypto.randomUUID());
+    const checks = guards.map((guard, index) => ({
+      sql: `INSERT INTO transaction_guards(id,valid) SELECT '${guardIds[index]}',CASE WHEN (${guard.sql}) THEN 1 ELSE 0 END`,
+      values: guard.values,
+    }));
+    const cleanup = guardIds.map(id => ({ sql: "DELETE FROM transaction_guards WHERE id=?1", values: [id] }));
     try {
-      await db.waitReady;
-      await db.exec(
-        "create table if not exists library_migrations (name text primary key)",
-      );
-      for (const file of [
-        "local.sql",
-        "002_local_features.sql",
-        "003_local_catalog.sql",
-        "004_local_operations.sql",
-        "005_more_stories.sql",
-        "006_user_profiles.sql",
-        "007_site_settings_visibility.sql",
-        "008_optional_story_themes.sql",
-        "009_site_description.sql",
-        "010_draft_vocabulary.sql",
-        "011_user_avatars_story_dates.sql",
-        "012_theme_icons.sql",
-      ]) {
-        const sql = await readFile(
-          path.join(process.cwd(), "database", file),
-          "utf8",
-        );
-        await db.transaction(async (tx) => {
-          if (
-            (
-              await tx.query("select 1 from library_migrations where name=$1", [
-                file,
-              ])
-            ).rows.length
-          )
-            return;
-          await tx.exec(sql);
-          await tx.query("insert into library_migrations(name) values($1)", [
-            file,
-          ]);
-        });
-      }
-      state.littleReadersDb = db;
-      return db;
+      await this.binding.batch([...checks, ...statements, ...cleanup].map(statement => this.prepare(statement)));
     } catch (error) {
-      await db.close();
+      const message = error instanceof Error ? error.message : String(error);
+      if (/CHECK constraint failed:.*valid/i.test(message)) throw new HttpError(409, "Thông tin đã thay đổi. Hãy tải lại trước khi lưu.");
+      if (/UNIQUE constraint failed: teacher_users.username/i.test(message)) throw new HttpError(409, "Tên đăng nhập đã tồn tại.");
       throw error;
     }
-  })();
-  try {
-    return await state.littleReadersDbReady;
-  } catch (error) {
-    state.littleReadersDbReady = undefined;
-    throw error;
   }
+}
+
+export async function getDb(): Promise<LibraryDatabase> {
+  // Bindings and durable data belong to the request, never the build machine.
+  await connection();
+  return new LibraryDatabase((await getLibraryBindings()).DB);
 }

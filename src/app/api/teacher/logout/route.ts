@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if (token)
       await (
         await getDb()
-      ).query("delete from teacher_sessions where token_hash=$1", [
+      ).query("delete from teacher_sessions where token_hash=?1", [
         hashToken(token),
       ]);
     store.delete("library_teacher");

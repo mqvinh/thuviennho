@@ -5,17 +5,27 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "npm run preview:sites",
     "lint": "eslint",
-    "test": "playwright test"
+    "test": "playwright test",
+    "local:setup": "node scripts/local-setup.mjs",
+    "data:export": "node scripts/export-data.mjs",
+    "data:verify": "node scripts/local-setup.mjs --verify",
+    "build:sites": "node scripts/prepare-opennext.mjs && opennextjs-cloudflare build",
+    "postinstall": "node scripts/prepare-opennext.mjs",
+    "preview:sites": "wrangler dev --port 3001",
+    "package:sites": "node scripts/package-sites.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
+    "@noble/hashes": "^2.4.0",
+    "@opennextjs/cloudflare": "^1.20.11",
     "next": "16.4.0",
     "react": "19.3.0",
     "react-dom": "19.3.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261014.1",
     "@playwright/test": "^1.64.0",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
@@ -23,7 +33,9 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.4.0",
+    "fflate": "^0.8.3",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.151.0"
   }
 }
