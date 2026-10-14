@@ -2,13 +2,32 @@
 
 ## Trạng thái và điều kiện của Sites
 
-Dự án đã chuyển sang D1/R2, có bản build Worker bằng OpenNext và gói dữ liệu đầy đủ. Đây là bước chuẩn bị kỹ thuật; chưa có Site online hoặc chứng nhận tương thích của nền tảng. Phiên IDE này không có công cụ provisioning/save-version/deploy của Sites và chưa liên kết GitHub.
+Dự án đã chuyển sang D1/R2, có bản build Worker bằng OpenNext và gói dữ liệu đầy đủ. Mã nguồn đã liên kết GitHub tại [mqvinh/thuviennho](https://github.com/mqvinh/thuviennho), nhánh `main`, remote `origin`. Đây là bước chuẩn bị kỹ thuật; chưa có Site online hoặc chứng nhận tương thích của nền tảng. Phiên IDE này không có công cụ provisioning/save-version/deploy của Sites.
 
 Theo [OpenAI Docs](https://learn.chatgpt.com/docs/sites), Sites không hỗ trợ trải nghiệm nhắm tới trẻ dưới 13 tuổi hoặc tuổi đồng ý số áp dụng. Sản phẩm hiện dành cho lớp 2, vì vậy cần chọn hosting riêng cho đối tượng này. Giữ đúng mô tả đối tượng khi kiểm tra nền tảng; không đổi nhãn để vượt điều kiện. Các bước Sites dưới đây mô tả cách kiểm tra artifact và bảo toàn dữ liệu nếu nền tảng xác nhận một cách sử dụng được hỗ trợ.
 
-## Cài bản local từ ZIP
+## Lấy mã nguồn từ GitHub
 
-Giải nén cả thư mục ẩn `.site-transfer/`. Cài Node.js 22.16+ và Git, sau đó:
+```bash
+git clone https://github.com/mqvinh/thuviennho.git
+cd thuviennho
+```
+
+Repo đã bao gồm các thành phần cần để cài và build:
+
+- `src/` và `public/`: giao diện, API, ảnh minh họa, icon chủ đề và font.
+- `package.json`, `package-lock.json` và các cấu hình Next.js, OpenNext, TypeScript: cài đúng phụ thuộc và build Worker.
+- `wrangler.jsonc`, `.openai/hosting.json`: cấu hình runtime và tên bindings `DB`, `MEDIA`.
+- `database/d1/migrations/`, `scripts/`, `tests/`: schema, công cụ chuyển dữ liệu và kiểm thử.
+- Các tài liệu hướng dẫn local, triển khai và cập nhật.
+
+Git không chứa `.env*`, mật khẩu dạng text, `.data/`, `.site-transfer/`, `.wrangler/`, `node_modules/` hoặc thư mục build. Dữ liệu ứng dụng và ảnh/audio tải lên vẫn được giữ trên máy gốc và trong ZIP riêng tư. Để lần triển khai đầu có đủ học liệu, cần chuyển cả gói này và thực hiện các bước nhập D1/R2 bên dưới; chỉ lấy repo sẽ chưa có dữ liệu hiện tại.
+
+Khi giao việc cho agent có công cụ hosting, cung cấp link repo, nhánh/commit cần dùng và ZIP riêng tư. Yêu cầu đọc tài liệu này, kiểm tra điều kiện nền tảng, build bằng `npm ci` rồi `npm run build:sites`, và giữ nguyên dữ liệu/media khi nhập lần đầu. Nền tảng phải xác nhận hỗ trợ lấy code từ repo; tài liệu Sites hiện không xác lập một luồng tự deploy mỗi khi GitHub có push.
+
+## Cài bản local từ repo hoặc ZIP
+
+Nếu dùng repo và cần dữ liệu hiện tại, giải nén thư mục ẩn `.site-transfer/` từ ZIP riêng tư vào thư mục gốc của repo. Nếu dùng toàn bộ ZIP, giữ nguyên thư mục ẩn này khi giải nén. Cài Node.js 22.16+ và Git, sau đó:
 
 ```bash
 npm ci
@@ -16,7 +35,7 @@ npm run local:setup
 npm run dev
 ```
 
-Setup chỉ nhập vào database trống. Nó giữ ID, slug, trạng thái, thứ tự, tài khoản, hash mật khẩu và các đường dẫn media. Không reset mật khẩu cũ. D1/R2 local lưu ở `.wrangler/state/v3/`; dev, preview và các script cùng dùng đường dẫn này. Việc sửa code và restart không làm mất dữ liệu.
+Setup chỉ nhập vào database trống. Nó giữ ID, slug, trạng thái, thứ tự, tài khoản, hash mật khẩu và các đường dẫn media. Không reset mật khẩu cũ. Nếu không có gói chuyển dữ liệu, setup chỉ khởi tạo database trống; có thể chạy `node scripts/setup-local-admin.mjs` để tạo quản trị đầu tiên. D1/R2 local lưu ở `.wrangler/state/v3/`; dev, preview và các script cùng dùng đường dẫn này. Việc sửa code và restart không làm mất dữ liệu.
 
 `npm run data:verify` so sánh với snapshot nhập ban đầu. Khi đã chỉnh dữ liệu trên web, snapshot cũ có thể khác: xuất bản sao mới bằng `npm run data:export`, rồi kiểm tra bằng `node scripts/local-setup.mjs --verify --from .data/current-sites-transfer`.
 
@@ -63,7 +82,7 @@ Upload ZIP không tự chạy những bước nhập D1/R2 này. Không có CLI 
 
 ## Cập nhật code từ local
 
-Git đã được khởi tạo thật trên máy, có commit mốc trước chuyển đổi. Git không phải giả lập; GitHub remote là tùy chọn và cần repo/tài khoản của bạn khi muốn push. Chưa có remote được tạo trong phiên này.
+Git đã được khởi tạo thật trên máy, có commit mốc trước chuyển đổi. Remote `origin` hiện trỏ tới `https://github.com/mqvinh/thuviennho.git`, nhánh làm việc là `main`. Sau khi sửa code trên local:
 
 ```bash
 git status
@@ -71,8 +90,10 @@ npm run lint
 npm run build:sites
 git add .
 git commit -m "Describe the change"
-npm run package:sites
+git push origin main
 ```
+
+Trên một bản clone khác có working tree sạch, dùng `git pull --ff-only origin main` rồi `npm ci` để lấy phiên bản mới. Chỉ tạo lại ZIP bằng `npm run package:sites` khi cần gửi bản sao dữ liệu mới hoặc bàn giao trọn gói. Không cần đưa ZIP lên GitHub.
 
 Giữ nguyên liên kết Site/project_id và bindings đã provision. Khi cập nhật deployment, chỉ đưa code và migration schema mới; **không nhập lại snapshot, không reset D1, không xóa R2**. Hosted data tiếp tục được giữ trong bindings hiện có. Nếu gửi ZIP mới, yêu cầu agent dùng snapshot chỉ làm bản sao/tham chiếu và bỏ qua nhập khi hosted đã có dữ liệu.
 

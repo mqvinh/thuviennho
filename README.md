@@ -33,7 +33,9 @@ npm run package:sites
 
 ZIP trong `.data/packages/` chứa mã nguồn, toàn bộ `public/`, snapshot D1, tất cả tệp R2 và kế hoạch nhập dữ liệu. Chương trình đối chiếu giá trị database, checksum media và từng file trong ZIP. ZIP chứa bản ghi tài khoản và hash mật khẩu, cần giữ riêng tư. Không chứa `.env`, mật khẩu khởi tạo dạng text, `node_modules`, Git hoặc cache build.
 
-Xem [HUONG_DAN_TRIEN_KHAI_SITES.md](HUONG_DAN_TRIEN_KHAI_SITES.md) để biết bước nhập lần đầu và cập nhật từ Git. D1/R2 local và hosted là hai bộ dữ liệu riêng; deploy code không tự đồng bộ dữ liệu. Phiên làm việc này chưa có công cụ Sites, project_id hoặc Git remote, nên chưa tạo deployment online.
+Mã nguồn nằm tại [mqvinh/thuviennho](https://github.com/mqvinh/thuviennho), nhánh `main`. Repo chứa cấu hình build, schema D1 và toàn bộ ảnh/font tĩnh trong `public/`. Dữ liệu truyện, tài khoản và ảnh/audio tải lên được chuyển bằng ZIP riêng tư; clone repo chưa có các dữ liệu này.
+
+Xem [HUONG_DAN_TRIEN_KHAI_SITES.md](HUONG_DAN_TRIEN_KHAI_SITES.md) để biết bước nhập lần đầu và cập nhật từ Git. D1/R2 local và hosted là hai bộ dữ liệu riêng; deploy code không tự đồng bộ dữ liệu. Push GitHub cũng không tự tạo hoặc cập nhật Site. Chưa có công cụ Sites hoặc project_id trong phiên IDE này, nên chưa tạo deployment online.
 
 **Giới hạn nền tảng:** theo [OpenAI Docs về Sites](https://learn.chatgpt.com/docs/sites), Sites không hỗ trợ website nhắm đến trẻ dưới 13 tuổi hoặc tuổi đồng ý số áp dụng. Website này dành cho lớp 2, vì vậy không thể coi GPT Sites là nơi triển khai phù hợp cho đối tượng hiện tại. Bản Worker/D1/R2 vẫn có thể dùng làm nền tảng cho hosting riêng.
 
