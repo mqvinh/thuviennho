@@ -1,6 +1,6 @@
 import "server-only";
 import { connection } from "next/server";
-import type { D1Database, D1PreparedStatement } from "@cloudflare/workers-types";
+import type { LibraryDatabaseBinding, LibraryStatement } from "./platform-types";
 import { getLibraryBindings } from "./cloudflare";
 import { HttpError } from "./http";
 
@@ -17,8 +17,8 @@ function decodeRow(row: Record<string, unknown>) {
 }
 
 export class LibraryDatabase {
-  constructor(private binding: D1Database) {}
-  private prepare({ sql, values = [] }: SqlStatement): D1PreparedStatement {
+  constructor(private binding: LibraryDatabaseBinding) {}
+  private prepare({ sql, values = [] }: SqlStatement): LibraryStatement {
     return this.binding.prepare(sql).bind(...values.map(value => typeof value === "boolean" ? Number(value) : value));
   }
   async query<T = Record<string, unknown>>(sql: string, values: SqlValue[] = []): Promise<{ rows: T[] }> {

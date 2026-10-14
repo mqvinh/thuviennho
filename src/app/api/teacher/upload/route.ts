@@ -3,6 +3,7 @@ import { putMedia } from "@/lib/media-storage";
 import { requireTeacher } from "@/lib/auth";
 import { sameOrigin, errorResponse, HttpError } from "@/lib/http";
 import { getDb } from "@/lib/db";
+import { MEDIA_LIMIT_BYTES, MEDIA_LIMIT_MB } from "@/lib/media-limits";
 export async function POST(request: Request) {
   try {
     sameOrigin(request);
@@ -15,9 +16,9 @@ export async function POST(request: Request) {
       const { done, value } = await reader.read();
       if (done) break;
       size += value.length;
-      if (size > 5 * 1024 * 1024) {
+      if (size > MEDIA_LIMIT_BYTES) {
         await reader.cancel();
-        throw new HttpError(413, "Tệp tối đa 5 MB.");
+        throw new HttpError(413, `Tệp tối đa ${MEDIA_LIMIT_MB} MB.`);
       }
       chunks.push(value);
     }

@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import { useUI, useUnsavedChanges } from "./ui-provider";
 import { LoadingIndicator } from "./loading-indicator";
+import { MEDIA_LIMIT_BYTES, MEDIA_LIMIT_MB } from "@/lib/media-limits";
 
 export function MediaField({ label, kind, value, onChange }: { label: string; kind: "image" | "audio"; value: string; onChange: (value: string) => void }) {
   const { notify } = useUI();
@@ -17,7 +18,7 @@ export function MediaField({ label, kind, value, onChange }: { label: string; ki
     <label>{label}<input type="file" accept={kind === "audio" ? "audio/mpeg,audio/wav,audio/ogg" : "image/png,image/jpeg,image/webp"} disabled={busy} onChange={async event => {
       const input = event.currentTarget; const file = input.files?.[0];
       if (!file) return;
-      if (file.size > 5 * 1024 * 1024) { input.value = ""; void notify("Hãy chọn tệp có dung lượng tối đa 5 MB."); return; }
+      if (file.size > MEDIA_LIMIT_BYTES) { input.value = ""; void notify(`Hãy chọn tệp có dung lượng tối đa ${MEDIA_LIMIT_MB} MB.`); return; }
       setPreview(URL.createObjectURL(file)); setBusy(true);
       const controller = new AbortController(); upload.current = controller;
       try {

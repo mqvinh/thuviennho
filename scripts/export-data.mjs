@@ -2,11 +2,13 @@ import {openLocalPlatform} from "./lib/local-platform.mjs";
 import {importOrder,digest} from "./lib/data-transfer.mjs";
 import {mkdir,writeFile} from "node:fs/promises";
 import path from "node:path";
+import {createRemoteBindings} from "./lib/remote-client.mjs";
 
 const args=process.argv.slice(2);
-const directory=path.resolve(args.includes("--out") ? args[args.indexOf("--out")+1] : ".data/current-sites-transfer");
+const remote=args.includes("--remote");
+const directory=path.resolve(args.includes("--out") ? args[args.indexOf("--out")+1] : remote ? ".data/remote-sites-transfer" : ".data/current-sites-transfer");
 await mkdir(path.join(directory,"media"),{recursive:true});
-const platform=await openLocalPlatform();
+const platform=remote ? {env:createRemoteBindings({url:process.env.LITTLE_READERS_BACKEND_URL,token:process.env.LITTLE_READERS_BACKEND_TOKEN}),dispose:async()=>{}} : await openLocalPlatform();
 try {
   const snapshot={version:1,exportedAt:new Date().toISOString(),tables:{}};
   for(const name of importOrder) {
@@ -32,5 +34,5 @@ try {
   const text=JSON.stringify(snapshot,null,2)+"\n";
   await writeFile(path.join(directory,"snapshot.json"),text);
   await writeFile(path.join(directory,"manifest.json"),JSON.stringify({version:1,exportedAt:snapshot.exportedAt,databaseSha256:digest(text),tableCounts:Object.fromEntries(Object.entries(snapshot.tables).map(([name,table])=>[name,table.rows.length])),media},null,2)+"\n");
-  console.log(`Exported current local data: ${Object.keys(snapshot.tables).length} tables, ${media.length} media files → ${directory}`);
+  console.log(`Exported current ${remote ? "remote" : "local"} data: ${Object.keys(snapshot.tables).length} tables, ${media.length} media files → ${directory}`);
 } finally {await platform.dispose();}

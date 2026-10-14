@@ -7,6 +7,7 @@ import { MediaField } from "./media-field";
 import { FieldLabel } from "./field-label";
 import { LoadingIndicator } from "./loading-indicator";
 import { useUI, useUnsavedChanges } from "./ui-provider";
+import { MEDIA_LIMIT_MB } from "@/lib/media-limits";
 
 export function WebsiteSettings() {
   const router = useRouter(); const { notify } = useUI();
@@ -46,7 +47,7 @@ export function WebsiteSettings() {
         <label>Mô tả website<textarea aria-label="Mô tả website" name="site_description" maxLength={300} value={settings.site_description} onChange={event => setSettings({ ...settings, site_description: event.target.value })} /></label>
         <div className="form-row">
           <div><MediaField label="Icon website" kind="image" value={settings.icon_path} onChange={icon_path => setSettings(previous => previous && ({ ...previous, icon_path }))} /><p className="field-hint">Ảnh vuông PNG, JPG hoặc WebP; nên dùng từ 64 × 64 px.</p></div>
-          <div><MediaField label="Logo website" kind="image" value={settings.logo_path} onChange={logo_path => setSettings(previous => previous && ({ ...previous, logo_path }))} /><p className="field-hint">PNG, JPG hoặc WebP, tối đa 5 MB. Ảnh được giữ nguyên tỉ lệ.</p></div>
+          <div><MediaField label="Logo website" kind="image" value={settings.logo_path} onChange={logo_path => setSettings(previous => previous && ({ ...previous, logo_path }))} /><p className="field-hint">PNG, JPG hoặc WebP, tối đa {MEDIA_LIMIT_MB} MB. Ảnh được giữ nguyên tỉ lệ.</p></div>
         </div>
         <div className="actions"><button className="button">{busy && <LoadingIndicator inline />}Lưu cài đặt</button></div>
       </fieldset>

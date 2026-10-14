@@ -16,6 +16,12 @@ Mở http://localhost:3000. D1 lưu database, R2 lưu ảnh/audio trong `.wrangl
 
 Ứng dụng lấy dữ liệu động từ D1, đọc tệp qua R2 với cùng đường dẫn `/media/...`. Bản PGlite và tệp media cũ trong `.data/` vẫn được giữ làm nguồn khôi phục, không còn là database đang chạy. Không xóa `.wrangler/state/` để cập nhật code.
 
+## Deploy Vercel
+
+Vercel chạy Next.js, kết nối tới D1/R2 qua backend Worker có secret. Nhánh runtime này không gọi trình giả lập Wrangler. Repo có `vercel.json`, `backend/worker.mjs`, cấu hình `wrangler.backend.jsonc` và công cụ nhập/sao lưu dữ liệu remote.
+
+Xem [HUONG_DAN_TRIEN_KHAI_VERCEL.md](HUONG_DAN_TRIEN_KHAI_VERCEL.md) để tạo backend, chuyển nguyên dữ liệu và đặt `LITTLE_READERS_BACKEND_URL`, `LITTLE_READERS_BACKEND_TOKEN` trên Vercel. Clone repo hoặc chỉ build Next.js chưa tự tạo tài nguyên và dữ liệu online.
+
 ## Build và đóng gói
 
 ```bash
@@ -47,6 +53,8 @@ Khả năng triển khai lên GPT Sites cần được đối chiếu với [đi
 - `scripts/package-sites.mjs`: xuất dữ liệu hiện tại, tạo và kiểm tra ZIP.
 - `wrangler.jsonc`: runtime Worker và bindings local `DB`, `MEDIA`.
 - `.openai/hosting.json`: tên bindings cho Sites; project_id chỉ do nền tảng cấp.
+- `backend/worker.mjs`, `wrangler.backend.jsonc`: kết nối D1/R2 riêng cho Vercel, có xác thực bằng secret.
+- `scripts/remote-setup.mjs`: migration và chuyển dữ liệu lần đầu vào backend rỗng.
 - `database/local.sql` và SQL PostgreSQL cũ: nguồn lịch sử cho chuyển đổi/kiểm thử, không tự nạp vào D1.
 - `KE_HOACH_TRIEN_KHAI.md`: kế hoạch tổng thể.
 - `KE_HOACH_CHUC_NANG.md`: backlog code theo chức năng.

@@ -6,14 +6,13 @@
 
 **Định hướng:** Hỗ trợ phụ huynh và giáo viên lựa chọn, biên tập, kiểm duyệt học liệu và tổ chức hoạt động đọc.
 
-## Nền tảng triển khai đã chọn
+## Nền tảng triển khai hiện tại
 
 - **Ứng dụng:** Next.js App Router, TypeScript, Tailwind CSS.
-- **Hosting dự kiến:** Vercel.
-- **Database local:** PGlite (PostgreSQL nhúng, lưu trên máy phát triển, không cần Docker).
-- **Database khi vận hành:** Supabase PostgreSQL hosted; Vercel chạy ứng dụng, không dùng thư mục local làm database production.
-- **Tệp media:** Supabase Storage; audio/tranh là tài nguyên riêng, không nhúng nhị phân vào database.
-- **Thực trạng:** Next.js đã kết nối database local PGlite; schema và một truyện mẫu nằm trong `database/local.sql`. Schema hosted và seed nằm riêng trong `database/001_initial_library_schema.sql` và `database/seed.sql`. Trước khi deploy cần chuyển lớp truy vấn sang Supabase và cấu hình biến môi trường trên Vercel.
+- **Hosting:** Vercel chạy Next.js, kết nối tới backend Worker riêng có xác thực. Có thể build toàn bộ website thành Worker bằng OpenNext.
+- **Database:** D1; local dùng giả lập, hosted dùng tài nguyên Cloudflare bền vững.
+- **Tệp media:** R2, giữ nguyên key và đường dẫn `/media/...` khi chuyển dữ liệu.
+- **Hướng dẫn hiện tại:** [triển khai Vercel](HUONG_DAN_TRIEN_KHAI_VERCEL.md) hoặc [bản Worker/Sites](HUONG_DAN_TRIEN_KHAI_SITES.md). SQL PostgreSQL/PGlite cũ giữ cho chuyển đổi và kiểm thử, không nạp lại khi deploy. Một số checklist phía dưới ghi lại kế hoạch ban đầu trước chuyển đổi D1/R2.
 - **Backlog theo chức năng:** xem [KE_HOACH_CHUC_NANG.md](KE_HOACH_CHUC_NANG.md).
 
 ## 1. Tầm nhìn và mục tiêu
