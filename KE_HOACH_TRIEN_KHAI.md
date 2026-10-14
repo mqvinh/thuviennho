@@ -1,8 +1,10 @@
 # Kế hoạch triển khai — THƯ VIỆN NHỎ – LITTLE READERS
 
-**Sản phẩm:** Website đọc mở rộng song ngữ dành cho học sinh lớp 2  
-**Trạng thái:** Kế hoạch ban đầu dựa trên mô tả ý tưởng do người dùng cung cấp  
-**Định hướng:** Bắt đầu bằng bản thử nghiệm nhỏ, ưu tiên trải nghiệm đọc và học liệu đã được giáo viên kiểm duyệt.
+**Sản phẩm:** Website học liệu song ngữ dành cho phụ huynh và giáo viên
+
+**Trạng thái:** Kế hoạch sản phẩm, cập nhật đối tượng sử dụng chính theo định hướng mới
+
+**Định hướng:** Hỗ trợ phụ huynh và giáo viên lựa chọn, biên tập, kiểm duyệt học liệu và tổ chức hoạt động đọc.
 
 ## Nền tảng triển khai đã chọn
 
@@ -16,11 +18,11 @@
 
 ## 1. Tầm nhìn và mục tiêu
 
-THƯ VIỆN NHỎ – LITTLE READERS là hệ sinh thái đọc mở rộng kết hợp môn Tiếng Việt với hoạt động làm quen tiếng Anh qua truyện ngắn, tranh minh họa, âm thanh và trò chơi học tập. Website hướng tới việc giúp học sinh lớp 2 hình thành thói quen đọc, phát triển ngôn ngữ, khả năng tự học và tình yêu sách.
+THƯ VIỆN NHỎ – LITTLE READERS là website học liệu song ngữ dành cho phụ huynh và giáo viên, kết hợp truyện ngắn, tranh minh họa, âm thanh và hoạt động đọc hiểu. Website giúp người hướng dẫn chuẩn bị học liệu, tổ chức đọc cùng người học và khuyến khích thói quen đọc.
 
 Mục tiêu của bản thử nghiệm:
 
-- Cho học sinh dễ dàng tìm và đọc truyện phù hợp với trình độ.
+- Giúp phụ huynh và giáo viên tìm, rà soát và lựa chọn truyện phù hợp với trình độ người học.
 - Hỗ trợ nghe truyện bằng tiếng Việt và tiếng Anh, đọc song song theo câu.
 - Biến việc đọc thành hoạt động tương tác nhẹ nhàng, khuyến khích suy nghĩ và sáng tạo.
 - Cho giáo viên tổ chức hoạt động đọc ở lớp hoặc tại nhà và theo dõi tiến bộ theo hướng động viên.
@@ -28,10 +30,11 @@ Mục tiêu của bản thử nghiệm:
 
 ## 2. Người dùng và vai trò
 
-- **Học sinh lớp 2:** chọn truyện, đọc/nghe, học từ mới, làm trò chơi, ghi lại cảm nhận hoặc sản phẩm sáng tạo.
-- **Giáo viên:** giới thiệu truyện, giao hoạt động, xem tiến độ và kiểm duyệt học liệu do giáo viên tạo.
-- **Phụ huynh:** hỗ trợ con đọc tại nhà và xem thông tin tiến độ phù hợp (phạm vi cần chốt).
+- **Phụ huynh:** lựa chọn học liệu, tổ chức đọc cùng con tại nhà và xem tiến độ được lưu trên thiết bị.
+- **Giáo viên:** biên tập, kiểm duyệt học liệu, giới thiệu truyện và hướng dẫn hoạt động đọc. Báo cáo tiến độ lớp là phần mở rộng cần chốt.
 - **Quản trị viên nội dung:** quản lý truyện, tranh, âm thanh, câu hỏi, từ vựng và danh mục.
+
+Người học tham gia các hoạt động đọc/nghe, từ vựng, thử tài và nhật ký do phụ huynh hoặc giáo viên hướng dẫn. Các màn hình tương tác này vẫn có trong ứng dụng; thay đổi định hướng tài liệu chưa bổ sung cơ chế giới hạn người sử dụng.
 
 ## 3. Phạm vi chức năng
 
@@ -84,12 +87,12 @@ AI không phải điều kiện để phát hành bản thử nghiệm ban đầ
 - **Xưởng sáng tạo truyện:** hỗ trợ giáo viên tạo bản nháp truyện theo chủ đề, từ khóa hoặc bài học.
 - **Hỗ trợ giáo viên:** tạo bản nháp phiếu đọc, câu hỏi, bài nối từ và hoạt động sau đọc.
 
-Mọi nội dung AI tạo ra phải ở trạng thái bản nháp và được giáo viên duyệt về độ chính xác, ngôn ngữ, hình ảnh và mức độ phù hợp trước khi học sinh sử dụng. Không cung cấp chatbot mở cho học sinh lớp 2, không yêu cầu các em cung cấp thông tin cá nhân. Cần thống nhất chính sách dữ liệu và giới hạn sử dụng trước khi tích hợp dịch vụ AI.
+Mọi nội dung AI tạo ra phải ở trạng thái bản nháp và được giáo viên duyệt về độ chính xác, ngôn ngữ, hình ảnh và mức độ phù hợp trước khi dùng trong hoạt động đọc. Công cụ AI dành cho người biên tập học liệu; không cung cấp chatbot mở cho người học và không yêu cầu thông tin cá nhân của người học. Cần thống nhất chính sách dữ liệu và giới hạn sử dụng trước khi tích hợp dịch vụ AI.
 
 ## 4. Luồng hoạt động học tập
 
-1. **Chọn sách:** học sinh chọn truyện theo chủ đề hoặc gợi ý của giáo viên.
-2. **Đọc và nghe:** ưu tiên đọc tiếng Việt; học sinh nghe hoặc khám phá bản tiếng Anh theo khả năng.
+1. **Chọn sách:** phụ huynh hoặc giáo viên chọn truyện theo chủ đề và trình độ người học.
+2. **Đọc và nghe:** người hướng dẫn tổ chức đọc tiếng Việt, nghe hoặc khám phá bản tiếng Anh theo khả năng người học.
 3. **Tương tác:** làm câu hỏi, học từ mới hoặc sắp xếp diễn biến.
 4. **Chia sẻ:** kể lại, vẽ nhân vật hoặc viết 2–3 câu về điều đã học.
 
@@ -127,8 +130,8 @@ Giáo viên có thể theo dõi truyện đã đọc, nhiệm vụ hoàn thành 
 
 ### Giai đoạn 4 — Thử nghiệm thực tế và cải tiến
 
-- Thử nghiệm với lớp 2/4 theo kế hoạch của nhà trường/giáo viên.
-- Hướng dẫn học sinh và giáo viên sử dụng trong hoạt động đọc ở lớp và tại nhà.
+- Thử nghiệm với nhóm phụ huynh và giáo viên theo kế hoạch của người phụ trách.
+- Hướng dẫn phụ huynh và giáo viên lựa chọn học liệu và tổ chức hoạt động đọc ở lớp hoặc tại nhà.
 - Thu thập phản hồi từ học sinh, giáo viên và phụ huynh; rà soát khả năng sử dụng, mức độ hứng thú và thói quen đọc trước–sau.
 - Điều chỉnh nội dung, thao tác và tính năng trước khi mở rộng.
 
@@ -166,7 +169,7 @@ Giáo viên có thể theo dõi truyện đã đọc, nhiệm vụ hoàn thành 
 ## 9. Việc cần làm tiếp theo
 
 - [ ] Chốt nhóm người dùng đầu tiên và cách giáo viên/quản trị viên đăng nhập.
-- [ ] Xác định nội dung lớp 2 cần gắn với chương trình học nào.
+- [ ] Xác định nội dung và chương trình học mà phụ huynh, giáo viên cần hỗ trợ.
 - [ ] Chọn 20–30 truyện đầu tiên, chủ đề, mức đọc và người chịu trách nhiệm biên tập.
 - [ ] Chốt cách tạo giọng đọc (thu âm sẵn hoặc dịch vụ đọc văn bản) và yêu cầu đồng bộ câu.
 - [ ] Chốt cách lưu nhật ký, tranh vẽ/ghi âm và quyền xem của giáo viên/phụ huynh.

@@ -4,7 +4,9 @@
 
 Dự án đã chuyển sang D1/R2, có bản build Worker bằng OpenNext và gói dữ liệu đầy đủ. Mã nguồn đã liên kết GitHub tại [mqvinh/thuviennho](https://github.com/mqvinh/thuviennho), nhánh `main`, remote `origin`. Đây là bước chuẩn bị kỹ thuật; chưa có Site online hoặc chứng nhận tương thích của nền tảng. Phiên IDE này không có công cụ provisioning/save-version/deploy của Sites.
 
-Theo [OpenAI Docs](https://learn.chatgpt.com/docs/sites), Sites không hỗ trợ trải nghiệm nhắm tới trẻ dưới 13 tuổi hoặc tuổi đồng ý số áp dụng. Sản phẩm hiện dành cho lớp 2, vì vậy cần chọn hosting riêng cho đối tượng này. Giữ đúng mô tả đối tượng khi kiểm tra nền tảng; không đổi nhãn để vượt điều kiện. Các bước Sites dưới đây mô tả cách kiểm tra artifact và bảo toàn dữ liệu nếu nền tảng xác nhận một cách sử dụng được hỗ trợ.
+Website được định hướng dành cho phụ huynh và giáo viên để lựa chọn, biên tập và tổ chức hoạt động đọc song ngữ. Các màn hình đọc/nghe, từ vựng, thử tài, nhật ký và hành trình hiện vẫn hỗ trợ hoạt động tương tác với người học.
+
+Theo [OpenAI Docs](https://learn.chatgpt.com/docs/sites), Sites không hỗ trợ trải nghiệm nhắm tới trẻ dưới 13 tuổi hoặc tuổi đồng ý số áp dụng. Nền tảng cần đánh giá đối tượng và luồng sử dụng thực tế; thay đổi mô tả không tự xác nhận website đáp ứng điều kiện. Các bước dưới đây mô tả cách kiểm tra artifact và bảo toàn dữ liệu khi nền tảng xác nhận một cách sử dụng được hỗ trợ.
 
 ## Lấy mã nguồn từ GitHub
 

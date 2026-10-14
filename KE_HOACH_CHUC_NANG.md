@@ -2,6 +2,8 @@
 
 Tài liệu này chia kế hoạch sản phẩm thành các phần nhỏ có thể code, rà soát và nghiệm thu độc lập. Làm lần lượt theo thứ tự; chưa bắt đầu chức năng phụ thuộc khi dữ liệu hoặc luồng trước đó chưa ổn định.
 
+Đối tượng sử dụng chính là phụ huynh và giáo viên: lựa chọn, biên tập học liệu và hướng dẫn hoạt động đọc song ngữ. Các mục về người học mô tả hoạt động được người lớn tổ chức và hỗ trợ.
+
 ## Quy ước
 
 - **P0:** cần cho bản thử nghiệm; **P1:** hoàn thiện sau MVP; **P2:** mở rộng.
@@ -24,7 +26,7 @@ Tài liệu này chia kế hoạch sản phẩm thành các phần nhỏ có th�
 
 ## 1. Khung giao diện và điều hướng — P0
 
-- [x] Thiết lập font, màu, khoảng cách, nút, thẻ truyện và kiểu chữ dễ đọc cho học sinh lớp 2.
+- [x] Thiết lập font, màu, khoảng cách, nút, thẻ truyện và kiểu chữ dễ đọc để phụ huynh, giáo viên sử dụng khi hướng dẫn đọc.
 - [x] Tạo bố cục chung có logo, điều hướng tới sáu khu vực, nội dung chính và footer.
 - [x] Làm bố cục responsive cho điện thoại, máy tính bảng và desktop; vùng chạm đủ lớn.
 - [x] Thêm trang 404 và thông báo khi chức năng chưa có dữ liệu.
@@ -155,7 +157,7 @@ Tài liệu này chia kế hoạch sản phẩm thành các phần nhỏ có th�
 - [ ] Nguồn audio, tranh minh họa và người chịu trách nhiệm kiểm duyệt.
 - [x] Bản local: giáo viên sửa học liệu của mình và gửi duyệt; quản trị viên quản lý chủ đề, duyệt và xuất bản.
 - [ ] Phạm vi nhật ký đọc, lưu vẽ/ghi âm và thời hạn lưu.
-- [ ] Thiết bị/trình duyệt mục tiêu cho đợt thử nghiệm lớp 2/4.
+- [ ] Thiết bị/trình duyệt mục tiêu cho đợt dùng thử với phụ huynh và giáo viên.
 
 ## Trạng thái bản local sau đợt triển khai mục 4–12
 

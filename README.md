@@ -1,6 +1,6 @@
 # THƯ VIỆN NHỎ – LITTLE READERS
 
-Website đọc mở rộng song ngữ dành cho học sinh lớp 2. Ứng dụng dùng Next.js App Router, TypeScript và Tailwind CSS.
+Website học liệu song ngữ dành cho phụ huynh và giáo viên, hỗ trợ lựa chọn, biên tập và tổ chức hoạt động đọc. Ứng dụng dùng Next.js App Router, TypeScript và Tailwind CSS.
 
 ## Chạy local với D1 và R2
 
@@ -37,7 +37,7 @@ Mã nguồn nằm tại [mqvinh/thuviennho](https://github.com/mqvinh/thuviennho
 
 Xem [HUONG_DAN_TRIEN_KHAI_SITES.md](HUONG_DAN_TRIEN_KHAI_SITES.md) để biết bước nhập lần đầu và cập nhật từ Git. D1/R2 local và hosted là hai bộ dữ liệu riêng; deploy code không tự đồng bộ dữ liệu. Push GitHub cũng không tự tạo hoặc cập nhật Site. Chưa có công cụ Sites hoặc project_id trong phiên IDE này, nên chưa tạo deployment online.
 
-**Giới hạn nền tảng:** theo [OpenAI Docs về Sites](https://learn.chatgpt.com/docs/sites), Sites không hỗ trợ website nhắm đến trẻ dưới 13 tuổi hoặc tuổi đồng ý số áp dụng. Website này dành cho lớp 2, vì vậy không thể coi GPT Sites là nơi triển khai phù hợp cho đối tượng hiện tại. Bản Worker/D1/R2 vẫn có thể dùng làm nền tảng cho hosting riêng.
+Khả năng triển khai lên GPT Sites cần được đối chiếu với [điều kiện của nền tảng](https://learn.chatgpt.com/docs/sites) và cách sử dụng thực tế; xem hướng dẫn triển khai. Bản Worker/D1/R2 cũng có thể dùng cho hosting riêng.
 
 ## Cấu trúc chính
 

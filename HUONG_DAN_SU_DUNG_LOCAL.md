@@ -1,5 +1,7 @@
 # LITTLE READERS — hướng dẫn bản local
 
+Website học liệu song ngữ dành cho phụ huynh và giáo viên, hỗ trợ lựa chọn, biên tập và tổ chức hoạt động đọc. Các khu vực đọc/nghe, từ vựng, thử tài và nhật ký có thể được người hướng dẫn sử dụng trong buổi đọc cùng người học.
+
 ## Chạy và đăng nhập
 
 - Cài lần đầu bằng `npm ci`, chạy `npm run local:setup`, sau đó `npm run dev`, mở http://localhost:3000. Database D1 và tệp R2 local lưu bền vững ở `.wrangler/state/`.
@@ -38,9 +40,9 @@ Trong **Cài đặt website**, quản trị viên có thể đổi tên, mô t�
 - Mặc định **Tự chọn** ưu tiên bản thu âm của từng câu/ngôn ngữ; nếu chưa có, dùng giọng đọc trên thiết bị. Chọn **Bản thu âm** hoặc **Giọng máy** để dùng riêng một nguồn. Chất lượng và ngôn ngữ giọng thiết bị tùy trình duyệt/hệ điều hành. Thiếu audio hoặc tải lỗi không cản trở đọc truyện.
 - Khi triển khai hosted phải nhập cả metadata D1 và object R2; dùng ZIP từ `npm run package:sites` và [hướng dẫn triển khai](HUONG_DAN_TRIEN_KHAI_SITES.md). ZIP giữ nguyên nội dung và checksum ảnh/audio.
 
-## Học sinh trên thiết bị
+## Tổ chức đọc và dữ liệu trên thiết bị
 
-Sáu khu vực: tủ sách, nghe sách, từ vựng, thử tài, nhật ký và hành trình.
+Phụ huynh và giáo viên sử dụng sáu khu vực để chuẩn bị và hướng dẫn hoạt động: tủ sách, nghe sách, từ vựng, thử tài, nhật ký và hành trình.
 
 - Tủ sách chỉ có truyện đã xuất bản. Lọc chủ đề/mức hoặc tìm tên Việt–Anh.
 - Trang đọc chuyển Việt/Anh/song ngữ, chỉnh cỡ chữ, chạm từ được đánh dấu để xem nghĩa.

@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
     title: settings.site_name,
-    description: settings.site_description || "Thư viện đọc mở rộng song ngữ dành cho học sinh lớp 2.",
+    description: settings.site_description || "Thư viện học liệu song ngữ dành cho phụ huynh và giáo viên.",
     icons: { icon: settings.icon_path || "/images/book-cover.svg" },
   };
 }
