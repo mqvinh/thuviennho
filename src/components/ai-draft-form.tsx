@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import type { ThemeRecord } from "./theme-editor";
 import { useUI, useUnsavedChanges } from "./ui-provider";
 import { LoadingIndicator } from "./loading-indicator";
@@ -16,7 +17,7 @@ function AIFields({ themes }: { themes: ThemeRecord[] }) {
   const [data, setData] = useState(() => { try { const saved = sessionStorage.getItem("little-readers-ai-form"); return saved ? { ...blank, ...JSON.parse(saved) } as typeof blank : blank; } catch { return blank; } }); const [baseline, setBaseline] = useState(JSON.stringify(data)); const [busy, setBusy] = useState(false);
   async function saveInputs() { try { sessionStorage.setItem("little-readers-ai-form", JSON.stringify(data)); setBaseline(JSON.stringify(data)); return true; } catch { void notify("Trình duyệt chưa lưu được nội dung nhập. Bạn có thể ở lại để tiếp tục."); return false; } }
   useUnsavedChanges(JSON.stringify(data) !== baseline, saveInputs, () => setData(JSON.parse(baseline)), busy);
-  return <section className="panel"><h2>AI hỗ trợ bản nháp</h2><p>Chỉ nhập chủ đề và mục tiêu bài học, không nhập dữ liệu học sinh. Kết quả cần giáo viên rà soát; giới hạn 5 lượt/24 giờ.</p><form ref={form} className="form-grid" onSubmit={async event => {
+  return <section className="panel"><div className="management-heading form-heading"><h2>Tạo truyện bằng AI</h2><Link className="button secondary" href="/admin/truyen">← Quay lại</Link></div><p>Chỉ nhập chủ đề và mục tiêu bài học, không nhập dữ liệu học sinh. Kết quả cần giáo viên rà soát; giới hạn 5 lượt/24 giờ.</p><form ref={form} className="form-grid" onSubmit={async event => {
     event.preventDefault(); setBusy(true);
     try { const response = await fetch("/api/teacher/ai", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }); const result = await response.json(); if (!response.ok) throw Error(result.error); setBaseline(JSON.stringify(data)); sessionStorage.removeItem("little-readers-ai-form"); router.push(`/admin/bien-tap?slug=${encodeURIComponent(result.draft.slug)}`); }
     catch (error) { void notify(error instanceof Error ? error.message : "Chưa tạo được bản nháp."); } finally { setBusy(false); }

@@ -489,6 +489,11 @@ input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):focus, sele
 
 .account-menu summary, .account-dropdown { border: 0; }
 .management-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.management-heading-actions { display: flex; flex-wrap: wrap; gap: 10px; max-width: 100%; }
+@media (max-width: 600px) {
+  .management-heading-actions { width: 100%; }
+  .management-heading-actions .button { flex: 1 1 180px; }
+}
 .stories-table { table-layout: fixed; }
 .stories-table col.actions-column { width: 80px; }
 .stories-table th:last-child, .stories-table td:last-child { width: 80px; text-align: center; padding-inline: 10px; }
