@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { Word } from "@/lib/library";
 import { useDeviceData } from "@/lib/device-store";
 import { dueWords, flashcardReady } from "@/lib/flashcards";
+import { uniqueMatchingWords } from "@/lib/matching";
 import { IllustrationScene } from "./illustration-scene";
 import { GardenCorners } from "./reading-artwork";
 import { ListeningIcon } from "./listening-icon";
@@ -25,6 +26,15 @@ export function GamesCatalog({ words }: { words: Word[] }) {
           <div className="game-card-meta"><span><ListeningIcon name="sprout" />{ready.length} từ sẵn sàng</span><span><ListeningIcon name="clock" />5–10 phút / lượt</span></div>
           {due > 0 && <p className="game-due-badge">Hôm nay cần ôn {due} từ</p>}
           <span className="button game-play">Chơi ngay<ListeningIcon name="arrow-right" /></span></div>
+        </Link>
+      </IllustrationScene>
+      <IllustrationScene className="game-card">
+        <Link href="/tro-choi/ghep-tu-voi-hinh" className="game-card-link">
+          <div className="game-card-image"><Image src="/images/games-matching.svg" alt="Ghép các thẻ từ với hình quyển sách và chiếc lá" width={600} height={360} /><GardenCorners /></div>
+          <div className="game-card-body"><span className="game-category">VIỆT – ANH · TÌM ĐÚNG CẶP</span><h3>Ghép từ với hình</h3><p>Chạm hoặc kéo từng từ vào hình phù hợp. Cùng ghép những cặp từ thân quen và luyện lại các từ cần nhớ thêm.</p>
+            <div className="game-card-meta"><span><ListeningIcon name="image" />{uniqueMatchingWords(words).length} từ có hình</span><span><ListeningIcon name="clock" />2–4 phút / lượt</span></div>
+            <span className="button game-play">Chơi ngay<ListeningIcon name="arrow-right" /></span>
+          </div>
         </Link>
       </IllustrationScene>
     </div>

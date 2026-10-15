@@ -1,5 +1,6 @@
 import type { DeviceData, JournalEntry } from "./device-store";
 import type { FlashcardHistory } from "./flashcards";
+import type { MatchingHistory } from "./matching";
 const invalid = () => {
   throw Error(
     "Bản sao không đúng định dạng hoặc vượt giới hạn. Dữ liệu hiện tại chưa thay đổi.",
@@ -97,11 +98,27 @@ export function validateDeviceData(value: unknown): DeviceData {
     if (!attempts || Date.parse(dueAt) <= Date.parse(lastReviewed) || (streak > 0 && correct === 0)) return invalid();
     return [key, { attempts, correct, streak, lastReviewed, dueAt }];
   }));
+  const matchingEntries = Object.entries(object(data.matching === undefined ? {} : data.matching));
+  if (matchingEntries.length > 5000) return invalid();
+  const matching: MatchingHistory = Object.fromEntries(matchingEntries.map(([key, value]) => {
+    if (key.length > 2004 || !/^(en|vi):[a-z0-9-]+:[^:\s]+:[^:\s]+$/i.test(key)) return invalid();
+    const row = object(value);
+    function integer(name: string, max: number) {
+      const number = row[name];
+      if (typeof number !== "number" || !Number.isSafeInteger(number) || number < 0 || number > max) return invalid();
+      return number;
+    }
+    const plays = integer("plays", 1_000_000), firstTry = integer("firstTry", plays);
+    const mistakes = integer("mistakes", 1_000_000), lastMistakes = integer("lastMistakes", mistakes);
+    if (!plays || mistakes < plays - firstTry || (firstTry === plays && mistakes !== 0) || (lastMistakes === 0 && firstTry === 0) || (lastMistakes > 0 && firstTry === plays)) return invalid();
+    return [key, { plays, firstTry, mistakes, lastMistakes, lastPlayed: date(row.lastPlayed) }];
+  }));
   return {
     version: 1,
     favorites,
     journal,
     flashcards,
+    matching,
     started: records(data.started),
     finished: records(data.finished),
     activities: records(data.activities),

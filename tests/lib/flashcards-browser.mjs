@@ -16,9 +16,9 @@ export async function checkFlashcardGame(page, { words, mobile = false, screensh
   const seed = { version: 1, favorites: [words[0].id], started: {}, finished: {}, activities: {}, journal: [{ id: "00000000-0000-4000-a000-000000000002", slug: "test-story", title: "Nhật ký cần giữ", character: "Bạn", lesson: "Dữ liệu cũ", image: "", date: "2026-10-10T03:00:00.000Z" }] };
   await page.evaluate(({ key, seed }) => localStorage.setItem(key, JSON.stringify(seed)), { key: storageKey, seed });
   await page.reload();
-  await expect(page.locator(".game-card")).toHaveCount(1);
+  await expect(page.locator(".game-card")).toHaveCount(2);
   if (screenshots) await page.screenshot({ path: `${screenshots}/games-${mobile ? "mobile" : "desktop"}.png`, fullPage: true });
-  await page.locator(".game-card-link").click();
+  await page.locator('.game-card-link[href="/tro-choi/flashcard"]').click();
   await expect(page).toHaveURL(/\/tro-choi\/flashcard$/);
   const source = page.getByRole("combobox", { name: "Bộ từ", exact: true });
   await expect(source).toBeEnabled();
@@ -49,7 +49,7 @@ export async function checkFlashcardGame(page, { words, mobile = false, screensh
     await expect(page.locator(".flashcard-progress-label")).toContainText(`Thẻ ${i + 1}/5`);
     const flip = page.locator(".flashcard-flip");
     await expect.poll(() => flip.locator(".flashcard-front img").evaluate(image => image.complete && image.naturalWidth > 0)).toBe(true);
-    const path = await flip.locator(".flashcard-front img").getAttribute("src");
+    const path = await flip.locator(".flashcard-front img").evaluate(image => new URL(image.src).pathname);
     const word = words.find(item => item.illustration_path === path);
     assert.ok(word, "Study card belongs to an existing word");
     await flip.click();
@@ -70,7 +70,7 @@ export async function checkFlashcardGame(page, { words, mobile = false, screensh
     const english = await page.locator(".flashcard-prompt > strong").innerText();
     const options = page.locator(".flashcard-option");
     await expect.poll(() => options.locator("img").evaluateAll(images => images.length >= 3 && images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
-    const paths = await options.locator("img").evaluateAll(images => images.map(image => image.getAttribute("src")));
+    const paths = await options.locator("img").evaluateAll(images => images.map(image => new URL(image.src).pathname));
     const optionWords = paths.map(path => words.find(item => item.illustration_path === path));
     assert.ok(optionWords.every(Boolean));
     assert.equal(new Set(optionWords.map(word => word.word_en.toLowerCase())).size, paths.length);
@@ -136,7 +136,7 @@ export async function checkFlashcardGame(page, { words, mobile = false, screensh
     await page.getByRole("button", { name: "Bắt đầu thử tài", exact: true }).click();
     const target = await page.locator(".flashcard-prompt > strong").innerText();
     const options = page.locator(".flashcard-option");
-    const paths = await options.locator("img").evaluateAll(images => images.map(image => image.getAttribute("src")));
+    const paths = await options.locator("img").evaluateAll(images => images.map(image => new URL(image.src).pathname));
     const correct = paths.findIndex(path => words.some(word => word.illustration_path === path && word.word_en === target));
     const beforeFailure = await stored(page);
     await page.evaluate(() => { Storage.prototype.setItem = () => { throw new DOMException("Test storage full", "QuotaExceededError"); }; });
@@ -164,7 +164,7 @@ export async function checkFlashcardResultLayout(page, { words, mobile, screensh
     const english = await page.locator(".flashcard-prompt > strong").innerText();
     const options = page.locator(".flashcard-option");
     await expect.poll(() => options.locator("img").evaluateAll(images => images.every(image => image.complete && image.naturalWidth > 0))).toBe(true);
-    const paths = await options.locator("img").evaluateAll(images => images.map(image => image.getAttribute("src")));
+    const paths = await options.locator("img").evaluateAll(images => images.map(image => new URL(image.src).pathname));
     const correct = paths.findIndex(path => words.some(word => word.illustration_path === path && word.word_en === english));
     assert.ok(correct >= 0);
     await options.nth(correctAnswer ? correct : (correct + 1) % paths.length).click();
