@@ -11,9 +11,6 @@
 .story-introduction .story-cover-hero { border-radius: 30px; border-color: #ead8ae; box-shadow: 0 8px 24px #92400e0c; }
 .story-introduction .story-cover-hero > .cover { height: clamp(250px, 38vw, 330px); }
 .story-introduction .story-cover-hero > .story-cover-artwork { position: relative; isolation: isolate; height: auto; min-height: clamp(250px, 38vw, 330px); align-items: center; justify-content: center; gap: 10px; padding: 24px 32px; border-radius: 0; background: linear-gradient(120deg, #fff6df 20%, #e2f2fa 65%, #c9eaff); box-shadow: inset 0 0 0 4px #ffffff65; }
-.story-introduction .story-cover-artwork::before, .story-introduction .story-cover-artwork::after { content: ""; position: absolute; z-index: -1; bottom: 0; width: 200px; height: 146px; background: url('/images/reading-garden.svg') center / contain no-repeat; opacity: .8; pointer-events: none; }
-.story-introduction .story-cover-artwork::before { left: -26px; transform: scaleX(-1); }
-.story-introduction .story-cover-artwork::after { right: -26px; }
 .story-introduction .jacket-imprint { font-size: 12px; letter-spacing: .26em; color: #743f1b; opacity: 1; }
 .story-introduction .jacket-symbol { flex: none; min-height: 0; font-size: 90px; line-height: 1; }
 .story-introduction .jacket-symbol svg { width: 108px; height: 108px; }

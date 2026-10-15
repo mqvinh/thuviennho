@@ -21,6 +21,7 @@ import "./library-theme.css";
 import "./site-experience.css";
 import "./journey-theme.css";
 import "./journal-theme.css";
+import "./illustration-motion.css";
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {

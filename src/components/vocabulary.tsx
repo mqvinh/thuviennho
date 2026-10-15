@@ -5,6 +5,8 @@ import { useId, useRef, useState } from "react";
 import type { Word } from "@/lib/library";
 import { ListeningIcon } from "./listening-icon";
 import { CatalogPagination } from "./catalog-pagination";
+import { IllustrationScene } from "./illustration-scene";
+import { GardenCorners } from "./reading-artwork";
 
 export function VocabularyHeading({
   id,
@@ -49,7 +51,8 @@ export function WordCard({
       : null;
   return (
     <article className="panel word-card">
-      <div className={`word-illustration${illustration ? " has-word-illustration" : ""}`}>
+      <IllustrationScene className={`word-illustration${illustration ? " has-word-illustration" : ""}`}>
+        <span className="word-image-window">
         <Image
           src={illustration || "/images/vocabulary-books.svg"}
           alt={illustration ? `Minh họa từ ${word.word_vi}` : ""}
@@ -57,7 +60,9 @@ export function WordCard({
           sizes="(max-width: 600px) 100vw, 900px"
           unoptimized
         />
-      </div>
+        </span>
+        <GardenCorners />
+      </IllustrationScene>
       <h3>
         {word.word_vi} · <span lang="en">{word.word_en}</span>
       </h3>

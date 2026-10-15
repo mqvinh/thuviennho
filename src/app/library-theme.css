@@ -1,8 +1,5 @@
 .library-page { position: relative; isolation: isolate; }
 .library-page .shelf-welcome { position: relative; isolation: isolate; overflow: hidden; grid-template-columns: minmax(0, 1.35fr) minmax(0, .95fr) minmax(200px, .65fr); gap: 20px; min-height: 310px; padding: 30px; margin-bottom: 26px; border-radius: 38px; background: linear-gradient(110deg, #fffdf7 28%, #fff5d9 55%, #dff3ff); box-shadow: 0 8px 28px #92400e0a; }
-.library-page .shelf-welcome::before, .library-page .shelf-welcome::after { content: ""; position: absolute; z-index: -1; bottom: 0; width: 200px; height: 146px; background: url('/images/reading-garden.svg') center / contain no-repeat; pointer-events: none; }
-.library-page .shelf-welcome::before { left: -38px; transform: scaleX(-1); opacity: .65; }
-.library-page .shelf-welcome::after { right: -22px; }
 .library-page .hero { min-width: 0; }
 .library-page .hero > .eyebrow { margin: 0; font-size: 14px; color: #864c2b; }
 .library-page .shelf-welcome h1 { margin-block: 10px 14px; color: #743710; line-height: 1.18; letter-spacing: -.03em; }
@@ -12,7 +9,7 @@
 .library-page .hero-actions .button:first-child { border-color: #ad4c12; background: linear-gradient(#bd5d19, #a4450e); box-shadow: 0 3px 0 #88370e, 0 6px 14px #92400e18; }
 .library-page .hero-actions .listening-icon { width: 21px; height: 21px; flex-shrink: 0; }
 .library-page .hero-actions .listening-icon-arrow-right { width: 17px; }
-.library-page .shelf-welcome-art { width: 100%; aspect-ratio: 3 / 2; background: url('/images/listening-books.svg') center / contain no-repeat; pointer-events: none; }
+.library-page .shelf-welcome-art { width: 100%; aspect-ratio: 3 / 2; pointer-events: none; }
 .library-page .reading-ticket { position: relative; padding: 22px; border: 1px solid #aed9f4; border-radius: 28px; color: #185d93; background: linear-gradient(140deg, #e8f7ff, #ccecff); box-shadow: 0 5px 0 #b9dae96b; }
 .library-page .reading-ticket .eyebrow { margin: 0 0 6px; color: #185d93; font-size: 14px; }
 .library-page .reading-ticket h2 { margin: 0 0 12px; color: #13588d; }
@@ -47,15 +44,11 @@
 .library-page .bookshelf .story-card { min-width: 0; border-radius: 21px; border-color: #eeddb6; box-shadow: 0 6px 18px #92400e08; }
 .library-page .book-cover-link { padding: 8px 8px 0; }
 .library-page .bookshelf .book-jacket { position: relative; isolation: isolate; height: auto; min-height: 150px; aspect-ratio: 1.5; padding: 34px 12px 8px; border-radius: 15px; box-shadow: none; }
-.library-page .bookshelf .book-jacket::before, .library-page .bookshelf .book-jacket::after { content: ""; position: absolute; z-index: -1; bottom: 0; width: 145px; height: 106px; background: url('/images/reading-garden.svg') center / contain no-repeat; pointer-events: none; }
-.library-page .bookshelf .book-jacket::before { left: -36px; transform: scaleX(-1); }
-.library-page .bookshelf .book-jacket::after { right: -28px; }
 .library-page .bookshelf :is(.jacket-imprint, .jacket-title, .jacket-languages) { display: none; }
 .library-page .bookshelf .jacket-symbol { min-height: 0; font-size: 78px; line-height: 1; color: #864513; }
 .library-page .bookshelf .jacket-symbol svg { width: 118px; height: 118px; }
 .library-page .bookshelf .jacket-generic-art { display: block; width: 100%; max-width: 170px; aspect-ratio: 3 / 2; background: url('/images/listening-books.svg') center / contain no-repeat; }
 .library-page .bookshelf .custom-jacket { padding: 0; }
-.library-page .bookshelf .custom-jacket::before, .library-page .bookshelf .custom-jacket::after { display: none; }
 .library-page .bookshelf .custom-jacket img { position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; }
 .library-page .story-cover-badge { position: absolute; top: 13px; left: 14px; max-width: calc(100% - 28px); padding: 5px 10px; border: 1px solid #ffffffd9; border-radius: 13px; background: #fff5c9ed; color: #7e461f; font-size: 11px; line-height: 1.45; font-weight: 750; }
 .library-page .story-card:nth-child(4n + 2) .story-cover-badge { background: #e2f2ffed; color: #205a93; }

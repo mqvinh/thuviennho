@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-const symbols = ["☂", "♧", "☀", "✦", "☁"];
+import { IllustrationScene } from "./illustration-scene";
+import { BookArtwork, GardenCorners } from "./reading-artwork";
 function JacketArtwork({ title, fallback }: { title: string; fallback: ReactNode }) {
   const subject = title.toLocaleLowerCase("vi");
   let artwork;
@@ -44,16 +45,19 @@ export function Cover({ path, title, eager = false, shelf = false, hero = false 
   hero?: boolean;
 }) {
   const custom = path?.startsWith("/") && !path.startsWith("//") && path !== "/images/book-cover.svg";
-  if (hero || (shelf && !custom)) {
-    const index = Array.from(title).reduce((sum, char) => sum + char.codePointAt(0)!, 0) % symbols.length;
+  if (hero || shelf) {
     return (
-      <div className={`cover book-jacket${hero ? " story-cover-artwork" : ""}${hero && custom ? " has-cover-background" : ""}`} role="img" aria-label={`Bìa truyện ${title}`}>
+      <IllustrationScene className={`cover book-jacket${hero ? " story-cover-artwork" : ""}${hero && custom ? " has-cover-background" : ""}${shelf && custom ? " custom-jacket" : ""}`} role="img" aria-label={`Bìa truyện ${title}`}>
         {hero && custom && <><Image className="story-banner-background" src={path!} alt="" fill sizes="(max-width: 800px) 100vw, 800px" loading={eager ? "eager" : "lazy"} unoptimized /><span className="story-banner-shade" aria-hidden="true" /></>}
-        <span className="jacket-imprint">Little Readers</span>
-        <span className="jacket-symbol" aria-hidden="true"><JacketArtwork title={title} fallback={shelf ? <span className="jacket-generic-art" /> : symbols[index]} /></span>
-        <span className="jacket-title">{title}</span>
-        <span className="jacket-languages">Tiếng Việt · English</span>
-      </div>
+        {shelf && custom ? <span className="jacket-image-window"><Image src={path!} alt="" fill sizes="(max-width: 600px) 50vw, (max-width: 1000px) 33vw, 300px" loading={eager ? "eager" : "lazy"} unoptimized /></span> : null}
+        {(!shelf || !custom) && <>
+          <span className="jacket-imprint">Little Readers</span>
+          <span className="jacket-symbol" aria-hidden="true">{hero ? <BookArtwork /> : <JacketArtwork title={title} fallback={<span className="jacket-generic-art" />} />}</span>
+          <span className="jacket-title">{title}</span>
+          <span className="jacket-languages">Tiếng Việt · English</span>
+        </>}
+        <GardenCorners />
+      </IllustrationScene>
     );
   }
   const source = custom ? path! : "/images/book-cover.svg";

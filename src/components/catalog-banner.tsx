@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { ListeningIcon } from "./listening-icon";
+import { IllustrationScene } from "./illustration-scene";
+import { BookArtwork, GardenCorners } from "./reading-artwork";
 
 const banners = {
   library: { eyebrow: "Chào mừng bạn đến với thư viện của em!", title: "Hôm nay, em muốn mở cuốn sách nào?", description: "Những câu chuyện nhỏ, mang đến những bài học lớn. Chọn một cuốn sách và bắt đầu hành trình đọc song ngữ Việt – Anh thật thú vị nhé!", href: "#books", action: "Chọn sách để đọc", icon: "book", ticket: "Thử đọc hôm nay", goal: "5 phút", benefit: "cho một điều hay!", tip: "Chậm lại một chút. Đọc thêm một trang. Thế giới sẽ rộng mở hơn!" },
@@ -12,7 +14,7 @@ const banners = {
 
 export function CatalogBanner({ kind }: { kind: keyof typeof banners }) {
   const banner = banners[kind];
-  return <section className={`shelf-welcome collection-banner banner-${kind}`} aria-labelledby={`${kind}-banner-title`}>
+  return <IllustrationScene as="section" className={`shelf-welcome collection-banner banner-${kind}`} aria-labelledby={`${kind}-banner-title`}>
     <div className="hero">
       <p className="eyebrow">{banner.eyebrow}</p>
       <h1 id={`${kind}-banner-title`}>{banner.title}</h1>
@@ -22,12 +24,13 @@ export function CatalogBanner({ kind }: { kind: keyof typeof banners }) {
         <Link href={kind === "library" ? "/nghe-sach" : "/"} className="button secondary"><ListeningIcon name={kind === "library" ? "headphones" : "book"} />{kind === "library" ? "Nghe sách" : "Về tủ sách"}</Link>
       </div>
     </div>
-    <div className="shelf-welcome-art" aria-hidden="true" />
+    <div className="shelf-welcome-art" aria-hidden="true"><BookArtwork /></div>
     <aside className="reading-ticket" aria-label={banner.ticket}>
       <span className="reading-ticket-sun" aria-hidden="true">☀</span>
       <p className="eyebrow">{banner.ticket}</p>
       <h2><strong>{banner.goal}</strong>{" "}<span>{banner.benefit}</span></h2>
       <p>{banner.tip}</p>
     </aside>
-  </section>;
+    <GardenCorners />
+  </IllustrationScene>;
 }
