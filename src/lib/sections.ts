@@ -6,3 +6,11 @@ export const sections = [
   { href: "/nhat-ky", title: "Nhật ký đọc sách", icon: "✏️" },
   { href: "/hanh-trinh", title: "Hành trình đọc sách", icon: "🌟" },
 ];
+
+export const mobileNavigationQuery = "(max-width: 760px)";
+
+export function isSectionActive(pathname: string, href: string) {
+  return href === "/"
+    ? pathname === "/" || pathname.startsWith("/doc/") || pathname.startsWith("/truyen/")
+    : pathname === href || pathname.startsWith(`${href}/`);
+}

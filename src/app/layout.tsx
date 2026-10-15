@@ -4,9 +4,10 @@ import { io } from "next/cache";
 import { sections } from "@/lib/sections";
 import { getTeacher } from "@/lib/auth";
 import { getSiteSettings } from "@/lib/site-settings";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Navigation } from "@/components/navigation";
+import { MobileNavigation, MobileNavigationFallback } from "@/components/mobile-navigation";
 import { ScrollControls } from "@/components/scroll-controls";
 import { AccountMenu } from "@/components/account-menu";
 import { HeaderLogin } from "@/components/header-login";
@@ -22,6 +23,8 @@ import "./site-experience.css";
 import "./journey-theme.css";
 import "./journal-theme.css";
 import "./illustration-motion.css";
+import "./mobile-navigation.css";
+export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
   return {
@@ -69,6 +72,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <footer className="site-footer"><div className="footer-shell">
           <Suspense fallback={<LoadingIndicator />}><SiteFooter /></Suspense>
         </div></footer>
+        <Suspense fallback={<MobileNavigationFallback />}><MobileNavigation /></Suspense>
         </UIProvider>
       </body>
     </html>
