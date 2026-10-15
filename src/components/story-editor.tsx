@@ -11,18 +11,20 @@ import { QuestionOptions } from "./question-options";
 import { FieldLabel } from "./field-label";
 import { LoadingIndicator } from "./loading-indicator";
 import { useUI, useUnsavedChanges } from "./ui-provider";
+import { sequenceReady } from "@/lib/sequencing";
 
-type Group = "sentences" | "vocabulary" | "questions";
+type Group = "sentences" | "vocabulary" | "questions" | "sequence_cards";
 type Keyed<T> = T & { editorKey: string };
-type EditorDraft = Omit<ContentDraft, Group | "estimated_minutes"> & { estimated_minutes: number | "" } & { [K in Group]: Keyed<ContentDraft[K][number]>[] };
+type EditorDraft = Omit<ContentDraft, Group | "estimated_minutes"> & { estimated_minutes: number | "" } & { [K in Group]: Keyed<NonNullable<ContentDraft[K]>[number]>[] };
 const sentence = () => ({ text_vi: "", text_en: "", audio_vi_path: "", audio_en_path: "" });
 const word = () => ({ word_vi: "", word_en: "", meaning_vi: "", example_vi: "", pronunciation_path: "", illustration_path: "" });
 const question = () => ({ question_vi: "", question_en: "", kind: "choice" as const, options: ["", "", ""], correct_option: 0, correct_order: [0, 1, 2], explanation_vi: "" });
+const sequenceCard = () => ({ id: crypto.randomUUID(), text_vi: "", image_path: "", audio_path: "", hint_vi: "" });
 const blank: ContentDraft = { slug: "", theme_slug: "", title_vi: "", title_en: "", summary_vi: "", summary_en: "", reading_level: 1, estimated_minutes: 5, source_note: "", license_note: "", cover_image_path: "", sentences: [sentence()], vocabulary: [], questions: [] };
-const keyed = (data: ContentDraft): EditorDraft => ({ ...data, sentences: data.sentences.map(item => ({ ...item, editorKey: crypto.randomUUID() })), vocabulary: data.vocabulary.map(item => ({ ...item, editorKey: crypto.randomUUID() })), questions: data.questions.map(item => ({ ...item, editorKey: crypto.randomUUID() })) });
+const keyed = (data: ContentDraft): EditorDraft => ({ ...data, sequence_cards: (data.sequence_cards ?? []).map(item => ({ ...item, editorKey: crypto.randomUUID() })), sentences: data.sentences.map(item => ({ ...item, editorKey: crypto.randomUUID() })), vocabulary: data.vocabulary.map(item => ({ ...item, editorKey: crypto.randomUUID() })), questions: data.questions.map(item => ({ ...item, editorKey: crypto.randomUUID() })) });
 const content = (data: EditorDraft): ContentDraft => {
   const strip = <T extends { editorKey: string }>(items: T[]) => items.map(item => { const { editorKey, ...rest } = item; void editorKey; return rest; });
-  return { ...data, estimated_minutes: data.estimated_minutes === "" ? 5 : data.estimated_minutes, sentences: strip(data.sentences), vocabulary: strip(data.vocabulary), questions: strip(data.questions) };
+  return { ...data, estimated_minutes: data.estimated_minutes === "" ? 5 : data.estimated_minutes, sequence_cards: strip(data.sequence_cards), sentences: strip(data.sentences), vocabulary: strip(data.vocabulary), questions: strip(data.questions) };
 };
 async function api(action: string, data: unknown) { const response = await fetch(`/api/teacher/${action}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) }); const result = await response.json(); if (!response.ok) throw Error(result.error); return result; }
 
@@ -60,7 +62,7 @@ export function StoryEditor({ teacher, themes, editSlug = "" }: { teacher: Teach
   const update = <K extends Group>(group: K, key: string, value: Partial<EditorDraft[K][number]>) => setDraft(previous => previous && ({ ...previous, [group]: previous[group].map(item => item.editorKey === key ? { ...item, ...value } : item) }));
   const move = (group: Group, key: string, to: number) => setDraft(previous => { if (!previous) return previous; const items = [...previous[group]]; const from = items.findIndex(item => item.editorKey === key); if (from < 0 || to < 0 || to >= items.length) return previous; const [item] = items.splice(from, 1); items.splice(to, 0, item); return { ...previous, [group]: items }; });
   const add = (group: Group) => {
-    const item = { ...(group === "sentences" ? sentence() : group === "vocabulary" ? word() : question()), editorKey: crypto.randomUUID() };
+    const item = { ...(group === "sentences" ? sentence() : group === "vocabulary" ? word() : group === "sequence_cards" ? sequenceCard() : question()), editorKey: crypto.randomUUID() };
     setDraft(previous => previous && ({ ...previous, [group]: [...previous[group], item] })); setExpanded(previous => new Set(previous).add(item.editorKey));
     requestAnimationFrame(() => document.getElementById(`editor-${item.editorKey}`)?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth", block: "center" }));
   };
@@ -99,6 +101,16 @@ export function StoryEditor({ teacher, themes, editSlug = "" }: { teacher: Teach
         <QuestionOptions question={item} onChange={value => update("questions", item.editorKey, value)} />
         <label>Giải thích<textarea value={item.explanation_vi} onChange={event => update("questions", item.editorKey, { explanation_vi: event.target.value })} /></label>
       </EditorItem>)}</EditorGroup>
+      <EditorGroup title="Xếp tranh kể chuyện" addLabel="Thêm thẻ tranh" disabled={draft.sequence_cards.length >= 6} onAdd={() => add("sequence_cards")}>
+        <p className={`editor-flashcard-status${sequenceReady(draft.sequence_cards) ? " is-ready" : ""}`}>{sequenceReady(draft.sequence_cards) ? "✓ Bộ tranh sẵn sàng khi truyện được xuất bản và bật hiển thị." : "Chuẩn bị 4–6 thẻ, mỗi thẻ có hình riêng, mô tả khác nhau và một gợi ý."} Sắp xếp các thẻ dưới đây theo đúng diễn biến. Trò chơi sẽ tự đảo thứ tự cho người chơi. Audio tiếng Việt là tùy chọn; thiết bị hỗ trợ giọng đọc sẽ đọc mô tả khi chưa có audio.</p>
+        {draft.sequence_cards.map((item, index) => <EditorItem key={item.editorKey} {...itemProps("sequence_cards", item.editorKey, index, `Tranh ${index + 1}`, item.text_vi)}>
+          <label>Lấy mô tả từ câu truyện<select aria-label={`Lấy mô tả cho tranh ${index + 1}`} value="" onChange={event => { const source = draft.sentences[Number(event.target.value)]; if (source) update("sequence_cards", item.editorKey, { text_vi: source.text_vi, audio_path: source.audio_vi_path }); }}><option value="">Chọn câu có sẵn hoặc nhập bên dưới</option>{draft.sentences.map((s, i) => <option value={i} key={s.editorKey}>Câu {i + 1}: {s.text_vi.slice(0, 90)}</option>)}</select></label>
+          <label>Mô tả tranh<textarea maxLength={300} value={item.text_vi} onChange={event => update("sequence_cards", item.editorKey, { text_vi: event.target.value, audio_path: "" })} /></label>
+          <label>Gợi ý về diễn biến<textarea maxLength={300} value={item.hint_vi} onChange={event => update("sequence_cards", item.editorKey, { hint_vi: event.target.value })} /></label>
+          <label>Dùng hình trong truyện<select aria-label={`Dùng hình trong truyện cho tranh ${index + 1}`} value="" onChange={event => { if (event.target.value) update("sequence_cards", item.editorKey, { image_path: event.target.value }); }}><option value="">Chọn hình có sẵn hoặc tải ảnh riêng bên dưới</option>{draft.cover_image_path && <option value={draft.cover_image_path}>Ảnh bìa</option>}{draft.vocabulary.filter(v => v.illustration_path).map(v => <option key={v.editorKey} value={v.illustration_path}>{v.word_vi || v.word_en}</option>)}</select></label>
+          <div className="form-row"><MediaField kind="image" label="Tranh minh họa" value={item.image_path} onChange={value => update("sequence_cards", item.editorKey, { image_path: value })} /><MediaField kind="audio" label="Audio mô tả tiếng Việt" value={item.audio_path} onChange={value => update("sequence_cards", item.editorKey, { audio_path: value })} /></div>
+        </EditorItem>)}
+      </EditorGroup>
       <div className="actions editor-save-actions"><button type="submit" className="button secondary">{busy && <LoadingIndicator inline label="Đang lưu" />}Lưu bản nháp</button><button type="submit" className="button" data-action="publish">{teacher.role === "admin" ? "Xuất bản" : "Gửi duyệt"}</button></div>
     </fieldset>
   </form>;

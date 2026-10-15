@@ -1,6 +1,7 @@
 import { readMedia } from "@/lib/media-storage";
 import { getDb } from "@/lib/db";
 import { getTeacher } from "@/lib/auth";
+import { sequenceReady } from "@/lib/sequencing";
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ file: string }> },
@@ -10,13 +11,23 @@ export async function GET(
     return new Response("Not found", { status: 404 });
   const media = `/media/${file}`;
   const db = await getDb();
-  const publicMedia =
+  let publicMedia =
     (
       await db.query(
         `select 1 where exists(select 1 from site_settings where icon_path=?1 or logo_path=?1) or exists(select 1 from reading_themes where icon_path=?1) or exists(select 1 from stories s where s.is_published=true and s.is_visible=true and (s.cover_image_path=?1 or exists(select 1 from story_sentences ss where ss.story_id=s.id and (ss.audio_vi_path=?1 or ss.audio_en_path=?1)) or exists(select 1 from vocabulary v where v.story_id=s.id and (v.pronunciation_path=?1 or v.illustration_path=?1))))`,
         [media],
       )
     ).rows.length > 0;
+  if (!publicMedia) {
+    // Narrow in SQL, then inspect actual media fields so a caption containing
+    // a filename cannot accidentally grant access. CAST works on D1 and Postgres.
+    const candidates = await db.query<{ sequence_cards: unknown }>(
+      "select sequence_cards from stories where is_published=true and is_visible=true and cast(sequence_cards as text) like ?1",
+      [`%${media}%`],
+    );
+    publicMedia = candidates.rows.some(story => sequenceReady(story.sequence_cards)
+      && story.sequence_cards.some(card => card.image_path === media || card.audio_path === media));
+  }
   if (!publicMedia) {
     const teacher = await getTeacher();
     if (!teacher) return new Response("Not found", { status: 404 });

@@ -3,6 +3,7 @@ import { parseDeviceBackup, validateDeviceData } from "./device-backup";
 import { useSyncExternalStore } from "react";
 import type { FlashcardHistory } from "./flashcards";
 import type { MatchingHistory } from "./matching";
+import type { SequenceHistory } from "./sequencing";
 export type JournalEntry = {
   id: string;
   slug: string;
@@ -21,6 +22,7 @@ export type DeviceData = {
   journal: JournalEntry[];
   flashcards: FlashcardHistory;
   matching: MatchingHistory;
+  sequencing: SequenceHistory;
 };
 const key = "little-readers-device-v1";
 const empty: DeviceData = {
@@ -32,6 +34,7 @@ const empty: DeviceData = {
   journal: [],
   flashcards: {},
   matching: {},
+  sequencing: {},
 };
 const server = JSON.stringify(empty);
 function snapshot() {

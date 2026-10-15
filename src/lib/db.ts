@@ -7,7 +7,7 @@ import { HttpError } from "./http";
 export type SqlValue = string | number | boolean | null;
 export type SqlStatement = { sql: string; values?: SqlValue[] };
 const booleanColumns = new Set(["is_active", "is_published", "is_visible"]);
-const jsonColumns = new Set(["options", "correct_order"]);
+const jsonColumns = new Set(["options", "correct_order", "sequence_cards"]);
 
 function decodeRow(row: Record<string, unknown>) {
   return Object.fromEntries(Object.entries(row).map(([name, value]) => [name,

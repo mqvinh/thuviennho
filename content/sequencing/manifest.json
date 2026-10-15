@@ -1,0 +1,89 @@
+[
+  {
+    "slug": "but-chi-cua-lan",
+    "cards": [
+      {
+        "sentence_no": 1,
+        "text_vi": "Lan mang hai chiếc bút chì đến lớp.",
+        "hint_vi": "Trước khi giúp bạn, Lan đã mang đồ dùng của mình đến lớp.",
+        "image": "/images/sequencing/but-chi-cua-lan-1.png"
+      },
+      {
+        "sentence_no": 2,
+        "text_vi": "Bút chì của Minh bị gãy.",
+        "hint_vi": "Minh gặp một vấn đề với bút chì rồi mới được Lan giúp.",
+        "image": "/images/sequencing/but-chi-cua-lan-2.png"
+      },
+      {
+        "sentence_no": 3,
+        "text_vi": "Lan cho Minh mượn một chiếc bút.",
+        "hint_vi": "Sau khi thấy bút của bạn bị gãy, Lan chia sẻ đồ dùng.",
+        "image": "/images/sequencing/but-chi-cua-lan-3.png"
+      },
+      {
+        "sentence_no": 4,
+        "text_vi": "Minh cảm ơn Lan rồi viết bài.",
+        "hint_vi": "Có bút để dùng rồi, Minh mới tiếp tục làm bài.",
+        "image": "/images/sequencing/but-chi-cua-lan-4.png"
+      }
+    ]
+  },
+  {
+    "slug": "mam-cay-nho",
+    "cards": [
+      {
+        "sentence_no": 1,
+        "text_vi": "Bình đặt một hạt đậu vào chậu đất.",
+        "hint_vi": "Muốn có cây, trước hết Bình cần gieo hạt vào đất.",
+        "image": "/images/sequencing/mam-cay-nho-1.png"
+      },
+      {
+        "sentence_no": 2,
+        "text_vi": "Mỗi sáng Bình tưới một chút nước.",
+        "hint_vi": "Hạt đã ở trong chậu. Bình chăm sóc để hạt có thể nảy mầm.",
+        "image": "/images/sequencing/mam-cay-nho-2.png"
+      },
+      {
+        "sentence_no": 3,
+        "text_vi": "Một mầm xanh nhú lên khỏi đất.",
+        "hint_vi": "Sau những ngày tưới nước, điều gì bắt đầu xuất hiện trên mặt đất?",
+        "image": "/images/sequencing/mam-cay-nho-3.png"
+      },
+      {
+        "sentence_no": 5,
+        "text_vi": "Bình vui khi thấy cây lớn lên.",
+        "hint_vi": "Từ mầm nhỏ, cây đã lớn hơn và có thêm lá.",
+        "image": "/images/sequencing/mam-cay-nho-5.png"
+      }
+    ]
+  },
+  {
+    "slug": "binh-nuoc-cua-em",
+    "cards": [
+      {
+        "sentence_no": 1,
+        "text_vi": "Trước khi đi học, Tú kiểm tra cặp.",
+        "hint_vi": "Tú kiểm tra đồ dùng trước khi nhận ra bình nước đang trống.",
+        "image": "/images/sequencing/binh-nuoc-cua-em-1.png"
+      },
+      {
+        "sentence_no": 3,
+        "text_vi": "Tú nhờ mẹ giúp lấy nước uống.",
+        "hint_vi": "Khi biết bình còn trống, Tú nhờ người lớn giúp lấy nước.",
+        "image": "/images/sequencing/binh-nuoc-cua-em-3.png"
+      },
+      {
+        "sentence_no": 4,
+        "text_vi": "Tú đóng nắp bình thật chặt.",
+        "hint_vi": "Nước đã được lấy vào bình. Tú cần làm gì để nước không đổ ra?",
+        "image": "/images/sequencing/binh-nuoc-cua-em-4.png"
+      },
+      {
+        "sentence_no": 5,
+        "text_vi": "Sau giờ chơi, Tú uống nước.",
+        "hint_vi": "Đã chuẩn bị bình xong từ nhà, Tú dùng nước khi cần sau giờ chơi.",
+        "image": "/images/sequencing/binh-nuoc-cua-em-5.png"
+      }
+    ]
+  }
+]

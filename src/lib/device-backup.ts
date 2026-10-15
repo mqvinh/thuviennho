@@ -1,6 +1,7 @@
 import type { DeviceData, JournalEntry } from "./device-store";
 import type { FlashcardHistory } from "./flashcards";
 import type { MatchingHistory } from "./matching";
+import type { SequenceHistory } from "./sequencing";
 const invalid = () => {
   throw Error(
     "Bản sao không đúng định dạng hoặc vượt giới hạn. Dữ liệu hiện tại chưa thay đổi.",
@@ -113,12 +114,28 @@ export function validateDeviceData(value: unknown): DeviceData {
     if (!plays || mistakes < plays - firstTry || (firstTry === plays && mistakes !== 0) || (lastMistakes === 0 && firstTry === 0) || (lastMistakes > 0 && firstTry === plays)) return invalid();
     return [key, { plays, firstTry, mistakes, lastMistakes, lastPlayed: date(row.lastPlayed) }];
   }));
+  const sequenceEntries = Object.entries(object(data.sequencing === undefined ? {} : data.sequencing));
+  if (sequenceEntries.length > 1000) return invalid();
+  const sequencing: SequenceHistory = Object.fromEntries(sequenceEntries.map(([key, value]) => {
+    const row = object(value);
+    function integer(name: string, min: number, max: number) {
+      const number = row[name];
+      if (typeof number !== "number" || !Number.isSafeInteger(number) || number < min || number > max) return invalid();
+      return number;
+    }
+    const plays = integer("plays", 1, 1_000_000), bestStars = integer("bestStars", 1, 3), lastStars = integer("lastStars", 1, bestStars);
+    const lastAttempts = integer("lastAttempts", 1, 1_000_000), lastHints = integer("lastHints", 0, 1_000_000);
+    const expected = lastAttempts === 1 && lastHints === 0 ? 3 : lastAttempts <= 3 && lastHints <= 1 ? 2 : 1;
+    if (expected !== lastStars || (plays === 1 && bestStars !== lastStars)) return invalid();
+    return [slug(key), { plays, bestStars, lastStars, lastAttempts, lastHints, lastPlayed: date(row.lastPlayed) }];
+  }));
   return {
     version: 1,
     favorites,
     journal,
     flashcards,
     matching,
+    sequencing,
     started: records(data.started),
     finished: records(data.finished),
     activities: records(data.activities),

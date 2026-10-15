@@ -7,11 +7,12 @@ import type { Word } from "@/lib/library";
 import { useDeviceData } from "@/lib/device-store";
 import { dueWords, flashcardReady } from "@/lib/flashcards";
 import { uniqueMatchingWords } from "@/lib/matching";
+import type { SequenceStory } from "@/lib/sequencing";
 import { IllustrationScene } from "./illustration-scene";
 import { GardenCorners } from "./reading-artwork";
 import { ListeningIcon } from "./listening-icon";
 
-export function GamesCatalog({ words }: { words: Word[] }) {
+export function GamesCatalog({ words, sequenceStories }: { words: Word[]; sequenceStories: SequenceStory[] }) {
   const { data } = useDeviceData();
   const [now] = useState(() => Date.now());
   const ready = words.filter(flashcardReady);
@@ -35,6 +36,12 @@ export function GamesCatalog({ words }: { words: Word[] }) {
             <div className="game-card-meta"><span><ListeningIcon name="image" />{uniqueMatchingWords(words).length} từ có hình</span><span><ListeningIcon name="clock" />2–4 phút / lượt</span></div>
             <span className="button game-play">Chơi ngay<ListeningIcon name="arrow-right" /></span>
           </div>
+        </Link>
+      </IllustrationScene>
+      <IllustrationScene className="game-card">
+        <Link href="/tro-choi/xep-tranh-ke-chuyen" className="game-card-link">
+          <div className="game-card-image"><Image src="/images/games-sequencing.svg" alt="Những bức tranh hạt đậu, mầm xanh và cây nhỏ được xếp thành câu chuyện" width={600} height={360} /><GardenCorners /></div>
+          <div className="game-card-body"><span className="game-category">ĐỌC HIỂU · NHỚ DIỄN BIẾN</span><h3>Xếp tranh kể chuyện</h3><p>Chạm hoặc kéo các tranh theo thứ tự sự việc. Tìm gợi ý, nhận ngôi sao và cùng kể lại câu chuyện của em.</p><div className="game-card-meta"><span><ListeningIcon name="book" />{sequenceStories.length} truyện có bộ tranh</span><span><ListeningIcon name="clock" />3–5 phút / lượt</span></div><span className="button game-play">Chơi ngay<ListeningIcon name="arrow-right" /></span></div>
         </Link>
       </IllustrationScene>
     </div>

@@ -1,0 +1,13 @@
+# Xếp tranh kể chuyện
+
+Each story may contain one optional ordered `sequence_cards` array. A playable set has 4–6 distinct captions and images, a hint for every scene, and optional Vietnamese recordings. The editor supports existing sentence text/audio and existing story pictures as well as new uploads. Partial sets remain saveable drafts and stay out of the game catalog.
+
+Apply `database/supabase/003_story_sequences.sql` on Supabase or `database/d1/migrations/0003_story_sequences.sql` on local/hosted D1 before deploying the new code. `node --env-file=.env.supabase scripts/setup-sequence-games.mjs --apply` applies the Supabase migration and adds three reviewed sample sets only to stories without a game. It requires the existing project-scoped management token for the schema step. Use `node scripts/setup-sequence-games.mjs --local --apply` for the local D1 store. Both keep every original story/vocabulary field, snapshot the original content to ignored `.data/sequence-games/`, and never overwrite an authored set or existing media object.
+
+Original vector scenes in `illustrations/` and PNG files under `public/images/sequencing/` are reproducible with `node scripts/generate-sequence-assets.mjs`. `manifest.json` maps each reviewed scene to an exact existing story sentence; enrichment stops if that sentence has changed. Original artwork uses the library's existing code-native illustration style. Runtime pictures are registered in the normal private media bucket and use `/media/` paths; assets therefore stay editable and travel with normal server backups.
+
+Players select then place a card, or drag it on desktop. Placed cards swap, displaced cards return to the bank, and checked correct positions lock. A check requires all slots to be filled. Resetting the layout retains attempts and hints. Three stars require one check without a hint; two require at most three checks and one distinct hint; completed remaining rounds receive one star. Replaying the result animation does not save another result.
+
+Vietnamese recordings take priority. When none is attached, the listen button uses the browser's Vietnamese speech synthesis; voice availability depends on the device, and unsupported playback is explained in the UI. Speech and audio are canceled when leaving the game.
+
+Device results live under `sequencing` and are included in journal backup/restore. Backups made before this game remain readable. Run `node --experimental-strip-types --test tests/sequencing-unit.mjs tests/matching-unit.mjs tests/flashcards-unit.mjs` for ordering, scoring and backward compatibility checks.

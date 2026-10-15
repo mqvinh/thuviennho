@@ -16,7 +16,7 @@ export async function checkFlashcardGame(page, { words, mobile = false, screensh
   const seed = { version: 1, favorites: [words[0].id], started: {}, finished: {}, activities: {}, journal: [{ id: "00000000-0000-4000-a000-000000000002", slug: "test-story", title: "Nhật ký cần giữ", character: "Bạn", lesson: "Dữ liệu cũ", image: "", date: "2026-10-10T03:00:00.000Z" }] };
   await page.evaluate(({ key, seed }) => localStorage.setItem(key, JSON.stringify(seed)), { key: storageKey, seed });
   await page.reload();
-  await expect(page.locator(".game-card")).toHaveCount(2);
+  await expect(page.locator(".game-card")).toHaveCount(3);
   if (screenshots) await page.screenshot({ path: `${screenshots}/games-${mobile ? "mobile" : "desktop"}.png`, fullPage: true });
   await page.locator('.game-card-link[href="/tro-choi/flashcard"]').click();
   await expect(page).toHaveURL(/\/tro-choi\/flashcard$/);

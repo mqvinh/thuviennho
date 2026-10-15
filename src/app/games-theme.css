@@ -257,3 +257,97 @@
   .matching-bank { grid-template-columns: 1fr; }
   .matching-word-select { justify-content: flex-start; padding-inline: 14px; }
 }
+
+.sequence-game { scroll-margin-top: 115px; }
+.sequence-setup .matching-setup-heading h3 { margin: 0; color: #7a4a29; }
+.sequence-story-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.sequence-story { display: flex; flex-direction: column; min-width: 0; overflow: hidden; border: 1px solid #e4d8bf; border-radius: 18px; background: #fffdf5; }
+.sequence-story > .game-image { height: 170px; border-radius: 0; background: #f4f3e8; }
+.sequence-story-body { display: flex; flex: 1; flex-direction: column; gap: 12px; padding: 18px; }
+.sequence-story-body h3 { margin: 0; font-size: 20px; color: #794524; }
+.sequence-story-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: auto; }
+.sequence-story-actions .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+.sequence-story-actions a { font-size: 13px; color: #64835c; text-underline-offset: 3px; }
+.sequence-best { color: #a36f20; font-size: 12px; }
+.sequence-setup .flashcard-howto > p { margin-bottom: 0; font-size: 13px; }
+.sequence-play, .sequence-results { max-width: 1050px; margin-inline: auto; }
+.sequence-slots, .sequence-bank, .sequence-timeline { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.sequence-slots { scroll-margin-top: 115px; }
+.sequence-slot { min-width: 0; overflow: hidden; border: 2px dashed #dbcdad; border-radius: 18px; background: #faf7eb; transition: border-color 180ms ease, background 180ms ease; }
+.sequence-slot-target { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 45px; padding: 8px 13px; border: 0; border-bottom: 1px solid #e7dfcb; color: #917049; background: #f1ebd9; font: inherit; font-weight: 700; font-size: 14px; text-align: left; }
+.sequence-slot-target > span { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; background: #fffdf5; }
+.sequence-slot-target .listening-icon { width: 19px; height: 19px; margin-left: auto; }
+.sequence-slot-target:disabled { opacity: 1; cursor: default; }
+.sequence-empty-slot { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 100%; min-height: 270px; padding: 15px; border: 0; color: #a18b65; background: transparent; font: inherit; font-size: 13px; }
+.sequence-empty-slot .listening-icon { width: 42px; height: 42px; opacity: .55; }
+.sequence-empty-slot:disabled { opacity: 1; cursor: default; }
+.sequence-slot.is-over { border-color: #75a6c3; background: #eaf4ff; }
+.sequence-slot.is-correct { border-style: solid; border-color: #85ae7e; background: #f0f7e9; }
+.sequence-slot.is-correct .sequence-slot-target { background: #dfedcf; color: #507644; }
+.sequence-slot.is-wrong { border-style: solid; border-color: #d9a08c; }
+.sequence-slot.is-wrong .sequence-slot-target { background: #fae9dd; color: #a16b4c; }
+.sequence-card { height: 100%; overflow: hidden; border: 2px solid #e4d9bd; border-radius: 15px; background: #fffdf5; }
+.sequence-slot .sequence-card { height: auto; border: 0; border-radius: 0; background: transparent; }
+.sequence-card.is-selected { border-color: #679dc1; background: #eef7ff; box-shadow: inset 0 0 0 2px #83afd0; }
+.sequence-card-select { display: block; width: 100%; padding: 9px; border: 0; background: transparent; font: inherit; color: #7a5b37; text-align: left; }
+.sequence-card-select[draggable="true"] { cursor: grab; }
+.sequence-card-select:disabled { opacity: 1; cursor: default; }
+.sequence-card-select > .game-image { height: 145px; pointer-events: none; }
+.sequence-caption { display: block; min-height: 72px; padding: 12px 3px 2px; font-size: 15px; line-height: 1.65; overflow-wrap: anywhere; }
+.sequence-card-tools { display: flex; align-items: center; justify-content: space-between; gap: 7px; padding: 0 10px 8px 13px; }
+.sequence-card-tools > span { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: #9a896c; }
+.sequence-card-tools > span .listening-icon { width: 15px; height: 15px; color: #739465; }
+.sequence-audio { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; border: 1px solid #e2d6bb; border-radius: 50%; background: #fff7df; color: #927240; }
+.sequence-audio .listening-icon { width: 20px; height: 20px; }
+.sequence-remove { display: block; min-height: 35px; margin: 0 auto 8px; padding: 3px 9px; border: 0; background: transparent; font: inherit; color: #9b7951; font-size: 12px; text-decoration: underline; text-underline-offset: 3px; }
+.sequence-feedback { margin-top: 16px; padding: 13px 15px; border-radius: 12px; background: #f1f5e8; color: #6d8059; font-size: 14px; line-height: 1.7; }
+.sequence-bank-title { margin: 24px 0 14px; color: #7b542d; font-size: 19px; }
+.sequence-bank-empty { text-align: center; font-size: 14px; }
+.sequence-controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 24px; }
+.sequence-controls .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; }
+.sequence-controls .button:disabled { opacity: .5; cursor: default; }
+.sequence-hint { display: flex; align-items: flex-start; gap: 9px; padding: 15px; border-radius: 13px; background: #fff2cf; }
+.sequence-hint .listening-icon { flex-shrink: 0; margin-top: 3px; color: #a87c30; }
+.sequence-results { text-align: center; }
+.sequence-stars { display: flex; justify-content: center; gap: 12px; margin: 12px 0; font-size: 55px; color: #e0dac8; }
+.sequence-stars .is-earned { color: #e5ac34; text-shadow: 0 3px 0 #b8882522; }
+.sequence-results > h3 { margin: 26px 0 18px; color: #7c5c39; font-size: 19px; }
+.sequence-reveal { min-width: 0; padding: 12px; border: 2px solid #cfdfbd; border-radius: 17px; background: #f5f9ec; text-align: left; animation: sequence-reveal 700ms ease both; animation-delay: var(--reveal-delay); }
+.sequence-position { display: block; margin-bottom: 10px; font-weight: 700; color: #6c8759; font-size: 13px; }
+.sequence-reveal > .game-image { height: 155px; }
+.sequence-timeline-caption { display: flex; align-items: center; gap: 9px; padding-top: 10px; }
+.sequence-timeline-caption p { flex: 1; margin: 0; font-size: 14px; overflow-wrap: anywhere; }
+.sequence-family-tip { margin: 25px 0 0; padding: 15px; border-radius: 14px; background: #fff5df; font-size: 14px; }
+.sequence-game :is(button, a, select):focus-visible { outline: 3px solid #287bc1; outline-offset: 3px; }
+.sequence-game h2:focus { outline: none; }
+@keyframes sequence-reveal { from { opacity: .4; transform: translateY(9px); box-shadow: 0 0 0 4px #f4da8d; } to { opacity: 1; transform: translateY(0); box-shadow: 0 0 0 0 transparent; } }
+@media (hover: hover) and (pointer: fine) {
+  .sequence-card:not(.is-locked):hover { border-color: #b4c99f; background: #f7fbed; }
+  .sequence-slot-target:not(:disabled):hover, .sequence-empty-slot:not(:disabled):hover { background: #eaf4df; }
+}
+@media (max-width: 950px) { .sequence-story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .sequence-story-grid { grid-template-columns: 1fr; }
+  .sequence-slots, .sequence-bank, .sequence-timeline { gap: 10px; }
+  .sequence-slot { border-radius: 13px; }
+  .sequence-slot-target { gap: 5px; min-height: 42px; padding-inline: 7px; font-size: 11px; }
+  .sequence-slot-target > span { width: 21px; height: 21px; }
+  .sequence-empty-slot { min-height: 255px; font-size: 11px; }
+  .sequence-card-select { padding: 6px; }
+  .sequence-card-select > .game-image { height: 100px; }
+  .sequence-caption { min-height: 97px; padding: 10px 2px 0; font-size: 12px; }
+  .sequence-card-tools { padding-inline: 6px; gap: 3px; }
+  .sequence-card-tools > span { font-size: 9px; }
+  .sequence-audio { width: 38px; height: 38px; }
+  .sequence-remove { font-size: 11px; }
+  .sequence-play .game-category { font-size: 9px; }
+  .sequence-controls { gap: 9px; }
+  .sequence-controls .button { flex: 1 1 100%; }
+  .sequence-reveal { padding: 8px; }
+  .sequence-reveal > .game-image { height: 105px; }
+  .sequence-position { font-size: 11px; }
+  .sequence-timeline-caption { flex-wrap: wrap; }
+  .sequence-timeline-caption p { flex-basis: 100%; font-size: 12px; }
+  .sequence-feedback, .sequence-instructions { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) { .sequence-slot { transition: none; } .sequence-reveal { animation: none; } }

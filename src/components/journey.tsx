@@ -198,7 +198,7 @@ export function Journey({ stories }: { stories: Pick<Story, "slug" | "cover_imag
             <p>
               Bản sao có {backup.journal.length} sản phẩm,{" "}
               {Object.keys(backup.finished).length} truyện hoàn tất và{" "}
-              {backup.favorites.length} từ yêu thích, {Object.keys(backup.flashcards).length} từ có lịch ôn Flashcard và {Object.keys(backup.matching).length} mục kết quả ghép từ với hình.
+              {backup.favorites.length} từ yêu thích, {Object.keys(backup.flashcards).length} từ có lịch ôn Flashcard, {Object.keys(backup.matching).length} mục kết quả ghép từ với hình và {Object.keys(backup.sequencing).length} truyện có kết quả xếp tranh.
             </p>
             <p>
               Khôi phục sẽ thay thế dữ liệu hiện tại. Em có thể tải bản sao hiện

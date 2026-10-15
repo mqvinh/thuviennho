@@ -1,5 +1,12 @@
 import "server-only";
 import { getDb } from "./db";
+import { sequenceReady, type SequenceStory } from "./sequencing";
+
+export async function getSequenceStories() {
+  const rows = (await (await getDb()).query<SequenceStory>(`select s.slug,s.title_vi,s.cover_image_path,s.sequence_cards,t.slug theme_slug,coalesce(t.name_vi,'Chưa phân chủ đề') theme_vi
+    from stories s left join reading_themes t on t.id=s.theme_id where s.is_published=true and s.is_visible=true order by s.title_vi`)).rows;
+  return rows.filter(story => sequenceReady(story.sequence_cards));
+}
 
 export type Theme = { slug: string; name_vi: string; name_en: string; icon_path: string | null };
 export type LibraryActivity = "audio" | "quiz";

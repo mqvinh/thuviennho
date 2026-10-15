@@ -10,7 +10,7 @@ export async function checkMatchingGame(page, { words, mobile, screenshots }) {
   page.on("pageerror", error => errors.push(error.message));
   const activate = locator => mobile ? locator.tap() : locator.click();
   await page.goto("/tro-choi", { timeout: 90_000 });
-  await expect(page.locator(".game-card")).toHaveCount(2);
+  await expect(page.locator(".game-card")).toHaveCount(3);
   const seed = { version: 1, favorites: [words[0].id], started: {}, finished: {}, activities: {}, journal: [{ id: "00000000-0000-4000-a000-000000000002", slug: "test-story", title: "Nhật ký cần giữ", character: "Bạn", lesson: "Dữ liệu cũ", image: "", date: "2026-10-10T03:00:00.000Z" }], flashcards: { "test-story:book:sach": { attempts: 1, correct: 1, streak: 1, lastReviewed: "2026-10-13T04:00:00.000Z", dueAt: "2026-10-14T17:00:00.000Z" } } };
   await page.evaluate(({ key, seed }) => localStorage.setItem(key, JSON.stringify(seed)), { key: storageKey, seed });
   await page.reload();
