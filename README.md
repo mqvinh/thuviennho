@@ -18,9 +18,9 @@ Mở http://localhost:3000. D1 lưu database, R2 lưu ảnh/audio trong `.wrangl
 
 ## Deploy Vercel
 
-Vercel chạy Next.js, kết nối tới D1/R2 qua backend Worker có secret. Nhánh runtime này không gọi trình giả lập Wrangler. Repo có `vercel.json`, `backend/worker.mjs`, cấu hình `wrangler.backend.jsonc` và công cụ nhập/sao lưu dữ liệu remote.
+Vercel chạy Next.js, dùng PostgreSQL và Storage riêng tư trên Supabase. Không cần tài khoản Cloudflare, D1, R2 hoặc backend Worker cho bản Vercel. Bản local mặc định tiếp tục dùng trình giả lập và dữ liệu hiện có trong `.wrangler/state/`.
 
-Xem [HUONG_DAN_TRIEN_KHAI_VERCEL.md](HUONG_DAN_TRIEN_KHAI_VERCEL.md) để tạo backend, chuyển nguyên dữ liệu và đặt `LITTLE_READERS_BACKEND_URL`, `LITTLE_READERS_BACKEND_TOKEN` trên Vercel. Clone repo hoặc chỉ build Next.js chưa tự tạo tài nguyên và dữ liệu online.
+Xem [HUONG_DAN_TRIEN_KHAI_VERCEL.md](HUONG_DAN_TRIEN_KHAI_VERCEL.md) để tạo project Supabase, chạy schema và chuyển nguyên dữ liệu. Vercel dùng `SUPABASE_URL`, `SUPABASE_SECRET_KEY` và `SUPABASE_MEDIA_BUCKET`. Clone repo hoặc chỉ build Next.js chưa tự tạo tài nguyên và dữ liệu online.
 
 ## Build và đóng gói
 
@@ -53,8 +53,9 @@ Khả năng triển khai lên GPT Sites cần được đối chiếu với [đi
 - `scripts/package-sites.mjs`: xuất dữ liệu hiện tại, tạo và kiểm tra ZIP.
 - `wrangler.jsonc`: runtime Worker và bindings local `DB`, `MEDIA`.
 - `.openai/hosting.json`: tên bindings cho Sites; project_id chỉ do nền tảng cấp.
-- `backend/worker.mjs`, `wrangler.backend.jsonc`: kết nối D1/R2 riêng cho Vercel, có xác thực bằng secret.
-- `scripts/remote-setup.mjs`: migration và chuyển dữ liệu lần đầu vào backend rỗng.
+- `database/supabase/001_library.sql`: schema PostgreSQL và RPC chỉ cho server gọi.
+- `scripts/supabase-setup.mjs`: nhập, kiểm tra và sao lưu dữ liệu Supabase.
+- `backend/worker.mjs`, `wrangler.backend.jsonc`, `scripts/remote-setup.mjs`: phương án gateway Cloudflare cũ, không dùng cho Vercel hiện tại.
 - `database/local.sql` và SQL PostgreSQL cũ: nguồn lịch sử cho chuyển đổi/kiểm thử, không tự nạp vào D1.
 - `KE_HOACH_TRIEN_KHAI.md`: kế hoạch tổng thể.
 - `KE_HOACH_CHUC_NANG.md`: backlog code theo chức năng.

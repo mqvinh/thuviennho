@@ -110,7 +110,7 @@ try {
     const frontendUrl = "http://localhost:" + frontendPort;
     frontend = spawn(process.execPath, ["--experimental-loader", "./tests/deny-wrangler-loader.mjs", "node_modules/next/dist/bin/next", "start", "--hostname", "localhost", "--port", String(frontendPort)], {
       stdio: ["ignore", "pipe", "pipe"],
-      env: { ...process.env, NODE_ENV: "production", VERCEL: "1", LITTLE_READERS_TEST: "1", LITTLE_READERS_BACKEND_URL: url, LITTLE_READERS_BACKEND_TOKEN: token, OPENAI_API_KEY: "", OPENAI_MODEL: "" },
+      env: { ...process.env, NODE_ENV: "production", VERCEL: "", SUPABASE_URL: "", SUPABASE_SECRET_KEY: "", SUPABASE_SERVICE_ROLE_KEY: "", LITTLE_READERS_TEST: "1", LITTLE_READERS_BACKEND_URL: url, LITTLE_READERS_BACKEND_TOKEN: token, OPENAI_API_KEY: "", OPENAI_MODEL: "" },
     });
     let output = "";
     frontend.stdout.on("data", chunk => { output += chunk; });
@@ -173,7 +173,7 @@ try {
     assert.equal(adminPage.status, 200);
     await adminPage.arrayBuffer();
     assert.doesNotMatch(output, /Wrangler must not be loaded|ERR_MODULE_NOT_FOUND|Missing DB\/MEDIA/);
-    console.log("Production Next/Vercel opened six public pages, unchanged R2 media, admin login, guarded profile update and private image/audio upload with Wrangler blocked.");
+    console.log("Production Next/legacy Cloudflare gateway opened six public pages, unchanged R2 media, admin login, guarded profile update and private image/audio upload with Wrangler blocked.");
   }
 } finally {
   if (frontend && frontend.exitCode === null) {

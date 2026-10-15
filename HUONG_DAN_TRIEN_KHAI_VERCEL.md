@@ -1,132 +1,128 @@
-# Vercel với dữ liệu D1 và ảnh/audio R2
+# Triển khai Vercel với Supabase
 
-Website Next.js chạy trên Vercel. Một Worker nhỏ trên Cloudflare cung cấp kết nối riêng tới D1/R2, bảo vệ bằng secret. Mã nguồn, schema và định dạng dữ liệu dùng chung với bản local; không cần chuyển dữ liệu sang loại database khác.
+Vercel chạy website Next.js. Một project riêng trên Supabase cung cấp PostgreSQL và Storage. Không cần D1, R2, tài khoản Cloudflare hoặc Worker gateway cho bản Vercel hiện tại. Giữ nguyên project Vercel và repo GitHub đang dùng.
 
-## Vì sao bản deploy trước lỗi
+## 1. Tạo project Supabase
 
-Log `Cannot find package 'wrangler' ... digest: 335975728` xuất hiện vì bản cũ gọi `getCloudflareContext()` trên Vercel. Adapter cố mở trình giả lập Wrangler dành cho local, nhưng gói này không có trong runtime Vercel. Thêm Wrangler vào production dependencies không tạo ra database hoặc kho media hosted.
+Vào https://supabase.com/dashboard, đăng ký/đăng nhập và chọn **New project**. Chọn tổ chức gói Free, đặt tên project, mật khẩu database và khu vực gần Việt Nam (Singapore nếu có). Chờ project sẵn sàng.
 
-Bản hiện tại chọn kết nối remote khi có `VERCEL=1` hoặc biến `LITTLE_READERS_BACKEND_URL`. Runtime Vercel không gọi Wrangler. Wrangler chỉ dùng trên máy phát triển để tạo/deploy backend; không cài trình giả lập vào Vercel Function.
+Project Supabase chứa database và kho tệp; project Vercel vẫn chứa bản deploy website. Hai dịch vụ có vai trò riêng. Gói Free có hạn mức và có thể tạm dừng project khi không hoạt động; tham khảo https://supabase.com/pricing.
 
-## 1. Chuẩn bị Cloudflare
+Bản tích hợp này dùng HTTPS và secret key trên server; không cần cung cấp connection string PostgreSQL hoặc mật khẩu database cho ứng dụng. Không gửi secret vào chat.
 
-Cần tài khoản Cloudflare có Workers, D1 và R2. Nếu chưa có, tạo tài khoản và bật R2 trong dashboard trước. Các lệnh sau chạy trong thư mục gốc project với Node.js 22.16+:
+## 2. Khởi tạo schema một lần
 
-```powershell
-npm ci
-npx wrangler login
-```
+Trong Supabase, mở **SQL Editor → New query**. Dán toàn bộ nội dung `database/supabase/001_library.sql` rồi chạy.
 
-Chỉ tạo tài nguyên nếu chưa có:
+File tạo schema riêng `little_readers`, các bảng đúng cấu trúc học liệu hiện tại và hàm `public.library_batch`. Không nạp seed mẫu, không ghi đè dữ liệu. Chạy lại file giữ nguyên nội dung đã có. Không dùng các file PostgreSQL/seed lịch sử ở thư mục `database/` để khởi tạo bản này.
 
-```powershell
-npx wrangler d1 create little-readers
-npx wrangler r2 bucket create little-readers-media
-```
+Hàm RPC chỉ cấp quyền cho `service_role`, dùng SECURITY INVOKER. `anon` và `authenticated` không có quyền gọi hàm hoặc đọc schema riêng. Mỗi batch là một giao dịch PostgreSQL: lỗi điều kiện hoặc constraint hủy toàn bộ các lệnh ghi trong batch. Secret key chỉ được dùng trong Next.js server và công cụ chuyển dữ liệu, không đưa vào trình duyệt.
 
-`wrangler.backend.jsonc` đã liên kết tài khoản Cloudflare của dự án và database D1 `little-readers`; schema đã được áp dụng. Giữ nguyên `account_id` và `database_id` khi tiếp tục triển khai trên tài khoản này. Nếu triển khai bằng tài khoản khác, thay đúng `account_id`, `database_id`, `database_name` và `bucket_name`. Giữ bindings là `DB` và `MEDIA`.
+Khi có migration mới, chạy file migration được cung cấp bằng SQL Editor trước khi deploy code tương ứng. Không chạy lại dữ liệu ban đầu để cập nhật schema.
 
-Nếu Wrangler báo `Please enable R2 through the Cloudflare Dashboard` (mã `10042`), mở mục R2 trong dashboard để kích hoạt trước khi tạo bucket. Bước này cần chủ tài khoản hoàn tất; đăng nhập Wrangler chưa tự kích hoạt R2.
+## 3. Cấu hình riêng tư trên máy
 
-Backend tên `little-readers-backend`, riêng với bản Worker chạy toàn bộ website. `wrangler.jsonc` vẫn dành cho local và bản website Cloudflare; không cần thay state local để triển khai Vercel.
-
-## 2. Deploy backend và đặt secret
-
-```powershell
-npm run backend:deploy
-npx wrangler secret put BACKEND_TOKEN --config wrangler.backend.jsonc
-```
-
-Lệnh đầu trả URL dạng `https://little-readers-backend.<subdomain>.workers.dev`. Worker chưa có token sẽ trả 503, không mở dữ liệu công khai. Khi lệnh đặt secret hỏi giá trị, nhập một token ngẫu nhiên 64 ký tự hex. Có thể tạo token trên máy bằng:
-
-```powershell
-node -p "require('node:crypto').randomBytes(32).toString('hex')"
-```
-
-Lưu token riêng để dùng lại trong cấu hình Vercel. Không đưa token vào Git, `vercel.json`, `wrangler.backend.jsonc` hoặc biến `NEXT_PUBLIC_*`.
-
-Tạo `.env.remote` từ `.env.remote.example` và điền:
+Sao chép `.env.supabase.example` thành `.env.supabase`, điền:
 
 ```dotenv
-LITTLE_READERS_BACKEND_URL=https://little-readers-backend.YOUR_SUBDOMAIN.workers.dev
-LITTLE_READERS_BACKEND_TOKEN=the-same-token-as-BACKEND_TOKEN
+SUPABASE_URL=https://YOUR_PROJECT_REF.supabase.co
+SUPABASE_SECRET_KEY=sb_secret_YOUR_SERVER_SECRET_KEY
+SUPABASE_MEDIA_BUCKET=little-readers-media
 ```
 
-URL là origin HTTPS, không kèm path, query hoặc thông tin đăng nhập. `.env.remote` được Git và gói ZIP bỏ qua. Chỉ bản `.example` với giá trị minh họa được commit.
+Lấy Project URL trong **Connect** hoặc **Settings → Data API**; lấy secret key trong **Settings → API Keys**. Dùng secret key bắt đầu bằng `sb_secret_`; nếu project cũ chỉ có JWT `service_role`, có thể dùng biến `SUPABASE_SERVICE_ROLE_KEY` thay thế. Không dùng publishable/anon key.
 
-## 3. Chuyển nguyên dữ liệu lần đầu
+URL chỉ gồm origin HTTPS, không thêm `/rest/v1`, `/storage/v1`, query hoặc credentials. Không đặt secret dưới tên `NEXT_PUBLIC_*`, không đưa vào `vercel.json`, Git hoặc ZIP. `.env.supabase` đã được bỏ qua; chỉ file `.example` với giá trị minh họa được commit.
 
-Trên máy đang có dữ liệu local, tạm ngừng chỉnh học liệu hoặc upload trong lúc xuất:
+Kiểm tra kết nối:
 
 ```powershell
-npm run data:export
-npm run remote:setup
-npm run remote:verify
+npm run supabase:check
 ```
 
-Snapshot mới và toàn bộ ảnh/audio nằm trong `.data/current-sites-transfer/`. Công cụ nhập giữ ID, thứ tự câu/từ/câu hỏi, trạng thái, tài khoản, hash mật khẩu và đường dẫn `/media/...`; kiểm tra mọi giá trị database và SHA-256 của tệp. Tệp chưa gắn vào truyện cũng được giữ.
+CLI đọc `.env.supabase`; `npm run dev` không tự nạp file này, nên dữ liệu local vẫn tách riêng.
 
-Nếu dùng thư mục `.site-transfer/` đã giải nén từ ZIP riêng tư:
+## 4. Chuyển nguyên dữ liệu lần đầu
+
+Máy phát triển hiện đã có snapshot riêng `.data/vercel-initial-transfer/`. Snapshot giữ nguyên truyện, thứ tự câu/từ/câu hỏi, trạng thái, tài khoản và hash mật khẩu, icon/logo, đường dẫn `/media/...`, toàn bộ tệp kể cả tệp chưa gắn vào nội dung.
+
+Nếu cần xuất dữ liệu mới trước lần nhập đầu tiên, dừng chỉnh học liệu/upload trong lúc xuất:
 
 ```powershell
-node --env-file=.env.remote scripts/remote-setup.mjs --from .site-transfer
-node --env-file=.env.remote scripts/remote-setup.mjs --verify --from .site-transfer
+node scripts/export-data.mjs --out .data/vercel-initial-transfer
 ```
 
-Không cần đưa database, snapshot hoặc media riêng tư lên GitHub/Vercel. Công cụ chỉ nhập lần đầu vào database rỗng, từ chối ghi đè dữ liệu đã có và bỏ qua snapshot đã nhập. Khi nhập bị gián đoạn, chạy lại cùng snapshot để tiếp tục từ checkpoint. Không đổi snapshot trong lúc có lần nhập chưa hoàn tất.
-
-Backend dùng `D1.batch()` native cho từng batch SQL; lỗi guard hoặc constraint rollback toàn bộ batch. Client không tự retry lệnh ghi. Ảnh/audio được upload trước các bản ghi tham chiếu.
-
-Local và remote là hai bộ dữ liệu riêng. Chuyển code không tự đồng bộ những truyện sửa ở hai nơi. Nhật ký, từ yêu thích và tiến độ trong localStorage cần tải/khôi phục bản sao riêng khi đổi domain.
-
-## 4. Cấu hình Vercel và redeploy
-
-Trong project Vercel liên kết `mqvinh/thuviennho`:
-
-- **Framework Preset:** Next.js.
-- **Root Directory:** thư mục chứa `package.json` ở gốc repo (`./`), không chọn `src/`.
-- **Node.js Version:** 22.x.
-- **Install Command:** `npm ci`.
-- **Build Command:** `npm run build:vercel`.
-- **Output Directory:** để mặc định của Next.js.
-
-`vercel.json` đã đặt framework và hai lệnh cài/build. Không dùng `build:sites`, `.open-next/` hoặc `wrangler deploy` làm build Vercel.
-
-Ở **Settings → Environment Variables**, thêm hai biến trong `.env.remote` cho **Production**. `LITTLE_READERS_BACKEND_TOKEN` phải giống `BACKEND_TOKEN` trên Worker. Nếu cần Preview, nên dùng backend và dữ liệu riêng cho môi trường thử.
-
-Redeploy commit mới sau khi nhập dữ liệu và cấu hình biến môi trường. Đổi environment variables không cập nhật các deployment đã chạy; cần một deployment mới.
-
-Kiểm tra trang chủ, chi tiết truyện, đọc/nghe, ảnh/audio và đăng nhập quản lý. Chỉ xác nhận online khi đã mở và kiểm tra URL thật. Phiên IDE không có quyền truy cập dashboard Vercel thay cho chủ tài khoản.
-
-Vercel giới hạn payload vào Function ở 4,5 MB (xem [Functions limits](https://vercel.com/docs/functions/limitations)), nên form và API trong bản Vercel cùng giới hạn tệp mới ở **4 MB**. Bản local/Workers vẫn nhận 5 MB. Nhập dữ liệu ban đầu bằng CLI đi thẳng tới backend nên không chịu giới hạn request của Vercel; ảnh/audio hiện có được giữ nguyên. Giới hạn riêng của backend cho mỗi ảnh/audio là 5 MB.
-
-## 5. Cập nhật và sao lưu
-
-Sau khi sửa code, kiểm tra rồi commit/push nhánh `main`; Vercel có thể build deployment mới từ repo đã liên kết. Giữ nguyên URL backend, secret và bindings để tiếp tục dùng dữ liệu hiện có.
-
-Nếu có migration schema mới, áp dụng bằng:
+Sau đó nhập và kiểm tra:
 
 ```powershell
-npm run remote:migrate
+npm run supabase:setup
+npm run supabase:verify
 ```
 
-Lệnh này chỉ áp dụng migration chưa chạy, không nhập snapshot, không reset dữ liệu và không xóa R2. Cập nhật backend bằng `npm run backend:deploy` khi mã gateway thay đổi; secret đã đặt được giữ lại.
+Công cụ tự tạo bucket riêng tư `little-readers-media`. Nếu bucket có sẵn đang public, công cụ từ chối để chủ tài khoản chuyển về private trước. Tệp được upload nguyên byte, không đổi kích thước hoặc tên. Website tiếp tục phục vụ qua `/media/...`, giữ kiểm tra quyền xem tệp nháp/riêng tư và chỉ cho xem công khai các tệp đang được xuất bản.
 
-Sao lưu dữ liệu online:
+Công cụ đối chiếu mọi giá trị database và SHA-256 của mỗi tệp. Số 0/1 từ D1 được chuyển sang boolean PostgreSQL và kiểm tra theo cùng ý nghĩa. Văn bản, ngày tạo, ID, thứ tự và chuỗi JSON được giữ nguyên.
+
+Công cụ chỉ nhập vào đích rỗng, từ chối ghi đè dữ liệu hiện có và bỏ qua snapshot đã nhập. Nếu bị ngắt, chạy lại cùng snapshot để tiếp tục từ checkpoint. Không xuất lại/đổi snapshot trong lúc có lần nhập chưa hoàn tất. Không tự retry lệnh ghi khi HTTP lỗi.
+
+Nếu nguồn là `.site-transfer/` từ ZIP riêng tư:
 
 ```powershell
-npm run remote:export
+node --env-file=.env.supabase scripts/supabase-setup.mjs --from .site-transfer
+node --env-file=.env.supabase scripts/supabase-setup.mjs --verify --from .site-transfer
 ```
 
-Bản sao ở `.data/remote-sites-transfer/`, riêng với snapshot local. Có thể chỉ định thư mục mới bằng `node --env-file=.env.remote scripts/export-data.mjs --remote --out .data/remote-backups/my-backup`. Giữ các bản sao riêng tư vì có dữ liệu tài khoản và hash mật khẩu.
+Không đưa snapshot hoặc dữ liệu tài khoản lên GitHub. Tiến độ, nhật ký và từ yêu thích trong localStorage thuộc từng domain; dùng chức năng sao lưu/khôi phục thiết bị khi đổi domain.
 
-## Chẩn đoán kết nối
+## 5. Cập nhật project Vercel đang có
 
-| Log | Cách xử lý |
+Giữ repo `mqvinh/thuviennho`, nhánh `main` và project Vercel hiện tại. Trong **Settings → Environment Variables**, thêm cho Production:
+
+- `SUPABASE_URL`
+- `SUPABASE_SECRET_KEY` (hoặc legacy `SUPABASE_SERVICE_ROLE_KEY`)
+- `SUPABASE_MEDIA_BUCKET=little-readers-media`
+
+Bỏ hai biến gateway Cloudflare cũ `LITTLE_READERS_BACKEND_URL` và `LITTLE_READERS_BACKEND_TOKEN` khỏi cấu hình Vercel để tránh nhầm. Bản Vercel hiện chọn Supabase; các biến cũ không thay thế được cấu hình mới.
+
+Thiết lập build:
+
+- Framework: Next.js; Node.js: 22.x.
+- Root Directory: gốc repo có `package.json` (`./`).
+- Install Command: `npm ci`.
+- Build Command: `npm run build:vercel`.
+- Output Directory: mặc định của Next.js.
+
+`vercel.json` đã khai báo framework và lệnh build. Sau khi khởi tạo schema, nhập dữ liệu và đặt env, redeploy commit mới nhất. Thay environment variables cần tạo deployment mới.
+
+Kiểm tra trang chủ, đọc/nghe, từ vựng, thử tài, ảnh/audio, đăng nhập và chỉnh sửa quản lý trên URL thật. Gói mã nguồn hoặc build local chưa đồng nghĩa đã có website online.
+
+Form/API trên Vercel cùng giới hạn tệp upload mới ở 4 MB để nằm dưới giới hạn payload 4,5 MB của Vercel Functions. Local vẫn nhận 5 MB. Nhập dữ liệu ban đầu đi trực tiếp tới Storage, giữ nguyên các tệp hiện có (giới hạn mỗi tệp 5 MB trong công cụ).
+
+## 6. Local, cập nhật và sao lưu
+
+`npm run dev` tiếp tục dùng D1/R2 giả lập và dữ liệu hiện có trong `.wrangler/state/`; không cần Cloudflare account, không cần R2 thanh toán. Không xóa thư mục state để cập nhật code. D1 hosted đã tạo trước đây không được bản Vercel sử dụng và không bị công cụ này xóa.
+
+Có thể thử cùng backend Supabase ở local bằng `node --env-file=.env.supabase node_modules/next/dist/bin/next dev`, nhưng khi đó chỉnh sửa sẽ tác động trực tiếp tới project Supabase đã cấu hình. Dùng project thử riêng khi cần.
+
+Sau khi sửa code, kiểm tra rồi commit/push `main`; project Vercel liên kết GitHub có thể tự build bản mới. Giữ nguyên Supabase project và bucket để tiếp tục dùng dữ liệu online. Deploy code không tự đồng bộ các chỉnh sửa dữ liệu giữa local và Supabase.
+
+Dừng chỉnh học liệu/upload trong lúc sao lưu online:
+
+```powershell
+npm run supabase:export
+```
+
+Bản sao ở `.data/supabase-backup/`. Có thể chọn thư mục riêng bằng `node --env-file=.env.supabase scripts/supabase-setup.mjs --export --out .data/supabase-backups/my-backup`. Giữ bản sao riêng tư; không nhập bản sao đè vào backend đang có dữ liệu.
+
+## Chẩn đoán
+
+| Lỗi | Cách xử lý |
 |---|---|
-| `Configure LITTLE_READERS_BACKEND_URL ...` | Thêm đủ hai biến trên Vercel và redeploy. |
-| `Library backend (401): Unauthorized` | Đối chiếu secret Vercel với `BACKEND_TOKEN` trên Worker. |
-| `Library backend (503): Backend configuration is incomplete` | Kiểm tra secret và bindings `DB`, `MEDIA` trong backend đã deploy. |
-| `no such table` hoặc chưa có cài đặt website | Nhập dữ liệu lần đầu vào backend đã chọn; không thay bằng seed mẫu. |
-| `Refusing to overwrite non-empty ...` | Target đã có dữ liệu; giữ nguyên và kiểm tra backend/snapshot đang chọn. |
-| `Wrangler` vẫn được gọi ở runtime Vercel | Deployment đang dùng code cũ hoặc thiếu nhánh `VERCEL=1`; kiểm tra commit và cấu hình build. |
+| `Configure SUPABASE_URL ...` | Thêm biến Supabase trong Vercel và redeploy. |
+| Key không hợp lệ, 401/403 | Dùng secret/service_role key đúng project, không dùng publishable/anon. |
+| Không tìm thấy `public.library_batch` | Chạy `database/supabase/001_library.sql` trong SQL Editor đúng project; chờ Data API cập nhật schema cache. |
+| Permission denied | Chạy đủ file schema để cấp quyền service_role; không mở quyền cho anon/authenticated. |
+| Bucket phải private | Tắt Public bucket trong Storage trước khi nhập. |
+| `Refusing to overwrite non-empty ...` | Đích đã có dữ liệu; kiểm tra đúng project/snapshot, không reset hoặc seed lại. |
+| `Another snapshot import is unfinished` | Chạy lại snapshot gốc đang nhập, không trộn hai bản xuất. |
+| `Wrangler` vẫn được gọi trên Vercel | Kiểm tra deployment đang dùng commit mới và build command đúng. |

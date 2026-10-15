@@ -1,6 +1,6 @@
 # Một mã nguồn, local và hosting dùng D1/R2
 
-Nếu deploy website lên Vercel, dùng [HUONG_DAN_TRIEN_KHAI_VERCEL.md](HUONG_DAN_TRIEN_KHAI_VERCEL.md). Vercel cần kết nối tới backend D1/R2 từ xa; không cung cấp bindings Worker trực tiếp. Hướng dẫn bên dưới dành cho bản Worker/Sites.
+Nếu deploy website lên Vercel, dùng [HUONG_DAN_TRIEN_KHAI_VERCEL.md](HUONG_DAN_TRIEN_KHAI_VERCEL.md). Bản Vercel hiện dùng Supabase PostgreSQL và Storage, không cần Cloudflare. Hướng dẫn bên dưới dành riêng cho bản Worker/Sites.
 
 ## Trạng thái và điều kiện của Sites
 

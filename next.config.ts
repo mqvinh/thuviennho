@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
 import path from "node:path";
 
-if (process.env.NODE_ENV === "development" && process.env.VERCEL !== "1" && !process.env.LITTLE_READERS_BACKEND_URL && !process.env.LITTLE_READERS_BACKEND_TOKEN) {
+if (process.env.NODE_ENV === "development" && process.env.VERCEL !== "1" && !process.env.SUPABASE_URL && !process.env.SUPABASE_SECRET_KEY && !process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.LITTLE_READERS_BACKEND_URL && !process.env.LITTLE_READERS_BACKEND_TOKEN) {
   void initOpenNextCloudflareForDev({ persist: { path: path.resolve(process.env.LITTLE_READERS_STATE_DIR || ".wrangler/state","v3") } });
 }
 

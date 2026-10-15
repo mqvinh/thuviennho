@@ -9,10 +9,10 @@
 ## Nền tảng triển khai hiện tại
 
 - **Ứng dụng:** Next.js App Router, TypeScript, Tailwind CSS.
-- **Hosting:** Vercel chạy Next.js, kết nối tới backend Worker riêng có xác thực. Có thể build toàn bộ website thành Worker bằng OpenNext.
-- **Database:** D1; local dùng giả lập, hosted dùng tài nguyên Cloudflare bền vững.
-- **Tệp media:** R2, giữ nguyên key và đường dẫn `/media/...` khi chuyển dữ liệu.
-- **Hướng dẫn hiện tại:** [triển khai Vercel](HUONG_DAN_TRIEN_KHAI_VERCEL.md) hoặc [bản Worker/Sites](HUONG_DAN_TRIEN_KHAI_SITES.md). SQL PostgreSQL/PGlite cũ giữ cho chuyển đổi và kiểm thử, không nạp lại khi deploy. Một số checklist phía dưới ghi lại kế hoạch ban đầu trước chuyển đổi D1/R2.
+- **Hosting:** Vercel chạy Next.js, kết nối trực tiếp tới Supabase qua HTTPS; không cần backend Worker.
+- **Database:** PostgreSQL trên Supabase cho bản Vercel. Local giữ dữ liệu D1 giả lập hiện có.
+- **Tệp media:** Supabase Storage riêng tư cho bản Vercel; local giữ R2 giả lập. Giữ nguyên key và đường dẫn `/media/...` khi chuyển dữ liệu.
+- **Hướng dẫn hiện tại:** [triển khai Vercel](HUONG_DAN_TRIEN_KHAI_VERCEL.md), schema mới tại `database/supabase/001_library.sql`. SQL PostgreSQL/PGlite cũ giữ cho chuyển đổi và kiểm thử, không nạp seed lại khi deploy. Bản Worker/Sites là phương án khác; một số checklist phía dưới ghi lại kế hoạch ban đầu.
 - **Backlog theo chức năng:** xem [KE_HOACH_CHUC_NANG.md](KE_HOACH_CHUC_NANG.md).
 
 ## 1. Tầm nhìn và mục tiêu

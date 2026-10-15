@@ -11,7 +11,7 @@ const jsonColumns = new Set(["options", "correct_order"]);
 
 function decodeRow(row: Record<string, unknown>) {
   return Object.fromEntries(Object.entries(row).map(([name, value]) => [name,
-    booleanColumns.has(name) && value !== null ? value === 1 :
+    booleanColumns.has(name) && value !== null ? value === 1 || value === true :
     jsonColumns.has(name) && typeof value === "string" ? JSON.parse(value) : value,
   ]));
 }
@@ -19,7 +19,7 @@ function decodeRow(row: Record<string, unknown>) {
 export class LibraryDatabase {
   constructor(private binding: LibraryDatabaseBinding) {}
   private prepare({ sql, values = [] }: SqlStatement): LibraryStatement {
-    return this.binding.prepare(sql).bind(...values.map(value => typeof value === "boolean" ? Number(value) : value));
+    return this.binding.prepare(sql).bind(...values.map(value => typeof value === "boolean" && this.binding.dialect !== "postgres" ? Number(value) : value));
   }
   async query<T = Record<string, unknown>>(sql: string, values: SqlValue[] = []): Promise<{ rows: T[] }> {
     const result = await this.prepare({ sql, values }).all<Record<string, unknown>>();
@@ -37,8 +37,8 @@ export class LibraryDatabase {
       await this.binding.batch([...checks, ...statements, ...cleanup].map(statement => this.prepare(statement)));
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      if (/CHECK constraint failed:.*valid/i.test(message)) throw new HttpError(409, "Thông tin đã thay đổi. Hãy tải lại trước khi lưu.");
-      if (/UNIQUE constraint failed: teacher_users.username/i.test(message)) throw new HttpError(409, "Tên đăng nhập đã tồn tại.");
+      if (/CHECK constraint failed:.*valid|transaction_guards_valid_check/i.test(message)) throw new HttpError(409, "Thông tin đã thay đổi. Hãy tải lại trước khi lưu.");
+      if (/UNIQUE constraint failed: teacher_users.username|teacher_users_username_key/i.test(message)) throw new HttpError(409, "Tên đăng nhập đã tồn tại.");
       throw error;
     }
   }

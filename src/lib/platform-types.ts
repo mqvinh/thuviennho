@@ -1,11 +1,12 @@
 import type { D1Result } from "@cloudflare/workers-types";
 
-export type LibrarySqlValue = string | number | null;
+export type LibrarySqlValue = string | number | boolean | null;
 export interface LibraryStatement {
   bind(...values: LibrarySqlValue[]): LibraryStatement;
   all<T = Record<string, unknown>>(): Promise<D1Result<T>>;
 }
 export interface LibraryDatabaseBinding {
+  dialect?: "postgres";
   prepare(sql: string): LibraryStatement;
   batch<T = unknown>(statements: LibraryStatement[]): Promise<D1Result<T>[]>;
 }
