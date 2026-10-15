@@ -22,6 +22,7 @@ import "./library-theme.css";
 import "./site-experience.css";
 import "./journey-theme.css";
 import "./journal-theme.css";
+import "./games-theme.css";
 import "./illustration-motion.css";
 import "./mobile-navigation.css";
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };

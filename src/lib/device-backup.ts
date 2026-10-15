@@ -1,4 +1,5 @@
 import type { DeviceData, JournalEntry } from "./device-store";
+import type { FlashcardHistory } from "./flashcards";
 const invalid = () => {
   throw Error(
     "Bản sao không đúng định dạng hoặc vượt giới hạn. Dữ liệu hiện tại chưa thay đổi.",
@@ -80,10 +81,27 @@ export function validateDeviceData(value: unknown): DeviceData {
   });
   if (new Set(journal.map((v) => v.id)).size !== journal.length)
     return invalid();
+  // Version-one backups predating the games remain valid.
+  const flashcardEntries = Object.entries(object(data.flashcards === undefined ? {} : data.flashcards));
+  if (flashcardEntries.length > 5000) return invalid();
+  const flashcards: FlashcardHistory = Object.fromEntries(flashcardEntries.map(([key, value]) => {
+    if (key.length > 2000 || !/^[a-z0-9-]+:[^:\s]+:[^:\s]+$/i.test(key)) return invalid();
+    const row = object(value);
+    function integer(name: string, max: number) {
+      const number = row[name];
+      if (typeof number !== "number" || !Number.isSafeInteger(number) || number < 0 || number > max) return invalid();
+      return number;
+    }
+    const attempts = integer("attempts", 1_000_000), correct = integer("correct", attempts), streak = integer("streak", 4);
+    const lastReviewed = date(row.lastReviewed), dueAt = date(row.dueAt);
+    if (!attempts || Date.parse(dueAt) <= Date.parse(lastReviewed) || (streak > 0 && correct === 0)) return invalid();
+    return [key, { attempts, correct, streak, lastReviewed, dueAt }];
+  }));
   return {
     version: 1,
     favorites,
     journal,
+    flashcards,
     started: records(data.started),
     finished: records(data.finished),
     activities: records(data.activities),

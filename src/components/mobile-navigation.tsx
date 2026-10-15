@@ -13,6 +13,7 @@ const primaryItems = [
 ] as const;
 
 const moreItems = [
+  { href: "/tro-choi", label: "Khu trò chơi", description: "Học từ mới qua những trò chơi thú vị", icon: "game" },
   { href: "/thu-tai", label: "Đọc vui thử tài", description: "Kiểm tra hiểu biết qua những câu hỏi thú vị", icon: "trophy" },
   { href: "/hanh-trinh", label: "Hành trình đọc sách", description: "Theo dõi và lưu giữ hành trình của bạn", icon: "sun" },
 ] as const;
@@ -26,6 +27,7 @@ function NavigationIcon({ name }: { name: string }) {
     {name === "more" && <>{[5, 12, 19].map(cx => <circle key={cx} cx={cx} cy="12" r="1.8" fill="currentColor" stroke="none" />)}</>}
     {name === "trophy" && <><path d="M8 3h8v8a4 4 0 0 1-8 0V3ZM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 15v6M8 21h8" /></>}
     {name === "sun" && <><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5" /></>}
+    {name === "game" && <><path d="M7 7h10a4 4 0 0 1 4 3l1 7a2 2 0 0 1-3 2l-4-3H9l-4 3a2 2 0 0 1-3-2l1-7a4 4 0 0 1 4-3Z" /><path d="M7 10v5M4.5 12.5h5M16 11h.01M19 14h.01" /></>}
   </svg>;
 }
 

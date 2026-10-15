@@ -1,0 +1,248 @@
+[
+  {
+    "english": "puppy",
+    "slug": "puppy",
+    "image": "/images/flashcards/puppy.png",
+    "audio": "/audio/flashcards/puppy.mp3"
+  },
+  {
+    "english": "care for",
+    "slug": "care-for",
+    "image": "/images/flashcards/care-for.png",
+    "audio": "/audio/flashcards/care-for.mp3"
+  },
+  {
+    "english": "gentle",
+    "slug": "gentle",
+    "image": "/images/flashcards/gentle.png",
+    "audio": "/audio/flashcards/gentle.mp3"
+  },
+  {
+    "english": "friend",
+    "slug": "friend",
+    "image": "/images/flashcards/friend.png",
+    "audio": "/audio/flashcards/friend.mp3"
+  },
+  {
+    "english": "grandma",
+    "slug": "grandma",
+    "image": "/images/flashcards/grandma.png",
+    "audio": "/audio/flashcards/grandma.mp3"
+  },
+  {
+    "english": "lid",
+    "slug": "lid",
+    "image": "/images/flashcards/lid.png",
+    "audio": "/audio/flashcards/lid.mp3"
+  },
+  {
+    "english": "water bottle",
+    "slug": "water-bottle",
+    "image": "/images/flashcards/water-bottle.png",
+    "audio": "/audio/flashcards/water-bottle.mp3"
+  },
+  {
+    "english": "shade",
+    "slug": "shade",
+    "image": "/images/flashcards/shade.png",
+    "audio": "/audio/flashcards/shade.mp3"
+  },
+  {
+    "english": "leaf",
+    "slug": "leaf",
+    "image": "/images/flashcards/leaf.png",
+    "audio": "/audio/flashcards/leaf.mp3"
+  },
+  {
+    "english": "napkin",
+    "slug": "napkin",
+    "image": "/images/flashcards/napkin.png",
+    "audio": "/audio/flashcards/napkin.mp3"
+  },
+  {
+    "english": "prepare",
+    "slug": "prepare",
+    "image": "/images/flashcards/prepare.png",
+    "audio": "/audio/flashcards/prepare.mp3"
+  },
+  {
+    "english": "left",
+    "slug": "left",
+    "image": "/images/flashcards/left.png",
+    "audio": "/audio/flashcards/left.mp3"
+  },
+  {
+    "english": "idea",
+    "slug": "idea",
+    "image": "/images/flashcards/idea.png",
+    "audio": "/audio/flashcards/idea.mp3"
+  },
+  {
+    "english": "share",
+    "slug": "share",
+    "image": "/images/flashcards/share.png",
+    "audio": "/audio/flashcards/share.mp3"
+  },
+  {
+    "english": "shelf",
+    "slug": "shelf",
+    "image": "/images/flashcards/shelf.png",
+    "audio": "/audio/flashcards/shelf.mp3"
+  },
+  {
+    "english": "fold",
+    "slug": "fold",
+    "image": "/images/flashcards/fold.png",
+    "audio": "/audio/flashcards/fold.mp3"
+  },
+  {
+    "english": "result",
+    "slug": "result",
+    "image": "/images/flashcards/result.png",
+    "audio": "/audio/flashcards/result.mp3"
+  },
+  {
+    "english": "walk slowly",
+    "slug": "walk-slowly",
+    "image": "/images/flashcards/walk-slowly.png",
+    "audio": "/audio/flashcards/walk-slowly.mp3"
+  },
+  {
+    "english": "umbrella",
+    "slug": "umbrella",
+    "image": "/images/flashcards/umbrella.png",
+    "audio": "/audio/flashcards/umbrella.mp3"
+  },
+  {
+    "english": "wait",
+    "slug": "wait",
+    "image": "/images/flashcards/wait.png",
+    "audio": "/audio/flashcards/wait.mp3"
+  },
+  {
+    "english": "bag",
+    "slug": "bag",
+    "image": "/images/flashcards/bag.png",
+    "audio": "/audio/flashcards/bag.mp3"
+  },
+  {
+    "english": "cloud",
+    "slug": "cloud",
+    "image": "/images/flashcards/cloud.png",
+    "audio": "/audio/flashcards/cloud.mp3"
+  },
+  {
+    "english": "book",
+    "slug": "book",
+    "image": "/images/flashcards/book.png",
+    "audio": "/audio/flashcards/book.mp3"
+  },
+  {
+    "english": "weather",
+    "slug": "weather",
+    "image": "/images/flashcards/weather.png",
+    "audio": "/audio/flashcards/weather.mp3"
+  },
+  {
+    "english": "observe",
+    "slug": "observe",
+    "image": "/images/flashcards/observe.png",
+    "audio": "/audio/flashcards/observe.mp3"
+  },
+  {
+    "english": "slippers",
+    "slug": "slippers",
+    "image": "/images/flashcards/slippers.png",
+    "audio": "/audio/flashcards/slippers.mp3"
+  },
+  {
+    "english": "chair",
+    "slug": "chair",
+    "image": "/images/flashcards/chair.png",
+    "audio": "/audio/flashcards/chair.mp3"
+  },
+  {
+    "english": "neat",
+    "slug": "neat",
+    "image": "/images/flashcards/neat.png",
+    "audio": "/audio/flashcards/neat.mp3"
+  },
+  {
+    "english": "clean",
+    "slug": "clean",
+    "image": "/images/flashcards/clean.png",
+    "audio": "/audio/flashcards/clean.mp3"
+  },
+  {
+    "english": "ruler",
+    "slug": "ruler",
+    "image": "/images/flashcards/ruler.png",
+    "audio": "/audio/flashcards/ruler.mp3"
+  },
+  {
+    "english": "read",
+    "slug": "read",
+    "image": "/images/flashcards/read.png",
+    "audio": "/audio/flashcards/read.mp3"
+  },
+  {
+    "english": "rest",
+    "slug": "rest",
+    "image": "/images/flashcards/rest.png",
+    "audio": "/audio/flashcards/rest.mp3"
+  },
+  {
+    "english": "plan",
+    "slug": "plan",
+    "image": "/images/flashcards/plan.png",
+    "audio": "/audio/flashcards/plan.mp3"
+  },
+  {
+    "english": "sorry",
+    "slug": "sorry",
+    "image": "/images/flashcards/sorry.png",
+    "audio": "/audio/flashcards/sorry.mp3"
+  },
+  {
+    "english": "seed",
+    "slug": "seed",
+    "image": "/images/flashcards/seed.png",
+    "audio": "/audio/flashcards/seed.mp3"
+  },
+  {
+    "english": "ask",
+    "slug": "ask",
+    "image": "/images/flashcards/ask.png",
+    "audio": "/audio/flashcards/ask.mp3"
+  },
+  {
+    "english": "wash",
+    "slug": "wash",
+    "image": "/images/flashcards/wash.png",
+    "audio": "/audio/flashcards/wash.mp3"
+  },
+  {
+    "english": "card",
+    "slug": "card",
+    "image": "/images/flashcards/card.png",
+    "audio": "/audio/flashcards/card.mp3"
+  },
+  {
+    "english": "light",
+    "slug": "light",
+    "image": "/images/flashcards/light.png",
+    "audio": "/audio/flashcards/light.mp3"
+  },
+  {
+    "english": "page",
+    "slug": "page",
+    "image": "/images/flashcards/page.png",
+    "audio": "/audio/flashcards/page.mp3"
+  },
+  {
+    "english": "library",
+    "slug": "library",
+    "image": "/images/flashcards/library.png",
+    "audio": "/audio/flashcards/library.mp3"
+  }
+]

@@ -1,0 +1,143 @@
+.games-catalog, .flashcard-game { scroll-margin-top: 115px; }
+.games-section-heading { display: flex; align-items: center; gap: 15px; margin: 28px 0 22px; }
+.games-heading-symbol { display: grid; place-items: center; width: 60px; height: 60px; border-radius: 20px; background: #e4f2e7; font-size: 32px; }
+.games-section-heading h2 { margin: 0 0 5px; color: #78431f; font-size: 26px; }
+.games-section-heading p, .game-card-body p { margin: 0; color: #827363; line-height: 1.7; }
+.games-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
+.game-card { overflow: hidden; border: 1px solid #e8dcc3; border-radius: 24px; background: #fffefb; box-shadow: 0 6px 20px #8150250d; transition: transform 220ms ease, box-shadow 220ms ease; }
+.game-card-link { display: flex; flex-direction: column; height: 100%; text-decoration: none; color: inherit; }
+.game-card-link:focus-visible { outline: 3px solid #287bc1; outline-offset: -4px; border-radius: inherit; }
+.game-card-image { position: relative; isolation: isolate; overflow: hidden; background: #e7f5ed; }
+.game-card-image > img { display: block; width: 100%; height: auto; aspect-ratio: 5 / 3; object-fit: cover; }
+.game-card-image .garden-corners { --garden-width: 115px; }
+.game-card-body { display: flex; flex-direction: column; flex: 1; gap: 15px; padding: 23px; }
+.game-category { font-size: 11px; font-weight: 800; letter-spacing: .07em; color: #52896c; }
+.game-card-body h3 { margin: 0; font-size: 23px; line-height: 1.4; color: #77451f; }
+.game-card-body p { font-size: 14px; }
+.game-card-meta { display: flex; flex-wrap: wrap; gap: 8px 16px; color: #8c795e; font-size: 12px; }
+.game-card-meta > span, .game-due-badge, .games-device-note, .flashcard-saved { display: flex; align-items: center; gap: 7px; }
+.game-card-meta .listening-icon { width: 16px; height: 16px; }
+.game-card .game-play { display: flex; align-items: center; justify-content: center; gap: 12px; align-self: stretch; margin-top: auto; }
+.game-card-body .game-due-badge { align-self: flex-start; padding: 5px 12px; border-radius: 20px; background: #fff0cb; color: #995b17; font-size: 12px; font-weight: 700; }
+.games-device-note { flex-wrap: wrap; margin: 22px 0 0; color: #8c7c6a; font-size: 13px; line-height: 1.7; }
+.games-device-note .listening-icon { width: 18px; height: 18px; flex-shrink: 0; }
+.games-device-note a { color: #427a5c; text-underline-offset: 3px; }
+.flashcard-breadcrumb { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin: 25px 0 18px; color: #96856e; font-size: 13px; }
+.flashcard-breadcrumb a { text-decoration: none; color: #8b5b30; font-weight: 650; }
+.flashcard-overview { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 20px; }
+.flashcard-overview article { display: grid; grid-template-columns: 45px 1fr; align-items: center; gap: 2px 13px; padding: 18px 22px; border: 1px solid #e9dfc9; border-radius: 18px; background: #fffdf8; }
+.flashcard-overview .listening-icon { grid-row: span 2; width: 38px; height: 38px; color: #75a18a; }
+.flashcard-overview strong { color: #835028; font-size: 27px; }
+.flashcard-overview span { color: #8c7c6a; font-size: 12px; }
+.game-panel { padding: 28px; border: 1px solid #e9dec7; border-radius: 24px; background: #fffefb; box-shadow: 0 5px 24px #82552b0a; }
+.game-panel h2 { margin: 0 0 10px; color: #794524; font-size: 25px; line-height: 1.4; }
+.game-panel h2:focus { outline: none; }
+.game-panel p { color: #8a7965; line-height: 1.7; }
+.flashcard-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 24px 0; }
+.flashcard-filters label { display: grid; gap: 8px; color: #7d5735; font-size: 14px; font-weight: 650; min-width: 0; }
+.flashcard-filters select { width: 100%; min-width: 0; margin: 0; min-height: 46px; font: inherit; background-color: #fff; }
+.flashcard-selection { font-weight: 700; }
+.flashcard-setup .flashcard-start { display: inline-flex; gap: 10px; align-items: center; margin-top: 6px; }
+.flashcard-howto { margin-top: 28px; padding: 18px 22px; border-radius: 16px; background: #f2f7ee; }
+.flashcard-howto h3 { margin: 0 0 10px; color: #60836a; font-size: 15px; }
+.flashcard-howto ol { display: flex; flex-wrap: wrap; gap: 12px 38px; margin: 0; padding-left: 18px; color: #7f826d; font-size: 13px; }
+.flashcard-notice, .flashcard-empty { padding: 14px 17px; border-radius: 12px; background: #fff1d9; color: #8a6039; font-size: 14px; line-height: 1.7; }
+.flashcard-play { max-width: 950px; margin-inline: auto; }
+.flashcard-play-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.flashcard-play-heading h2 { margin-top: 6px; }
+.flashcard-end { flex-shrink: 0; min-height: 44px; padding: 8px 13px; border: 1px solid #e4d9c6; border-radius: 12px; background: #fffbf3; color: #8b7259; font-size: 12px; cursor: pointer; }
+.flashcard-progress-label { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; margin: 15px 0 8px; color: #9b8469; font-size: 12px; }
+.flashcard-play progress { display: block; width: 100%; height: 7px; margin-bottom: 24px; border: 0; border-radius: 7px; overflow: hidden; accent-color: #78a68a; background: #ede8dc; }
+.flashcard-play progress::-webkit-progress-bar { background: #ede8dc; }
+.flashcard-play progress::-webkit-progress-value { background: #78a68a; border-radius: 7px; }
+.flashcard-play progress::-moz-progress-bar { background: #78a68a; }
+.flashcard-flip { display: block; perspective: 1200px; width: min(100%, 530px); padding: 0; margin: 0 auto; border: 0; border-radius: 22px; background: transparent; color: #794524; font: inherit; cursor: pointer; text-align: center; }
+.flashcard-flip-inner { position: relative; display: grid; min-height: 375px; transform-style: preserve-3d; transition: transform 450ms ease; }
+.flashcard-flip.is-flipped .flashcard-flip-inner { transform: rotateY(180deg); }
+.flashcard-face { grid-area: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 22px; border: 2px solid #e5d5b4; border-radius: 22px; background: #fff9e9; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.flashcard-face img { display: block; max-width: 100%; width: 100%; height: 220px; object-fit: contain; border-radius: 12px; }
+.flashcard-face strong { font-size: clamp(25px, 4vw, 34px); }
+.flashcard-face > span:last-child { margin-top: auto; color: #a38b6d; font-size: 12px; }
+.flashcard-back { transform: rotateY(180deg); background: #edf6ec; border-color: #c9ddc6; color: #427257; }
+.flashcard-back > strong { color: #3c7b58; font-size: clamp(30px, 5vw, 42px); }
+.flashcard-back > span, .flashcard-back > em { max-width: 390px; font-size: 16px; line-height: 1.7; }
+.flashcard-back > .flashcard-back-icon { font-size: 40px; }
+.flashcard-back-vi { font-weight: 700; color: #857052; }
+.flashcard-back > em { font-size: 14px; color: #809077; }
+.flashcard-actions { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+.flashcard-actions .button, .flashcard-feedback .button, .flashcard-listen { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 46px; }
+.flashcard-prompt { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 20px; padding: 10px 0 26px; }
+.flashcard-prompt > strong { font-size: clamp(28px, 5vw, 38px); color: #598263; overflow-wrap: anywhere; }
+.flashcard-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.flashcard-option { position: relative; overflow: hidden; min-width: 0; padding: 10px; border: 2px solid #e8dcc5; border-radius: 18px; background: #fffdf6; cursor: pointer; transition: border-color 180ms ease, transform 180ms ease; }
+.flashcard-option > img { display: block; width: 100%; height: clamp(115px, 17vw, 180px); object-fit: contain; border-radius: 9px; }
+.flashcard-option-number { position: absolute; top: 9px; left: 9px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #ffffffed; color: #8a7255; border: 1px solid #e8dcc5; font-size: 12px; }
+.flashcard-option[data-result="correct"] { border-color: #6caa79; background: #edf7e9; }
+.flashcard-option[data-result="wrong"] { border-color: #d99080; background: #fff2eb; }
+.flashcard-option:disabled { opacity: 1; }
+.flashcard-answer-label { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 6px; color: #41784d; font-size: 14px; font-weight: 700; }
+.flashcard-answer-label .listening-icon { width: 17px; height: 17px; }
+.flashcard-feedback { margin-top: 22px; padding: 20px; border-radius: 16px; background: #f2f7ed; color: #5c7c50; }
+.flashcard-feedback p { margin: 8px 0 14px; }
+.flashcard-results { max-width: 850px; margin-inline: auto; text-align: center; }
+.flashcard-result-art { display: block; margin: 5px auto 18px; font-size: 62px; }
+.flashcard-saved { justify-content: center; color: #568559 !important; font-size: 14px; }
+.flashcard-review-list { margin-top: 23px; text-align: left; }
+.flashcard-review-row { display: flex; align-items: center; gap: 15px; padding: 13px 0; border-bottom: 1px solid #ede4d4; }
+.flashcard-review-row img { flex-shrink: 0; border-radius: 12px; object-fit: contain; background: #f5f6ea; }
+.flashcard-review-row > div { flex: 1; display: grid; gap: 6px; min-width: 0; }
+.flashcard-review-row strong { font-size: 15px; color: #776041; overflow-wrap: anywhere; }
+.flashcard-review-row div > span { font-size: 12px; color: #9a8b78; }
+.flashcard-review-row > .listening-icon { color: #79a17a; flex-shrink: 0; }
+.flashcard-message { color: #a16832; font-size: 14px; line-height: 1.7; }
+.flashcard-message:empty { display: none; }
+.flashcard-game :is(button, a, select):focus-visible { outline: 3px solid #287bc1; outline-offset: 4px; }
+.flashcard-game button:disabled { cursor: default; }
+.flashcard-start:disabled { opacity: .5; }
+.editor-flashcard-status { margin: 0; color: #94734f; font-size: 13px; line-height: 1.6; }
+.editor-flashcard-status.is-ready { color: #4c875e; }
+@media (hover: hover) and (pointer: fine) {
+  .game-card:hover { transform: translateY(-6px); box-shadow: 0 15px 30px #8150251b; }
+  .flashcard-option:hover:not(:disabled) { border-color: #9cb99b; transform: translateY(-2px); }
+}
+@media (max-width: 1050px) { .games-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) {
+  .games-grid { grid-template-columns: 1fr; }
+  .games-section-heading { gap: 12px; }
+  .games-section-heading h2 { font-size: 22px; }
+  .games-section-heading p { font-size: 13px; }
+  .games-heading-symbol { flex-shrink: 0; width: 47px; height: 47px; font-size: 25px; }
+  .game-panel { padding: 20px 15px; border-radius: 20px; }
+  .game-panel h2 { font-size: 21px; }
+  .game-panel p { font-size: 14px; }
+  .flashcard-overview { gap: 8px; }
+  .flashcard-overview article { grid-template-columns: 1fr; padding: 14px 8px; text-align: center; gap: 7px; }
+  .flashcard-overview .listening-icon { grid-row: auto; justify-self: center; width: 27px; height: 27px; }
+  .flashcard-overview strong { font-size: 23px; }
+  .flashcard-overview span { font-size: 10px; line-height: 1.5; }
+  .flashcard-filters { gap: 15px 12px; }
+  .flashcard-filters label { font-size: 13px; }
+  .flashcard-filters select { font-size: 16px; padding-inline: 9px; }
+  .flashcard-howto { padding: 16px; }
+  .flashcard-howto ol { display: grid; gap: 10px; }
+  .flashcard-play-heading { flex-direction: column; }
+  .flashcard-end { align-self: flex-end; }
+  .flashcard-flip-inner { min-height: 350px; }
+  .flashcard-face { padding: 18px 13px; }
+  .flashcard-face img { height: 190px; }
+  .flashcard-actions { gap: 10px; }
+  .flashcard-actions .button { flex: 1; padding-inline: 11px; font-size: 13px; }
+  .flashcard-results .flashcard-actions { flex-direction: column; align-items: stretch; }
+  .flashcard-results .flashcard-actions .button { flex: auto; width: 100%; }
+  .flashcard-options { gap: 10px; }
+  .flashcard-option { padding: 6px; border-radius: 13px; }
+  .flashcard-option > img { height: 115px; }
+  .flashcard-prompt { gap: 13px; }
+  .flashcard-option-number { width: 23px; height: 23px; font-size: 11px; }
+  .flashcard-review-row { gap: 11px; }
+  .flashcard-review-row strong { font-size: 13px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .game-card, .flashcard-option, .flashcard-flip-inner { transition: none; }
+  .game-card:hover, .flashcard-option:hover:not(:disabled) { transform: none; }
+}

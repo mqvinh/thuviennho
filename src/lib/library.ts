@@ -68,6 +68,8 @@ export type Word = {
   id: string;
   story_slug: string;
   story_title: string;
+  theme_slug?: string | null;
+  theme_title?: string;
   word_vi: string;
   word_en: string;
   meaning_vi: string;
@@ -86,7 +88,7 @@ export async function getWords(slug?: string) {
   const db = await getDb();
   return (
     await db.query<Word>(
-      `select v.id, s.slug as story_slug, s.title_vi as story_title, v.word_vi, v.word_en, v.meaning_vi, v.example_vi, v.pronunciation_path, v.illustration_path from vocabulary v join stories s on s.id = v.story_id where s.is_published = true and s.is_visible = true and (?1 is null or s.slug = ?1) order by s.title_vi, v.sequence_no`,
+      `select v.id, s.slug as story_slug, s.title_vi as story_title, t.slug as theme_slug, coalesce(t.name_vi,'Chưa phân chủ đề') as theme_title, v.word_vi, v.word_en, v.meaning_vi, v.example_vi, v.pronunciation_path, v.illustration_path from vocabulary v join stories s on s.id = v.story_id left join reading_themes t on t.id=s.theme_id where s.is_published = true and s.is_visible = true and (?1 is null or s.slug = ?1) order by s.title_vi, v.sequence_no`,
       [slug ?? null],
     )
   ).rows;

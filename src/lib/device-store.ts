@@ -1,6 +1,7 @@
 "use client";
 import { parseDeviceBackup, validateDeviceData } from "./device-backup";
 import { useSyncExternalStore } from "react";
+import type { FlashcardHistory } from "./flashcards";
 export type JournalEntry = {
   id: string;
   slug: string;
@@ -17,6 +18,7 @@ export type DeviceData = {
   finished: Record<string, { title: string; date: string }>;
   activities: Record<string, { title: string; date: string }>;
   journal: JournalEntry[];
+  flashcards: FlashcardHistory;
 };
 const key = "little-readers-device-v1";
 const empty: DeviceData = {
@@ -26,6 +28,7 @@ const empty: DeviceData = {
   finished: {},
   activities: {},
   journal: [],
+  flashcards: {},
 };
 const server = JSON.stringify(empty);
 function snapshot() {
