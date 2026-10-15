@@ -1,13 +1,14 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "little-readers-backend",
+  "account_id": "09bbb00f5b37d21d6fa12d81079d04d8",
   "main": "backend/worker.mjs",
   "compatibility_date": "2026-10-15",
   "workers_dev": true,
   "d1_databases": [{
     "binding": "DB",
     "database_name": "little-readers",
-    "database_id": "00000000-0000-0000-0000-000000000000",
+    "database_id": "a2404935-4102-4df2-93ad-4a24b362bf3c",
     "migrations_dir": "database/d1/migrations"
   }],
   "r2_buckets": [{ "binding": "MEDIA", "bucket_name": "little-readers-media" }]

@@ -24,7 +24,9 @@ npx wrangler d1 create little-readers
 npx wrangler r2 bucket create little-readers-media
 ```
 
-Trong `wrangler.backend.jsonc`, thay `database_id` toàn số 0 bằng ID database vừa tạo. Nếu dùng tài nguyên đã có, điền đúng `database_id`, `database_name` và `bucket_name`. Giữ bindings là `DB` và `MEDIA`. ID toàn số 0 chỉ là cấu hình local; không dùng để deploy hosted.
+`wrangler.backend.jsonc` đã liên kết tài khoản Cloudflare của dự án và database D1 `little-readers`; schema đã được áp dụng. Giữ nguyên `account_id` và `database_id` khi tiếp tục triển khai trên tài khoản này. Nếu triển khai bằng tài khoản khác, thay đúng `account_id`, `database_id`, `database_name` và `bucket_name`. Giữ bindings là `DB` và `MEDIA`.
+
+Nếu Wrangler báo `Please enable R2 through the Cloudflare Dashboard` (mã `10042`), mở mục R2 trong dashboard để kích hoạt trước khi tạo bucket. Bước này cần chủ tài khoản hoàn tất; đăng nhập Wrangler chưa tự kích hoạt R2.
 
 Backend tên `little-readers-backend`, riêng với bản Worker chạy toàn bộ website. `wrangler.jsonc` vẫn dành cho local và bản website Cloudflare; không cần thay state local để triển khai Vercel.
 
@@ -67,8 +69,8 @@ Snapshot mới và toàn bộ ảnh/audio nằm trong `.data/current-sites-trans
 Nếu dùng thư mục `.site-transfer/` đã giải nén từ ZIP riêng tư:
 
 ```powershell
-npm run remote:setup -- --from .site-transfer
-npm run remote:verify -- --from .site-transfer
+node --env-file=.env.remote scripts/remote-setup.mjs --from .site-transfer
+node --env-file=.env.remote scripts/remote-setup.mjs --verify --from .site-transfer
 ```
 
 Không cần đưa database, snapshot hoặc media riêng tư lên GitHub/Vercel. Công cụ chỉ nhập lần đầu vào database rỗng, từ chối ghi đè dữ liệu đã có và bỏ qua snapshot đã nhập. Khi nhập bị gián đoạn, chạy lại cùng snapshot để tiếp tục từ checkpoint. Không đổi snapshot trong lúc có lần nhập chưa hoàn tất.
@@ -116,7 +118,7 @@ Sao lưu dữ liệu online:
 npm run remote:export
 ```
 
-Bản sao ở `.data/remote-sites-transfer/`, riêng với snapshot local. Có thể chỉ định thư mục mới bằng `npm run remote:export -- --out .data/remote-backups/my-backup`. Giữ các bản sao riêng tư vì có dữ liệu tài khoản và hash mật khẩu.
+Bản sao ở `.data/remote-sites-transfer/`, riêng với snapshot local. Có thể chỉ định thư mục mới bằng `node --env-file=.env.remote scripts/export-data.mjs --remote --out .data/remote-backups/my-backup`. Giữ các bản sao riêng tư vì có dữ liệu tài khoản và hash mật khẩu.
 
 ## Chẩn đoán kết nối
 
