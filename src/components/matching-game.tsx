@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Word } from "@/lib/library";
@@ -9,6 +8,7 @@ import { flashcardKey, shuffled } from "@/lib/flashcards";
 import { matchingReady, matchingRounds, recordMatchingWord, uniqueMatchingWords, type MatchingLanguage } from "@/lib/matching";
 import { useHydrated } from "@/lib/use-hydrated";
 import { ListeningIcon } from "./listening-icon";
+import { GameImage } from "./game-image";
 
 type Game = {
   phase: "play" | "result";
@@ -149,7 +149,7 @@ export function MatchingGame({ words }: { words: Word[] }) {
       <p>{game.practice ? `Em đã luyện lại ${deck.length} từ. Cùng gặp thêm những từ mới nhé!` : <>Hoàn thành <strong>{deck.length} cặp</strong>, có <strong>{deck.length - missed.length}/{deck.length}</strong> cặp đúng ngay lần đầu.</>}</p>
       <div className="matching-result-stats"><span><ListeningIcon name="check" />{game.rounds.length} vòng hoàn thành</span><span><ListeningIcon name="clock" />{duration(elapsed)}</span><span>{game.language === "en" ? "Tiếng Anh với hình" : "Tiếng Việt với hình"}</span></div>
       {available && !saveFailed && !game.practice && <p className="flashcard-saved"><ListeningIcon name="check" />Đã lưu kết quả ghép từ trên thiết bị này.</p>}
-      <div className="flashcard-review-list">{deck.map(word => <div className="flashcard-review-row" key={word.id}><Image src={word.illustration_path!} alt="" width={56} height={56} unoptimized /><div><strong>{word.word_vi} · <span lang="en">{word.word_en}</span></strong><span>{(game.mistakes[word.id] ?? 0) > 0 ? "Đã ghép được · Cùng luyện thêm nhé" : "Ghép đúng ngay lần đầu"}</span></div><ListeningIcon name={(game.mistakes[word.id] ?? 0) > 0 ? "replay" : "check"} /></div>)}</div>
+      <div className="flashcard-review-list">{deck.map(word => <div className="flashcard-review-row" key={word.id}><GameImage src={word.illustration_path!} alt="" width={56} height={56} /><div><strong>{word.word_vi} · <span lang="en">{word.word_en}</span></strong><span>{(game.mistakes[word.id] ?? 0) > 0 ? "Đã ghép được · Cùng luyện thêm nhé" : "Ghép đúng ngay lần đầu"}</span></div><ListeningIcon name={(game.mistakes[word.id] ?? 0) > 0 ? "replay" : "check"} /></div>)}</div>
       <div className="matching-actions">{missed.length > 0 && <button type="button" className="button" onClick={() => start(missed, true)}><ListeningIcon name="replay" />Luyện lại từ sai</button>}<button type="button" className="button secondary" onClick={() => start()}>Chơi lượt mới</button><Link href="/tro-choi" className="button secondary">Về Khu trò chơi</Link></div>
       <button type="button" className="matching-change-set" onClick={exit}>Chọn bộ từ khác</button>
     </div> : <div className="game-panel matching-play">
@@ -163,7 +163,7 @@ export function MatchingGame({ words }: { words: Word[] }) {
           event.preventDefault(); const id = dragged.current; dragged.current = null; setHovered(null);
           if (id && event.dataTransfer.getData("text/plain") === id) match(id, word.id);
         }}>
-          <span className="matching-tile-number" aria-hidden="true">{index + 1}</span><Image src={word.illustration_path!} alt={`Hình để ghép số ${index + 1}`} width={420} height={280} unoptimized loading="eager" draggable={false} onError={() => setMessage("Một hình chưa tải được. Em thử tải lại trang để chơi với đủ hình nhé.")} />
+          <span className="matching-tile-number" aria-hidden="true">{index + 1}</span><GameImage src={word.illustration_path!} alt={`Hình để ghép số ${index + 1}`} width={420} height={280} loading="eager" onError={() => setMessage("Một hình chưa tải được. Em thử tải lại trang để chơi với đủ hình nhé.")} />
           <span className="matching-slot">{matched ? <><ListeningIcon name="check" /><span lang={game.language}>{label(word, game.language)}</span></> : "Ghép từ vào đây"}</span>
         </button>;
       })}</div>

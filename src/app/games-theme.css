@@ -33,6 +33,18 @@
 .game-panel h2 { margin: 0 0 10px; color: #794524; font-size: 25px; line-height: 1.4; }
 .game-panel h2:focus { outline: none; }
 .game-panel p { color: #8a7965; line-height: 1.7; }
+.game-image { position: relative; display: block; flex-shrink: 0; width: 100%; overflow: hidden; border-radius: 12px; }
+.game-image > img { display: block; width: 100%; height: 100%; object-fit: contain; opacity: 0; transition: opacity 180ms ease; }
+.game-image[data-state="loaded"] > img { opacity: 1; }
+.game-image-placeholder { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 9px; padding: 8px; background: #f4f1e5; color: #7f745f; font-size: 12px; line-height: 1.5; text-align: center; pointer-events: none; }
+.game-image-placeholder::before { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 20%, #fffaf0c9 50%, transparent 80%); transform: translateX(-100%); animation: game-image-shimmer 1.6s ease-in-out infinite; }
+.game-image-placeholder > * { position: relative; }
+.game-image-spinner { width: 27px; height: 27px; flex-shrink: 0; border: 3px solid #dedfce; border-top-color: #759b7c; border-radius: 50%; animation: game-image-spin 800ms linear infinite; }
+.game-image-placeholder.is-error { background: #fbefe4; color: #98694b; }
+.game-image-placeholder.is-error::before { display: none; }
+.game-image-placeholder.is-error .listening-icon { width: 26px; height: 26px; }
+@keyframes game-image-shimmer { to { transform: translateX(100%); } }
+@keyframes game-image-spin { to { transform: rotate(360deg); } }
 .flashcard-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 24px 0; }
 .flashcard-filters label { display: grid; gap: 8px; color: #7d5735; font-size: 14px; font-weight: 650; min-width: 0; }
 .flashcard-filters select { width: 100%; min-width: 0; margin: 0; min-height: 46px; font: inherit; background-color: #fff; }
@@ -55,7 +67,7 @@
 .flashcard-flip-inner { position: relative; display: grid; min-height: 375px; transform-style: preserve-3d; transition: transform 450ms ease; }
 .flashcard-flip.is-flipped .flashcard-flip-inner { transform: rotateY(180deg); }
 .flashcard-face { grid-area: 1 / 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; padding: 22px; border: 2px solid #e5d5b4; border-radius: 22px; background: #fff9e9; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.flashcard-face img { display: block; max-width: 100%; width: 100%; height: 220px; object-fit: contain; border-radius: 12px; }
+.flashcard-face > .game-image { height: 220px; }
 .flashcard-face strong { font-size: clamp(25px, 4vw, 34px); }
 .flashcard-face > span:last-child { margin-top: auto; color: #a38b6d; font-size: 12px; }
 .flashcard-back { transform: rotateY(180deg); background: #edf6ec; border-color: #c9ddc6; color: #427257; }
@@ -70,7 +82,7 @@
 .flashcard-prompt > strong { font-size: clamp(28px, 5vw, 38px); color: #598263; overflow-wrap: anywhere; }
 .flashcard-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .flashcard-option { position: relative; overflow: hidden; min-width: 0; padding: 10px; border: 2px solid #e8dcc5; border-radius: 18px; background: #fffdf6; cursor: pointer; transition: border-color 180ms ease, transform 180ms ease; }
-.flashcard-option > img { display: block; width: 100%; height: clamp(115px, 17vw, 180px); object-fit: contain; border-radius: 9px; }
+.flashcard-option > .game-image { height: clamp(115px, 17vw, 180px); border-radius: 9px; }
 .flashcard-option-number { position: absolute; top: 9px; left: 9px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: #ffffffed; color: #8a7255; border: 1px solid #e8dcc5; font-size: 12px; }
 .flashcard-option[data-result="correct"] { border-color: #6caa79; background: #edf7e9; }
 .flashcard-option[data-result="wrong"] { border-color: #d99080; background: #fff2eb; }
@@ -84,7 +96,9 @@
 .flashcard-saved { justify-content: center; color: #568559 !important; font-size: 14px; }
 .flashcard-review-list { margin-top: 23px; text-align: left; }
 .flashcard-review-row { display: flex; align-items: center; gap: 15px; padding: 13px 0; border-bottom: 1px solid #ede4d4; }
-.flashcard-review-row img { flex-shrink: 0; border-radius: 12px; object-fit: contain; background: #f5f6ea; }
+.flashcard-review-row > .game-image { width: 56px; height: 56px; background: #f5f6ea; }
+.flashcard-review-row .game-image-status-text { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.flashcard-review-row .game-image-spinner { width: 21px; height: 21px; }
 .flashcard-review-row > div { flex: 1; display: grid; gap: 6px; min-width: 0; }
 .flashcard-review-row strong { font-size: 15px; color: #776041; overflow-wrap: anywhere; }
 .flashcard-review-row div > span { font-size: 12px; color: #9a8b78; }
@@ -124,20 +138,22 @@
   .flashcard-end { align-self: flex-end; }
   .flashcard-flip-inner { min-height: 350px; }
   .flashcard-face { padding: 18px 13px; }
-  .flashcard-face img { height: 190px; }
+  .flashcard-face > .game-image { height: 190px; }
   .flashcard-actions { gap: 10px; }
   .flashcard-actions .button { flex: 1; padding-inline: 11px; font-size: 13px; }
   .flashcard-results .flashcard-actions { flex-direction: column; align-items: stretch; }
   .flashcard-results .flashcard-actions .button { flex: auto; width: 100%; }
   .flashcard-options { gap: 10px; }
   .flashcard-option { padding: 6px; border-radius: 13px; }
-  .flashcard-option > img { height: 115px; }
+  .flashcard-option > .game-image { height: 115px; }
   .flashcard-prompt { gap: 13px; }
   .flashcard-option-number { width: 23px; height: 23px; font-size: 11px; }
   .flashcard-review-row { gap: 11px; }
   .flashcard-review-row strong { font-size: 13px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .game-image > img { transition: none; }
+  .game-image-placeholder::before, .game-image-spinner { animation: none; }
   .game-card, .flashcard-option, .flashcard-flip-inner { transition: none; }
   .game-card:hover, .flashcard-option:hover:not(:disabled) { transform: none; }
 }
@@ -167,7 +183,8 @@
 .matching-play .matching-instructions { margin: 0 0 16px; font-size: 13px; }
 .matching-board { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
 .matching-tile { position: relative; min-width: 0; overflow: hidden; padding: 10px; border: 2px solid #e5dbc5; border-radius: 18px; background: #fffdf5; transition: border-color 180ms ease, background 180ms ease, transform 180ms ease; }
-.matching-tile img { display: block; width: 100%; height: 150px; object-fit: contain; border-radius: 10px; pointer-events: none; }
+.matching-tile > .game-image { height: 150px; border-radius: 10px; pointer-events: none; }
+.matching-tile-number { z-index: 1; }
 .matching-tile-number { position: absolute; top: 9px; left: 9px; display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid #e3d9c4; border-radius: 50%; background: #fffffff0; color: #9c876b; font-size: 12px; }
 .matching-slot { display: flex; align-items: center; justify-content: center; gap: 7px; min-height: 38px; margin-top: 7px; padding: 5px 8px; border: 1px dashed #d9c9a6; border-radius: 10px; background: #fcf7e8; color: #a18c6c; font-size: 13px; overflow-wrap: anywhere; }
 .matching-slot .listening-icon { width: 19px; height: 19px; flex-shrink: 0; }
@@ -221,7 +238,7 @@
   .matching-progress { margin-top: 16px; font-size: 12px; }
   .matching-board { gap: 10px; }
   .matching-tile { padding: 6px; border-radius: 14px; }
-  .matching-tile img { height: 105px; }
+  .matching-tile > .game-image { height: 105px; }
   .matching-tile-number { top: 6px; left: 6px; width: 22px; height: 22px; font-size: 10px; }
   .matching-slot { min-height: 36px; padding-inline: 3px; font-size: 11px; }
   .matching-bank-heading { margin-top: 17px; }

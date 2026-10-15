@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { Word } from "@/lib/library";
@@ -8,6 +7,7 @@ import { changeDeviceData, useDeviceData } from "@/lib/device-store";
 import { dueWords, flashcardKey, flashcardReady, learningDeck, pictureOptions, reviewWord } from "@/lib/flashcards";
 import { useHydrated } from "@/lib/use-hydrated";
 import { ListeningIcon } from "./listening-icon";
+import { GameImage } from "./game-image";
 
 type Session = {
   phase: "study" | "quiz" | "result";
@@ -123,7 +123,7 @@ export function FlashcardGame({ words }: { words: Word[] }) {
       {saveFailed && <p role="status">Lịch ôn chưa được lưu đầy đủ. Em kiểm tra bộ nhớ trình duyệt rồi thử lại nhé.</p>}
       <div className="flashcard-review-list">{session.deck.map(word => {
         const progress = data.flashcards[flashcardKey(word)];
-        return <div className="flashcard-review-row" key={word.id}><Image src={word.illustration_path!} alt="" width={56} height={56} unoptimized /><div><strong>{word.word_vi} · <span lang="en">{word.word_en}</span></strong><span>{studyOnly ? "Đã xem thẻ" : session.results[flashcardKey(word)] ? "Đã trả lời đúng" : "Cần luyện thêm"}{progress && ` · Ôn ngày ${new Date(progress.dueAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}`}</span></div><ListeningIcon name={session.results[flashcardKey(word)] ? "check" : "replay"} /></div>;
+        return <div className="flashcard-review-row" key={word.id}><GameImage src={word.illustration_path!} alt="" width={56} height={56} /><div><strong>{word.word_vi} · <span lang="en">{word.word_en}</span></strong><span>{studyOnly ? "Đã xem thẻ" : session.results[flashcardKey(word)] ? "Đã trả lời đúng" : "Cần luyện thêm"}{progress && ` · Ôn ngày ${new Date(progress.dueAt).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}`}</span></div><ListeningIcon name={session.results[flashcardKey(word)] ? "check" : "replay"} /></div>;
       })}</div>
       <div className="flashcard-actions">{missed.length > 0 && <button type="button" className="button" onClick={() => start(missed)}><ListeningIcon name="replay" />Ôn từ cần luyện thêm</button>}<button type="button" className="button secondary" onClick={() => { setSession(null); setMessage(""); }}>Chọn bộ từ khác</button><Link className="button secondary" href="/tro-choi">Về Khu trò chơi</Link></div>
     </div> : current && <div className="flashcard-play game-panel">
@@ -132,7 +132,7 @@ export function FlashcardGame({ words }: { words: Word[] }) {
       <progress aria-label={session.phase === "study" ? "Tiến độ xem thẻ" : "Tiến độ thử tài"} max={session.phase === "study" ? session.deck.length : session.queue.length} value={session.index + 1} />
       {session.phase === "study" ? <>
         <button type="button" className={`flashcard-flip${session.flipped ? " is-flipped" : ""}`} aria-label={session.flipped ? "Xem mặt trước thẻ" : "Lật thẻ xem tiếng Anh"} aria-pressed={session.flipped} onClick={() => setSession({ ...session, flipped: !session.flipped })}>
-          <span className="flashcard-flip-inner"><span className="flashcard-face flashcard-front" aria-hidden={session.flipped}><Image src={current.illustration_path!} alt={`Minh họa từ ${current.word_vi}`} width={600} height={400} unoptimized /><strong>{current.word_vi}</strong><span>Chạm để lật thẻ ↻</span></span><span className="flashcard-face flashcard-back" aria-hidden={!session.flipped}><span className="flashcard-back-icon" aria-hidden="true">🌱</span><strong lang="en">{current.word_en}</strong><span className="flashcard-back-vi">{current.word_vi}</span><span>{current.meaning_vi}</span><em>{current.example_vi}</em><span>Chạm để xem lại hình ↻</span></span></span>
+          <span className="flashcard-flip-inner"><span className="flashcard-face flashcard-front" aria-hidden={session.flipped}><GameImage src={current.illustration_path!} alt={`Minh họa từ ${current.word_vi}`} width={600} height={400} loading="eager" /><strong>{current.word_vi}</strong><span>Chạm để lật thẻ ↻</span></span><span className="flashcard-face flashcard-back" aria-hidden={!session.flipped}><span className="flashcard-back-icon" aria-hidden="true">🌱</span><strong lang="en">{current.word_en}</strong><span className="flashcard-back-vi">{current.word_vi}</span><span>{current.meaning_vi}</span><em>{current.example_vi}</em><span>Chạm để xem lại hình ↻</span></span></span>
         </button>
         <div className="flashcard-actions">{listenButton}<button type="button" className="button" onClick={() => {
           if (session.index + 1 < session.deck.length) setSession({ ...session, index: session.index + 1, flipped: false });
@@ -141,7 +141,7 @@ export function FlashcardGame({ words }: { words: Word[] }) {
         }}>{session.index + 1 < session.deck.length ? "Thẻ tiếp theo" : "Bắt đầu thử tài"}<ListeningIcon name="arrow-right" /></button></div>
       </> : <>
         <div className="flashcard-prompt"><strong lang="en">{current.word_en}</strong>{listenButton}</div>
-        <div className="flashcard-options" role="group" aria-label="Chọn hình đúng">{session.options.map((word, index) => <button type="button" className="flashcard-option" key={word.id} disabled={!!session.choice} aria-label={`Hình ${index + 1}`} aria-pressed={session.choice === word.id} data-result={session.choice ? word.id === current.id ? "correct" : word.id === session.choice ? "wrong" : undefined : undefined} onClick={() => answer(word)}><Image src={word.illustration_path!} alt={`Hình lựa chọn ${index + 1}`} width={360} height={240} unoptimized /><span className="flashcard-option-number">{index + 1}</span>{session.choice && word.id === current.id && <span className="flashcard-answer-label"><ListeningIcon name="check" />{word.word_vi}</span>}</button>)}</div>
+        <div className="flashcard-options" role="group" aria-label="Chọn hình đúng">{session.options.map((word, index) => <button type="button" className="flashcard-option" key={word.id} disabled={!!session.choice} aria-label={`Hình ${index + 1}`} aria-pressed={session.choice === word.id} data-result={session.choice ? word.id === current.id ? "correct" : word.id === session.choice ? "wrong" : undefined : undefined} onClick={() => answer(word)}><GameImage src={word.illustration_path!} alt={`Hình lựa chọn ${index + 1}`} width={360} height={240} loading="eager" /><span className="flashcard-option-number">{index + 1}</span>{session.choice && word.id === current.id && <span className="flashcard-answer-label"><ListeningIcon name="check" />{word.word_vi}</span>}</button>)}</div>
         {session.choice && <div className="flashcard-feedback" role="status"><strong>{session.choice === current.id ? "Đúng rồi, em giỏi lắm!" : `Cùng nhớ nhé: ${current.word_en} nghĩa là ${current.word_vi}.`}</strong><p>{current.meaning_vi} {session.choice !== current.id && "Từ này sẽ được luyện lại trong lượt chơi."}</p><button ref={nextButton} type="button" className="button" onClick={nextQuestion}>{session.index + 1 === session.queue.length ? "Xem kết quả" : "Câu tiếp theo"}<ListeningIcon name="arrow-right" /></button></div>}
       </>}
     </div>}
