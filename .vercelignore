@@ -1,0 +1,19 @@
+# Upload source and public assets; configure secrets in Vercel project settings.
+.git/
+node_modules/
+.next/
+.next-test/
+.open-next/
+.wrangler/
+.vercel/
+.data/
+.site-transfer/
+.env*
+.dev.vars*
+coverage/
+test-results/
+playwright-report/
+out/
+build/
+*.tsbuildinfo
+*.log
