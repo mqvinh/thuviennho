@@ -85,6 +85,7 @@ export async function checkJournalDrawing(page, { touch = false, fallback = fals
       });
     });
     assert.ok(fits, `Fullscreen controls and canvas fit at ${viewport.width}x${viewport.height}`);
+    assert.ok(await board.evaluate(target => [[20, 20], [innerWidth / 2, innerHeight - 20], [innerWidth - 20, innerHeight - 20]].every(([x, y]) => target.contains(document.elementFromPoint(x, y)))), "The fullscreen board covers floating menus and back-to-top controls");
     assert.equal(await bitmap(), before, "Resizing does not clear the canvas");
   }
   if (screenshots) await page.screenshot({ path: `${screenshots}/drawing-fullscreen-${touch ? "touch" : "mouse"}.png` });
