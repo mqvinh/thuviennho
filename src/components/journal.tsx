@@ -8,17 +8,7 @@ import type { Story } from "@/lib/library";
 import { changeDeviceData, useDeviceData } from "@/lib/device-store";
 import { FieldLabel } from "./field-label";
 import { ListeningIcon } from "./listening-icon";
-const drawingColors = [
-  { name: "Xanh lá", value: "#276653" },
-  { name: "Xanh dương", value: "#287bc1" },
-  { name: "Đỏ", value: "#e34242" },
-  { name: "Vàng", value: "#f2b629" },
-  { name: "Cam", value: "#e97c22" },
-  { name: "Tím", value: "#8652c7" },
-  { name: "Hồng", value: "#e15b97" },
-  { name: "Nâu", value: "#8b522e" },
-  { name: "Đen", value: "#263238" },
-];
+import { JournalDrawing } from "./journal-drawing";
 export function Journal({ stories }: { stories: Story[] }) {
   const { confirm } = useUI();
   const ready = useHydrated();
@@ -30,16 +20,7 @@ export function Journal({ stories }: { stories: Story[] }) {
   const [imageName, setImageName] = useState("");
   const [message, setMessage] = useState("");
   const canvas = useRef<HTMLCanvasElement>(null);
-  const drawing = useRef(false);
   const [hasDrawing, setHasDrawing] = useState(false);
-  const [drawingColor, setDrawingColor] = useState(drawingColors[0].value);
-  function position(e: React.PointerEvent<HTMLCanvasElement>) {
-    const rect = e.currentTarget.getBoundingClientRect();
-    return [
-      ((e.clientX - rect.left) * 800) / rect.width,
-      ((e.clientY - rect.top) * 450) / rect.height,
-    ];
-  }
   return (
     <div className="journal-content">
       <section className="journal-device-notice journal-card" aria-labelledby="journal-device-title">
@@ -155,84 +136,23 @@ export function Journal({ stories }: { stories: Story[] }) {
           />
           </span>
         </label>
-        <section className="journal-artwork" aria-labelledby="journal-artwork-title">
-          <div className="journal-artwork-heading"><ListeningIcon name="palette" /><div>
-            <h3 id="journal-artwork-title">Vẽ hoặc viết điều em thích</h3>
-            <p>Em có thể vẽ tranh hoặc viết bằng nét bút. Phần này không bắt buộc.</p>
-          </div><button
-            type="button"
-            className="journal-clear-drawing"
-            aria-label="Xóa tranh đang vẽ"
-            title="Xóa tranh đang vẽ"
-            disabled={!ready || (!hasDrawing && !image)}
-            onClick={() => {
-              canvas.current?.getContext("2d")?.clearRect(0, 0, 800, 450);
-              setHasDrawing(false);
-              setImage("");
-              setImageName("");
-            }}
-          ><ListeningIcon name="trash" /></button></div>
-          <fieldset className="drawing-palette">
-            <legend>Chọn màu vẽ</legend>
-            <div className="drawing-colors">
-              {drawingColors.map(color => <button
-                key={color.value}
-                type="button"
-                disabled={!ready}
-                className="drawing-swatch"
-                aria-label={`Màu ${color.name.toLowerCase()}`}
-                title={color.name}
-                aria-pressed={drawingColor === color.value}
-                style={{ "--drawing-color": color.value } as React.CSSProperties}
-                onClick={() => setDrawingColor(color.value)}
-              ><span aria-hidden="true">{drawingColor === color.value ? "✓" : ""}</span></button>)}
-              <label className="drawing-custom-color">
-                Màu khác
-                <input type="color" disabled={!ready} aria-label="Chọn màu vẽ khác" value={drawingColor} onChange={e => setDrawingColor(e.target.value)} />
-              </label>
-            </div>
-          </fieldset>
-          <div className="journal-drawing-stage">
-          <canvas
-            ref={canvas}
-            width={800}
-            height={450}
-            aria-label="Bảng vẽ bằng chuột hoặc cảm ứng; em cũng có thể tải ảnh bên dưới"
-            className="drawing-canvas"
-            onPointerDown={(e) => {
-              if (!ready) return;
-              e.currentTarget.setPointerCapture(e.pointerId);
-              drawing.current = true;
-              const ctx = e.currentTarget.getContext("2d");
-              if (ctx) {
-                const [x, y] = position(e);
-                ctx.beginPath();
-                ctx.moveTo(x, y);
-                ctx.lineWidth = 6;
-                ctx.lineCap = "round";
-                ctx.strokeStyle = drawingColor;
-                ctx.lineTo(x + 0.1, y + 0.1);
-                ctx.stroke();
-                setHasDrawing(true);
-                setImage("");
-                setImageName("");
-              }
-            }}
-            onPointerMove={(e) => {
-              if (!drawing.current) return;
-              const ctx = e.currentTarget.getContext("2d");
-              const [x, y] = position(e);
-              ctx?.lineTo(x, y);
-              ctx?.stroke();
-              setHasDrawing(true);
-              setImage("");
-            }}
-            onPointerUp={() => (drawing.current = false)}
-            onPointerCancel={() => (drawing.current = false)}
-          />
-          {!hasDrawing && <div className="journal-drawing-placeholder" aria-hidden="true"><ListeningIcon name="pencil" /><p>Thỏa sức sáng tạo nào!</p></div>}
-          </div>
-        </section>
+        <JournalDrawing
+          canvas={canvas}
+          ready={ready}
+          hasDrawing={hasDrawing}
+          canClear={hasDrawing || !!image}
+          onDrawingChange={(visible) => {
+            setHasDrawing(visible);
+            setImage("");
+            setImageName("");
+          }}
+          onClear={() => {
+            canvas.current?.getContext("2d")?.clearRect(0, 0, 800, 450);
+            setHasDrawing(false);
+            setImage("");
+            setImageName("");
+          }}
+        />
         <div className="journal-upload-box">
         <label className="journal-upload-label" htmlFor="journal-art-upload"><ListeningIcon name="image" />Hoặc chọn tranh đã vẽ (PNG/JPG/WebP, tối đa 1 MB)</label>
         <div className="journal-file-control">

@@ -1,4 +1,4 @@
-type ListeningIconName = "headphones" | "book" | "type" | "speed" | "voice" | "replay" | "tip" | "heart" | "pencil" | "volume" | "clock" | "sprout" | "arrow-right" | "search" | "check" | "calendar" | "quiz" | "trophy" | "download" | "upload" | "trash" | "info" | "star" | "lock" | "person" | "palette" | "image" | "rabbit" | "chart";
+type ListeningIconName = "headphones" | "book" | "type" | "speed" | "voice" | "replay" | "tip" | "heart" | "pencil" | "volume" | "clock" | "sprout" | "arrow-right" | "search" | "check" | "calendar" | "quiz" | "trophy" | "download" | "upload" | "trash" | "info" | "star" | "lock" | "person" | "palette" | "image" | "rabbit" | "chart" | "eraser" | "maximize" | "minimize";
 
 export function ListeningIcon({ name }: { name: ListeningIconName }) {
   return (
@@ -24,6 +24,9 @@ export function ListeningIcon({ name }: { name: ListeningIconName }) {
       {name === "download" && <><path d="M12 3v12m-4-4 4 4 4-4M4 16v5h16v-5" strokeWidth="2.5" /></>}
       {name === "upload" && <><path d="M12 16V4m-4 4 4-4 4 4M4 16v5h16v-5" strokeWidth="2.5" /></>}
       {name === "trash" && <><path d="M3 6h18M9 3h6M6 6l1 15h10l1-15M10 10v7M14 10v7" /></>}
+      {name === "eraser" && <><path d="m14 3 7 7a2 2 0 0 1 0 3l-8 8H7l-5-5a2 2 0 0 1 0-3L12 3a1.5 1.5 0 0 1 2 0ZM7 8l9 9M13 21h9" /></>}
+      {name === "maximize" && <path d="M8 3H3v5M16 3h5v5M3 16v5h5M21 16v5h-5" />}
+      {name === "minimize" && <path d="M3 8h5V3M21 8h-5V3M8 21v-5H3M16 21v-5h5" />}
       {name === "info" && <><circle cx="12" cy="12" r="9" /><path d="M12 11v6M12 7h.01" strokeWidth="2.5" /></>}
       {name === "star" && <path d="m12 2 3 6 7 .9-5 4.9 1.2 7L12 17.5l-6.2 3.3 1.2-7-5-4.9L9 8Z" fill="currentColor" />}
       {name === "lock" && <><rect x="5" y="10" width="14" height="12" rx="3" fill="currentColor" /><path d="M8 10V6a4 4 0 0 1 8 0v4" /><path d="M12 15v3" stroke="white" strokeWidth="2.5" /></>}
