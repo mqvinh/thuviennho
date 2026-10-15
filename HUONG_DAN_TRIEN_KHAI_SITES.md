@@ -105,6 +105,6 @@ Local và online độc lập. Sửa truyện trên local không tự sửa nộ
 
 ## Secrets và khôi phục
 
-AI là tùy chọn, cần `OPENAI_API_KEY` và `OPENAI_MODEL` ở server. Local dùng `.env.local`; hosted cấu hình secret bằng công cụ/settings của nền tảng, sau đó redeploy. Không đưa giá trị secret vào hosting.json, snapshot, ZIP hoặc Git. Chưa gọi AI thật trong kiểm thử.
+AI là tùy chọn. Sau khi áp dụng migration mới, admin có thể cấu hình địa chỉ API, API key và model trong **Cài đặt website → Cấu hình AI hỗ trợ** mà không cần redeploy. Key được lưu trong database riêng tư, không hiển thị lại trên form; bản sao database có thể chứa key nên phải bảo quản riêng tư. `OPENAI_API_KEY` và `OPENAI_MODEL` ở server vẫn là cấu hình dự phòng. Không đưa giá trị secret vào hosting.json, ZIP hoặc Git. Chưa gọi AI thật trong kiểm thử.
 
 Backup trước chuyển đổi nằm trong `.data/backups/sites-migration-20261014-185707/`, gồm PGlite và 100 media gốc. `.data/little-readers/` và `.data/media/` cũng vẫn còn. Backup không được tự xóa. Để khôi phục bản D1/R2 từ transfer, dùng một thư mục state mới qua `LITTLE_READERS_STATE_DIR`, không ghi đè state đang sử dụng.

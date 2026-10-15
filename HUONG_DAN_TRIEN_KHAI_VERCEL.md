@@ -16,6 +16,8 @@ Trong Supabase, mở **SQL Editor → New query**. Dán toàn bộ nội dung `d
 
 File tạo schema riêng `little_readers`, các bảng đúng cấu trúc học liệu hiện tại và hàm `public.library_batch`. Không nạp seed mẫu, không ghi đè dữ liệu. Chạy lại file giữ nguyên nội dung đã có. Không dùng các file PostgreSQL/seed lịch sử ở thư mục `database/` để khởi tạo bản này.
 
+Chạy tiếp `database/supabase/002_ai_settings.sql` để thêm cấu hình AI. Với project đang có dữ liệu, chỉ cần chạy file `002_ai_settings.sql`; file thêm ba cột cấu hình, không thay đổi truyện, người dùng hoặc ảnh/audio. Chạy lại an toàn.
+
 Hàm RPC chỉ cấp quyền cho `service_role`, dùng SECURITY INVOKER. `anon` và `authenticated` không có quyền gọi hàm hoặc đọc schema riêng. Mỗi batch là một giao dịch PostgreSQL: lỗi điều kiện hoặc constraint hủy toàn bộ các lệnh ghi trong batch. Secret key chỉ được dùng trong Next.js server và công cụ chuyển dữ liệu, không đưa vào trình duyệt.
 
 Khi có migration mới, chạy file migration được cung cấp bằng SQL Editor trước khi deploy code tương ứng. Không chạy lại dữ liệu ban đầu để cập nhật schema.
@@ -41,6 +43,16 @@ npm run supabase:check
 ```
 
 CLI đọc `.env.supabase`; `npm run dev` không tự nạp file này, nên dữ liệu local vẫn tách riêng.
+
+### Cho phép công cụ quản trị cập nhật cấu trúc bảng
+
+Thêm `SUPABASE_ACCESS_TOKEN=` trong `.env.supabase` trên máy. Đây là personal access token dành cho Supabase Management API, khác với `SUPABASE_SECRET_KEY` mà website đang dùng. Project ref được lấy từ `SUPABASE_URL`, không cần thêm mật khẩu database.
+
+1. Mở https://supabase.com/dashboard/account/tokens và tạo token mới, ví dụ tên `codex-thuviennho`.
+2. Chọn token có giới hạn phạm vi (scoped), chỉ chọn project Supabase hiện tại. Cấp **Database → Read-write** và **Migrations → Read-write**.
+3. Chọn thời hạn, tạo token và sao chép giá trị vào `SUPABASE_ACCESS_TOKEN` trong `.env.supabase`. Giữ nguyên ba thông số runtime đang có.
+
+Token này cho phép công cụ quản trị gọi API chạy SQL và áp dụng migration theo yêu cầu. Các lệnh `supabase:check`, `supabase:setup` và `supabase:verify` hiện vẫn dùng kết nối ứng dụng; thêm token không tự chạy migration hoặc đồng bộ dữ liệu. Không đưa token quản trị vào Vercel, `NEXT_PUBLIC_*`, Git hoặc nội dung chat. Tham khảo [quyền personal access token](https://supabase.com/docs/guides/platform/personal-access-tokens).
 
 ## 4. Chuyển nguyên dữ liệu lần đầu
 
@@ -113,6 +125,16 @@ npm run supabase:export
 ```
 
 Bản sao ở `.data/supabase-backup/`. Có thể chọn thư mục riêng bằng `node --env-file=.env.supabase scripts/supabase-setup.mjs --export --out .data/supabase-backups/my-backup`. Giữ bản sao riêng tư; không nhập bản sao đè vào backend đang có dữ liệu.
+
+## Cấu hình AI hỗ trợ
+
+Đăng nhập tài khoản admin → **Cài đặt website → Cấu hình AI hỗ trợ**. Nhập địa chỉ API, API key và model rồi bấm **Lưu cài đặt**. Cấu hình mới được chức năng AI hỗ trợ sử dụng ngay, không cần redeploy.
+
+Địa chỉ mặc định là `https://api.openai.com/v1/responses`; có thể nhập URL gốc kết thúc bằng `/v1`, hệ thống bổ sung `/responses`. Nhà cung cấp phải tương thích [OpenAI Responses](https://developers.openai.com/api/reference/resources/responses/methods/create) và Structured Outputs (`text.format.type=json_schema`). Các API chỉ có Chat Completions không dùng được với chức năng này.
+
+Key nằm trong bảng riêng tư `little_readers.site_settings`, chỉ server có quyền đọc. API cài đặt chỉ trả trạng thái đã có key; không trả lại key kể cả cho admin. Để trống ô key khi lưu sẽ giữ key hiện tại; nhập key mới để thay thế hoặc chọn **Xóa API key hiện tại** để tắt kết nối. Không lưu key trong mã nguồn, Git hay trình duyệt sau khi lưu. Bản sao database có thể chứa key nên phải giữ riêng tư.
+
+Các cấu hình môi trường cũ `OPENAI_API_KEY`, `OPENAI_MODEL` và tùy chọn `OPENAI_API_URL` vẫn là cấu hình dự phòng khi chưa lưu cấu hình tương ứng. Xóa key trong cài đặt sẽ ngừng dùng cả key môi trường cho đến khi admin nhập key mới. Local và online lưu cấu hình độc lập theo database đang dùng. Với local, chạy `npm run local:setup` để áp dụng migration mới mà không nạp lại dữ liệu.
 
 ## Chẩn đoán
 

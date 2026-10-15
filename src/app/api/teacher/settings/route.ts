@@ -2,6 +2,7 @@ import { revalidatePath } from "next/cache";
 import { requireTeacher } from "@/lib/auth";
 import { getDb } from "@/lib/db";
 import { getSiteSettings } from "@/lib/site-settings";
+import { aiSettingsUpdate, getAdminAISettings } from "@/lib/ai-settings";
 import { errorResponse, HttpError, readJson, sameOrigin, text } from "@/lib/http";
 
 async function requireAdmin() {
@@ -12,7 +13,8 @@ async function requireAdmin() {
 export async function GET() {
   try {
     await requireAdmin();
-    return Response.json(await getSiteSettings(), { headers: { "Cache-Control": "no-store" } });
+    const [settings, ai] = await Promise.all([getSiteSettings(), getAdminAISettings()]);
+    return Response.json({ ...settings, ai }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) { return errorResponse(error); }
 }
 
@@ -31,6 +33,7 @@ export async function POST(request: Request) {
     };
     const icon = image(body.icon_path), logo = image(body.logo_path);
     const db = await getDb();
+    const aiUpdate = body.ai === undefined ? [] : [await aiSettingsUpdate(body.ai, db)];
     const paths = [icon, logo].filter(Boolean);
     for (const media of paths) {
       if (!(await db.query("select 1 from media_files where path=?1", [media])).rows.length)
@@ -38,8 +41,9 @@ export async function POST(request: Request) {
     }
     await db.batch([
       { sql: "update site_settings set site_name=?1,icon_path=?2,logo_path=?3,site_description=coalesce(?4,site_description) where id=true", values: [name, icon, logo, description] },
+      ...aiUpdate,
     ], paths.map(media => ({ sql: "exists(select 1 from media_files where path=?1)", values: [media] })));
     revalidatePath("/", "layout");
-    return Response.json({ ok: true });
+    return Response.json({ ok: true, ai: await getAdminAISettings() }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) { return errorResponse(error); }
 }

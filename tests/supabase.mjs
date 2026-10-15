@@ -16,6 +16,9 @@ const schema = await readFile("database/supabase/001_library.sql", "utf8");
 await pg.exec("CREATE ROLE anon; CREATE ROLE authenticated; CREATE ROLE service_role BYPASSRLS;");
 await pg.exec(schema);
 await pg.exec(schema); // Setup is repeatable without replacing existing tables.
+const aiMigration = await readFile("database/supabase/002_ai_settings.sql", "utf8");
+await pg.exec(aiMigration);
+await pg.exec(aiMigration); // Upgrading existing deployments is repeatable too.
 for (const role of ["anon", "authenticated"]) {
   await pg.exec("SET ROLE " + role);
   await assert.rejects(() => pg.query("SELECT public.library_batch('[]'::jsonb)"), /permission denied/);

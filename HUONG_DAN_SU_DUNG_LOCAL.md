@@ -55,14 +55,18 @@ Phụ huynh và giáo viên sử dụng sáu khu vực để chuẩn bị và h�
 
 ## AI dành cho giáo viên
 
-Endpoint và biểu mẫu đã có, chỉ hoạt động khi server được cấu hình trong `.env.local`:
+Admin vào **Cài đặt website → Cấu hình AI hỗ trợ**, nhập địa chỉ API, API key và model rồi lưu. Mặc định dùng `https://api.openai.com/v1/responses`; nhà cung cấp cần hỗ trợ OpenAI Responses và Structured Outputs. Cấu hình có hiệu lực ngay. Khi cập nhật code trên local, chạy `npm run local:setup` để thêm cột cấu hình mà không nạp lại dữ liệu.
+
+Key đã lưu không hiển thị lại: để trống ô key để giữ nguyên, nhập key mới để thay thế hoặc chọn **Xóa API key hiện tại** để tắt kết nối. Key chỉ được đọc ở server; bản sao database có thể chứa key nên phải giữ riêng tư. Local và online lưu cấu hình riêng theo backend đang dùng.
+
+Các biến môi trường trong `.env.local` vẫn được hỗ trợ làm cấu hình dự phòng:
 
 ```dotenv
 OPENAI_API_KEY=your-server-side-key
 OPENAI_MODEL=your-enabled-model-supporting-structured-outputs
 ```
 
-Không dùng biến `NEXT_PUBLIC_*` cho key. Model do quản trị chọn theo quyền sử dụng/ngân sách. Khởi động lại server sau khi cấu hình.
+Không dùng biến `NEXT_PUBLIC_*` cho key. Model do quản trị chọn theo quyền sử dụng/ngân sách. Chỉ cần khởi động lại server nếu thay đổi biến môi trường; lưu qua trang cài đặt không cần khởi động lại.
 
 - API Responses với Structured Outputs, `store: false`, tối đa 5.000 output tokens/lượt, timeout 45 giây.
 - Giới hạn 5 lượt/tài khoản trong 24 giờ; lượt thất bại cũng tính vào giới hạn để tránh gọi lặp tốn chi phí. Model vẫn có thể phát sinh phí theo input và output thực tế.

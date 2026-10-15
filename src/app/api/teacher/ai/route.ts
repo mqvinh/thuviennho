@@ -9,16 +9,13 @@ import {
 } from "@/lib/http";
 import { validateDraft, saveDraft } from "@/lib/teacher-content";
 import { draftSchema } from "@/lib/ai-schema";
+import { getAIConnection } from "@/lib/ai-settings";
 export async function POST(request: Request) {
   try {
     sameOrigin(request);
     const teacher = await requireTeacher();
     const body = await readJson(request, 4000);
-    if (!process.env.OPENAI_API_KEY || !process.env.OPENAI_MODEL)
-      throw new HttpError(
-        503,
-        "AI chưa được cấu hình. Quản trị viên cần đặt OPENAI_API_KEY và OPENAI_MODEL ở server.",
-      );
+    const ai = await getAIConnection();
     if (body.noStudentData !== true)
       throw new HttpError(
         400,
@@ -56,15 +53,17 @@ export async function POST(request: Request) {
       );
     let result: Response;
     try {
-      result = await fetch("https://api.openai.com/v1/responses", {
+      result = await fetch(ai.url, {
         method: "POST",
+        redirect: "error",
+        cache: "no-store",
         headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          Authorization: `Bearer ${ai.key}`,
           "Content-Type": "application/json",
         },
         signal: AbortSignal.timeout(45_000),
         body: JSON.stringify({
-          model: process.env.OPENAI_MODEL,
+          model: ai.model,
           store: false,
           max_output_tokens: 5000,
           input: [
@@ -102,7 +101,11 @@ export async function POST(request: Request) {
         502,
         "Dịch vụ AI chưa tạo được bản nháp. Kiểm tra cấu hình model, hạn mức và thử lại.",
       );
-    const output = await result.json();
+    let output;
+    try { output = await result.json(); }
+    catch { throw new HttpError(502, "Dịch vụ AI trả về dữ liệu không hợp lệ."); }
+    if (!output || !Array.isArray(output.output))
+      throw new HttpError(502, "Dịch vụ AI trả về dữ liệu không hợp lệ.");
     if (output.status !== "completed")
       throw new HttpError(502, "AI chưa hoàn tất bản nháp. Hãy thử lại.");
     const content = output.output

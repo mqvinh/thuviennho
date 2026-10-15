@@ -2,12 +2,13 @@ import assert from "node:assert/strict";
 import { spawn } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import { digest } from "../../scripts/lib/data-transfer.mjs";
+import { aiSettingsSmoke } from "./ai-settings-production.mjs";
 
 export async function productionSmoke({ env, url, key, username, password, snapshot, manifest }) {
   const frontendUrl = "http://localhost:3106";
-  const child = spawn(process.execPath, ["--experimental-loader", "./tests/deny-wrangler-loader.mjs", "node_modules/next/dist/bin/next", "start", "--hostname", "localhost", "--port", "3106"], {
+  const child = spawn(process.execPath, ["--experimental-loader", "./tests/deny-wrangler-loader.mjs", "--import", "./tests/mock-ai-provider.mjs", "node_modules/next/dist/bin/next", "start", "--hostname", "localhost", "--port", "3106"], {
     stdio: ["ignore", "pipe", "pipe"],
-    env: { ...process.env, NODE_ENV: "production", VERCEL: "1", LITTLE_READERS_TEST: "1", SUPABASE_URL: url, SUPABASE_SECRET_KEY: key, SUPABASE_MEDIA_BUCKET: "little-readers-media", LITTLE_READERS_BACKEND_URL: "", LITTLE_READERS_BACKEND_TOKEN: "", OPENAI_API_KEY: "" },
+    env: { ...process.env, NODE_ENV: "production", VERCEL: "1", LITTLE_READERS_TEST: "1", SUPABASE_URL: url, SUPABASE_SECRET_KEY: key, SUPABASE_MEDIA_BUCKET: "little-readers-media", LITTLE_READERS_BACKEND_URL: "", LITTLE_READERS_BACKEND_TOKEN: "", OPENAI_API_KEY: "", OPENAI_MODEL: "", OPENAI_API_URL: "" },
   });
   let output = "";
   child.stdout.on("data", chunk => { output += chunk; });
@@ -33,6 +34,7 @@ export async function productionSmoke({ env, url, key, username, password, snaps
     const login = await fetch(frontendUrl + "/api/teacher/login", { method: "POST", headers: { "Content-Type": "application/json", Origin: frontendUrl }, body: JSON.stringify({ username, password }) });
     assert.equal(login.status, 200, await login.text());
     const cookie = login.headers.getSetCookie().map(value => value.split(";")[0]).join("; ");
+    await aiSettingsSmoke({ env, frontendUrl, cookie });
     async function post(action, body, status = 200) {
       const response = await fetch(frontendUrl + "/api/teacher/" + action, { method: "POST", headers: { Cookie: cookie, "Content-Type": "application/json", Origin: frontendUrl }, body: JSON.stringify(body) });
       assert.equal(response.status, status, await response.text());
@@ -83,6 +85,7 @@ export async function productionSmoke({ env, url, key, username, password, snaps
     const admin = await fetch(frontendUrl + "/admin/truyen", { headers: { Cookie: cookie } });
     assert.equal(admin.status, 200); await admin.arrayBuffer();
     assert.doesNotMatch(output, /Wrangler must not be loaded|ERR_MODULE_NOT_FOUND|Missing DB\/MEDIA/);
+    assert.ok(!output.includes("test-private-ai-key"), "AI keys must not appear in server logs.");
     console.log("Production Next/Vercel passed public pages, original media, legacy-password login, private image/audio upload, ordered story save, publication/visibility and cascade delete, with Wrangler blocked.");
   } finally {
     if (child.exitCode === null) await new Promise(resolve => { child.once("exit", resolve); child.kill("SIGTERM"); });
