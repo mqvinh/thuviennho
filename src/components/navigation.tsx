@@ -53,13 +53,13 @@ function AdaptiveNavigation({ pathname }: { pathname: string }) {
   }}>
     {sections.slice(0, count).map(link)}
     {remaining.length > 0 && <div className="navigation-more">
-      <button ref={more} type="button" className={`navigation-more-trigger${overflowActive ? " is-active" : ""}`} aria-label="Xem thêm" aria-expanded={open} aria-controls={open ? id : undefined} onClick={() => setOpen(value => !value)} onKeyDown={event => {
+      <button ref={more} type="button" className={`navigation-more-trigger${overflowActive ? " is-active" : ""}`} aria-label="Xem thêm" title="Xem thêm" aria-expanded={open} aria-controls={open ? id : undefined} onClick={() => setOpen(value => !value)} onKeyDown={event => {
         if (event.key === "ArrowDown" || event.key === "ArrowUp") {
           event.preventDefault(); setOpen(true);
           const last = event.key === "ArrowUp";
           requestAnimationFrame(() => { const links = panel.current?.querySelectorAll<HTMLAnchorElement>("a"); links?.[last ? links.length - 1 : 0]?.focus(); });
         }
-      }}><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">{[5, 12, 19].map(cx => <circle key={cx} cx={cx} cy="12" r="1.8" />)}</svg><span>Xem thêm</span><span aria-hidden="true">⌄</span></button>
+      }}><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">{[5, 12, 19].map(cx => <circle key={cx} cx={cx} cy="12" r="2" />)}</svg></button>
       {open && <div ref={panel} id={id} className="navigation-more-panel" onKeyDown={event => {
         if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
         event.preventDefault();
@@ -67,6 +67,6 @@ function AdaptiveNavigation({ pathname }: { pathname: string }) {
         links[event.key === "Home" ? 0 : event.key === "End" ? links.length - 1 : (current + (event.key === "ArrowDown" ? 1 : -1) + links.length) % links.length]?.focus();
       }}>{remaining.map(link)}</div>}
     </div>}
-    <div ref={measure} className="navigation-measure" aria-hidden="true" inert>{sections.map(section => <span key={section.href} className="navigation-link"><span>{section.icon}</span>{section.title}</span>)}<span className="navigation-more-trigger"><svg width="22" height="22" /><span>Xem thêm</span><span>⌄</span></span></div>
+    <div ref={measure} className="navigation-measure" aria-hidden="true" inert>{sections.map(section => <span key={section.href} className="navigation-link"><span>{section.icon}</span>{section.title}</span>)}<span className="navigation-more-trigger"><svg width="24" height="24" /></span></div>
   </nav>;
 }
