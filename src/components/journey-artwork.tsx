@@ -13,26 +13,3 @@ export function LandmarkArtwork({ kind, className = "" }: { kind: Landmark; clas
     <path d="m24 111-3-9m4 9 6-7m98 7 5-9m-5 9-3-7" stroke="#8ba66a" strokeWidth="3" strokeLinecap="round" />
   </svg>;
 }
-
-export function MapIsland({ x, y, land, edge, kind }: { x: number; y: number; land: string; edge: string; kind: Landmark }) {
-  return <g transform={`translate(${x} ${y})`}>
-    <ellipse cy="46" rx="162" ry="89" fill="#b5dce0" opacity=".35" />
-    <path d="M-157 23c-19-45 13-66 43-80 32-16 44-3 69-18 38-22 58-8 87 0 30 7 68-6 91 30 16 24 40 31 25 66-10 30-56 45-91 43-40-3-44 21-91 7-42-13-80-8-114-20-14-6-20-18-19-28Z" fill={edge} transform="translate(0 12)" />
-    <path d="M-157 23c-19-45 13-66 43-80 32-16 44-3 69-18 38-22 58-8 87 0 30 7 68-6 91 30 16 24 40 31 25 66-10 30-56 45-91 43-40-3-44 21-91 7-42-13-80-8-114-20-14-6-20-18-19-28Z" fill={land} stroke="#fff5d3" strokeWidth="10" />
-    <path d="m-128-22 27-44 25 42Zm37-3 32-56 36 58Z" fill={edge} opacity=".8" /><path d="m-69-65 10-17 11 19-11-4Z" fill="#fff9e9" />
-    <g transform="translate(-52 -85) scale(.68)"><LandmarkArtwork kind={kind} /></g>
-    <g fill={edge}><ellipse cx="104" cy="-23" rx="11" ry="25" /><ellipse cx="122" cy="-12" rx="9" ry="21" /><ellipse cx="-117" cy="10" rx="8" ry="19" /></g>
-    <path d="M104-10v18m18-8v13m-239 3v9" stroke="#ae956c" strokeWidth="4" strokeLinecap="round" />
-    <g fill="#fff9df"><circle cx="-82" cy="26" r="4" /><circle cx="86" cy="17" r="4" /><circle cx="98" cy="32" r="3" /></g>
-  </g>;
-}
-
-export function SeaDecorations() {
-  return <>
-    <path d="M65 315c160 150 276-103 430-22s205 119 306 34 201-37 335 27" stroke="#fffdf1" strokeWidth="3" strokeDasharray="6 12" fill="none" opacity=".9" />
-    {[70, 320, 560, 810, 1080].map((x, index) => <g key={x} transform={`translate(${x} ${index % 2 ? 40 : 650})`} fill="none" stroke="#9ac7cc" strokeWidth="3" strokeLinecap="round"><path d="M0 0q9 9 18 0t18 0m10 9q9 9 18 0" /></g>)}
-    <g transform="translate(520 325)"><path d="m0 17 44 0-9 14H10Z" fill="#b59872" /><path d="M23-17v34H3Zm4-5v36h22Z" fill="#fffcdf" /><path d="M23-25v42" stroke="#a18c6c" strokeWidth="2" /></g>
-    <g transform="translate(1114 70)" stroke="#a3bdad" strokeWidth="2" fill="none"><circle r="28" /><path d="m0-23 6 23-6 23-6-23Z" fill="#fff8df" /><path d="M-21 0h42" /><text y="-36" textAnchor="middle" fill="#789c98" stroke="none" fontSize="12">N</text></g>
-    <g fill="#fffdf5" opacity=".85"><path d="M59 81c-20-22 16-48 32-22 19-37 55-11 46 11 25-7 36 21 11 24H54c-13-1-11-16 5-13Z" /><path d="M810 405c-16-18 13-38 26-18 15-29 44-8 37 9 20-5 29 17 9 19h-75c-10-1-9-13 3-10Z" /></g>
-  </>;
-}

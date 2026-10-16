@@ -32,6 +32,21 @@ try {
     const activate = locator => mobile ? locator.tap() : locator.click();
     const updateProgress = value => page.evaluate(({ key, value }) => { localStorage.setItem(key, JSON.stringify(value)); dispatchEvent(new Event("library-device-change")); }, { key, value });
     const progress = () => page.evaluate(key => JSON.parse(localStorage.getItem(key)), key);
+    const checkDestinations = async () => {
+      const issues = await page.locator(".journey-scene-board").evaluateAll(boards => boards.flatMap(board => {
+        const frame = board.getBoundingClientRect(), stops = [...board.querySelectorAll(".journey-map-stop")];
+        return stops.flatMap((stop, index) => {
+          const box = stop.getBoundingClientRect(), problems = [];
+          if (box.left < frame.left || box.right > frame.right || box.top < frame.top || box.bottom > frame.bottom) problems.push("Destination clipped: " + stop.dataset.story);
+          for (const other of stops.slice(index + 1)) {
+            const next = other.getBoundingClientRect();
+            if (Math.min(box.right, next.right) - Math.max(box.left, next.left) > 1 && Math.min(box.bottom, next.bottom) - Math.max(box.top, next.top) > 1) problems.push("Overlapping destinations: " + stop.dataset.story + ", " + other.dataset.story);
+          }
+          return problems;
+        });
+      }));
+      assert.deepEqual(issues, []);
+    };
     try {
       await page.goto("/hanh-trinh");
       const map = page.locator(".journey-map");
@@ -47,6 +62,7 @@ try {
           await expect(pickers.nth(index)).toHaveAttribute("aria-pressed", "true");
           const group = await map.locator(".journey-map-stop").evaluateAll(buttons => buttons.map(button => ({ slug: button.dataset.story, title: button.querySelector(".journey-stop-story").textContent, state: button.dataset.state })));
           assert.ok(group.every(story => story.state === "new"));
+          await checkDestinations();
           stories.push(...group);
         }
         assert.equal(new Set(stories.map(story => story.slug)).size, stories.length);
@@ -94,7 +110,7 @@ try {
         await page.goto(`/hanh-trinh?truyen=${stories[10].slug}`);
         await expect(page.locator(`.journey-map-stop[data-story="${stories[10].slug}"]`)).toHaveAttribute("data-state", "started");
         await page.locator(".journey-region").screenshot({ path: `${directory}/region-desktop.png` });
-        for (const width of [761, 900, 1280, 1600]) { await page.setViewportSize({ width, height: 1000 }); assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)); }
+        for (const width of [761, 900, 1101, 1280, 1600]) { await page.setViewportSize({ width, height: 1000 }); assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)); await checkDestinations(); }
         reports.push({ mobile, stories: stories.length, completion: true, rereadIdempotent: true, deepLink: true, milestones: true, backupRoundTrip: true });
       } else {
         await updateProgress(saved);
@@ -110,6 +126,7 @@ try {
             await expect(page.locator("#journey-stop-title")).toBeFocused();
           }
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+          await checkDestinations();
         }
         await page.goto(`/hanh-trinh?truyen=${stories[10].slug}`);
         await expect(page.locator(`.journey-map-stop[data-story="${stories[10].slug}"]`)).toHaveAttribute("aria-pressed", "true");
