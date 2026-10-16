@@ -4,15 +4,20 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type Ref } from "react";
 import { isSectionActive, mobileNavigationQuery, sections } from "@/lib/sections";
+import { useDeviceData } from "@/lib/device-store";
+import { dailyProgress } from "@/lib/daily-learning";
+import { useLearningDay } from "@/lib/use-learning-day";
+import { CompassIcon } from "./compass-icon";
 
 const primaryItems = [
-  { href: "/", label: "Tủ sách", icon: "book" },
+  { href: "/tu-sach", label: "Tủ sách", icon: "book" },
   { href: "/nghe-sach", label: "Nghe", icon: "headphones" },
+  { href: "/", label: "Khám phá", icon: "compass" },
   { href: "/tu-vung", label: "Từ vựng", icon: "sprout" },
-  { href: "/nhat-ky", label: "Nhật ký", icon: "pencil" },
 ] as const;
 
 const moreDetails: Record<string, { description: string; icon: string }> = {
+  "/nhat-ky": { description: "Viết và vẽ lại những điều đáng nhớ", icon: "pencil" },
   "/tro-choi": { description: "Học từ mới qua những trò chơi thú vị", icon: "game" },
   "/thu-tai": { description: "Kiểm tra hiểu biết qua những câu hỏi thú vị", icon: "trophy" },
   "/hanh-trinh": { description: "Theo dõi và lưu giữ hành trình của bạn", icon: "sun" },
@@ -25,6 +30,7 @@ const moreItems = sections.filter(section => !primaryHrefs.has(section.href)).ma
 }));
 
 function NavigationIcon({ name }: { name: string }) {
+  if (name === "compass") return <CompassIcon />;
   return <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     {name === "book" && <><path d="M12 5C9 3 5 3 3 4v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-2-1-6-1-9 1Z" /><path d="M12 5v15" /></>}
     {name === "headphones" && <><path d="M4 14v-3a8 8 0 0 1 16 0v3" /><rect x="3" y="12" width="4" height="8" rx="2" /><rect x="17" y="12" width="4" height="8" rx="2" /></>}
@@ -48,10 +54,11 @@ type TabBarProps = {
 };
 
 function TabBar({ pathname = "", moreOpen = false, moreId, moreButton, onMore, onNavigate }: TabBarProps) {
+  const { data } = useDeviceData(), day = useLearningDay(), plan = data.daily?.[day], progress = dailyProgress(plan);
   const moreActive = moreOpen || moreItems.some(item => isSectionActive(pathname, item.href));
   return <nav className="mobile-bottom-nav" aria-label="Menu chính trên di động">
-    {primaryItems.map(item => <Link key={item.href} href={item.href} className="mobile-nav-tab" aria-current={!moreOpen && isSectionActive(pathname, item.href) ? "page" : undefined} onNavigate={onNavigate}>
-      <span className="mobile-nav-symbol"><NavigationIcon name={item.icon} /></span>
+    {primaryItems.map(item => <Link key={item.href} href={item.href} className={`mobile-nav-tab${item.href === "/" ? " mobile-discovery-tab" : ""}`} aria-label={item.href === "/" ? `Khám phá${plan ? `, ${progress}/3 nhiệm vụ hôm nay${plan.awardedAt ? ", đã nhận một sao" : ""}` : ""}` : undefined} aria-current={!moreOpen && isSectionActive(pathname, item.href) ? "page" : undefined} onNavigate={onNavigate}>
+      <span className="mobile-nav-symbol">{item.href === "/" && <svg className="mobile-daily-ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" /><circle cx="32" cy="32" r="29" pathLength="3" strokeDasharray={`${progress} 3`} transform="rotate(-90 32 32)" /></svg>}<NavigationIcon name={item.icon} />{item.href === "/" && plan?.awardedAt && <span className="mobile-daily-star" aria-hidden="true">★</span>}</span>
       <span className="mobile-nav-label">{item.label}</span>
     </Link>)}
     <button ref={moreButton} type="button" className={`mobile-nav-tab${moreActive ? " is-active" : ""}`} aria-expanded={moreOpen} aria-controls={moreOpen ? moreId : undefined} aria-haspopup="dialog" onClick={onMore} disabled={!onMore}>

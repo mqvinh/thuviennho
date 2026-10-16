@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import { isSectionActive, sections } from "@/lib/sections";
+import { CompassIcon } from "./compass-icon";
 
 export function Navigation() {
   const pathname = usePathname();
@@ -47,7 +48,7 @@ function AdaptiveNavigation({ pathname }: { pathname: string }) {
     return () => document.removeEventListener("pointerdown", outside);
   }, [open]);
 
-  const link = (section: typeof sections[number]) => <Link className="navigation-link" key={section.href} href={section.href} aria-current={isSectionActive(pathname, section.href) ? "page" : undefined} onNavigate={() => setOpen(false)}><span aria-hidden="true">{section.icon}</span>{section.title}</Link>;
+  const link = (section: typeof sections[number]) => <Link className={`navigation-link${section.href === "/" ? " navigation-discovery" : ""}`} key={section.href} href={section.href} aria-current={isSectionActive(pathname, section.href) ? "page" : undefined} onNavigate={() => setOpen(false)}><span aria-hidden="true">{section.href === "/" ? <CompassIcon /> : section.icon}</span>{section.title}</Link>;
   return <nav ref={root} aria-label="Các khu vực thư viện" className="navigation navigation-adaptive" data-measured={measured} onBlur={event => { if (event.relatedTarget instanceof Node && !event.currentTarget.contains(event.relatedTarget)) setOpen(false); }} onKeyDown={event => {
     if (event.key === "Escape" && open) { event.preventDefault(); setOpen(false); more.current?.focus(); }
   }}>
@@ -67,6 +68,6 @@ function AdaptiveNavigation({ pathname }: { pathname: string }) {
         links[event.key === "Home" ? 0 : event.key === "End" ? links.length - 1 : (current + (event.key === "ArrowDown" ? 1 : -1) + links.length) % links.length]?.focus();
       }}>{remaining.map(link)}</div>}
     </div>}
-    <div ref={measure} className="navigation-measure" aria-hidden="true" inert>{sections.map(section => <span key={section.href} className="navigation-link"><span>{section.icon}</span>{section.title}</span>)}<span className="navigation-more-trigger"><svg width="24" height="24" /></span></div>
+    <div ref={measure} className="navigation-measure" aria-hidden="true" inert>{sections.map(section => <span key={section.href} className={`navigation-link${section.href === "/" ? " navigation-discovery" : ""}`}><span>{section.href === "/" ? <CompassIcon /> : section.icon}</span>{section.title}</span>)}<span className="navigation-more-trigger"><svg width="24" height="24" /></span></div>
   </nav>;
 }

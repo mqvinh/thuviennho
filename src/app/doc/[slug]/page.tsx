@@ -31,7 +31,7 @@ async function StoryContent({
   return (
     <article className="reading-width reading-page">
       <nav className="panel actions reading-navigation" aria-label="Điều hướng truyện">
-        <Link href="/" className="button secondary">
+        <Link href="/tu-sach" className="button secondary">
           ← Về tủ sách
         </Link>
         <Link href={`/truyen/${slug}`} className="button secondary">

@@ -7,7 +7,7 @@ export default function NotFound() {
         Trang hoặc truyện này chưa có trong thư viện. Em chọn một câu chuyện
         khác nhé!
       </p>
-      <Link className="button" href="/">
+      <Link className="button" href="/tu-sach">
         Về tủ sách
       </Link>
     </section>

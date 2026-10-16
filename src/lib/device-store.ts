@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import type { FlashcardHistory } from "./flashcards";
 import type { MatchingHistory } from "./matching";
 import type { SequenceHistory } from "./sequencing";
+import type { DailyHistory } from "./daily-learning";
 export type JournalEntry = {
   id: string;
   slug: string;
@@ -23,6 +24,7 @@ export type DeviceData = {
   flashcards: FlashcardHistory;
   matching: MatchingHistory;
   sequencing: SequenceHistory;
+  daily?: DailyHistory;
 };
 const key = "little-readers-device-v1";
 const empty: DeviceData = {

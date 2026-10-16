@@ -1,5 +1,6 @@
 export const sections = [
-  { href: "/", title: "Tủ sách song ngữ", icon: "📚" },
+  { href: "/", title: "Khám phá", icon: "🧭" },
+  { href: "/tu-sach", title: "Tủ sách song ngữ", icon: "📚" },
   { href: "/nghe-sach", title: "Nghe sách", icon: "🎧" },
   { href: "/tu-vung", title: "Góc từ vựng", icon: "🌱" },
   { href: "/thu-tai", title: "Đọc vui thử tài", icon: "🧩" },
@@ -12,7 +13,7 @@ export const sections = [
 export const mobileNavigationQuery = "(max-width: 760px)";
 
 export function isSectionActive(pathname: string, href: string) {
-  return href === "/"
-    ? pathname === "/" || pathname.startsWith("/doc/") || pathname.startsWith("/truyen/")
-    : pathname === href || pathname.startsWith(`${href}/`);
+  if (href === "/") return pathname === "/";
+  if (href === "/tu-sach" && (pathname.startsWith("/doc/") || pathname.startsWith("/truyen/"))) return true;
+  return pathname === href || pathname.startsWith(`${href}/`);
 }

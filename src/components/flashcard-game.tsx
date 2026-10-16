@@ -8,6 +8,7 @@ import { dueWords, flashcardKey, flashcardReady, learningDeck, pictureOptions, r
 import { useHydrated } from "@/lib/use-hydrated";
 import { ListeningIcon } from "./listening-icon";
 import { GameImage } from "./game-image";
+import { recordDailyWord } from "@/lib/daily-learning";
 
 type Session = {
   phase: "study" | "quiz" | "result";
@@ -82,7 +83,7 @@ export function FlashcardGame({ words }: { words: Word[] }) {
     setMessage("");
     if (!retry) {
       try {
-        changeDeviceData(previous => ({ ...previous, flashcards: { ...previous.flashcards, [flashcardKey(current)]: reviewWord(previous.flashcards[flashcardKey(current)], correct) } }));
+        changeDeviceData(previous => recordDailyWord({ ...previous, flashcards: { ...previous.flashcards, [flashcardKey(current)]: reviewWord(previous.flashcards[flashcardKey(current)], correct) } }, flashcardKey(current)));
       } catch { setSaveFailed(true); setMessage("Lượt chơi vẫn tiếp tục, nhưng chưa lưu được lịch ôn. Em kiểm tra quyền lưu dữ liệu của trình duyệt nhé."); }
     }
     setSession({ ...session, choice: word.id, results: retry ? session.results : { ...session.results, [flashcardKey(current)]: correct }, queue: !correct && !retry ? [...session.queue, { word: current, retry: true }] : session.queue });

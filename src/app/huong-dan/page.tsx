@@ -10,7 +10,7 @@ async function RuntimeMetadata() {
 export default function HelpPage() {
   return <article className="reading-width help-page">
     <Suspense fallback={null}><RuntimeMetadata /></Suspense>
-    <header className="panel"><h1>Cùng khám phá thư viện</h1><p>Một vài gợi ý để em và gia đình đọc sách thật vui mỗi ngày.</p><Link className="button" href="/">Về tủ sách →</Link></header>
+    <header className="panel"><h1>Cùng khám phá thư viện</h1><p>Một vài gợi ý để em và gia đình đọc sách thật vui mỗi ngày.</p><Link className="button" href="/tu-sach">Về tủ sách →</Link></header>
     <section id="cau-hoi" className="panel"><h2>Câu hỏi thường gặp</h2>
       <h3>Làm sao để nghe truyện?</h3><p>Mở mục “Nghe sách”, chọn một truyện rồi bấm “Nghe truyện”. Em có thể chọn câu, tiếng Việt hoặc tiếng Anh và tốc độ nghe trong trang đọc.</p>
       <h3>Làm sao để lưu từ yêu thích?</h3><p>Trong mục từ vựng, chạm “Yêu thích từ”. Mở tab “Từ yêu thích” để xem lại những từ đã lưu trên thiết bị này.</p>

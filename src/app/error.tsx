@@ -16,7 +16,7 @@ export default function ErrorPage({
         <button className="button" onClick={() => retry()}>
           Thử lại
         </button>
-        <Link className="button secondary" href="/">
+        <Link className="button secondary" href="/tu-sach">
           Về tủ sách
         </Link>
       </div>

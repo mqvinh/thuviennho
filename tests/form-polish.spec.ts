@@ -121,7 +121,7 @@ test("management forms share centered widths and required markers while login st
 
 test("loading indicators actually rotate and back to top scrolls through intermediate positions", async ({ page }) => {
   test.setTimeout(180_000); await page.setViewportSize({ width: 1280, height: 720 });
-  await page.emulateMedia({ reducedMotion: "no-preference" }); await page.goto("/");
+  await page.emulateMedia({ reducedMotion: "no-preference" }); await page.goto("/tu-sach");
   await expect(page.locator(".bookshelf .story-card")).toHaveCount(8, { timeout: 60_000 });
   await page.evaluate(() => {
     const observed = window as typeof window & { scrollSamples?: number[] };

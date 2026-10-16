@@ -180,7 +180,7 @@ test("theme deletion warns about usage, keeps stories with null themes and prese
     await page.goto(`/admin/xem-thu/${privateDraft.slug}`); await expect(page.getByRole("heading", { name: privateDraft.title_vi, exact: true })).toBeVisible();
     await page.goto(`/admin/bien-tap?slug=${privateDraft.slug}`); await expect(page.getByLabel("Chủ đề", { exact: true })).toHaveValue("", { timeout: 60_000 });
     await page.getByRole("button", { name: "Lưu bản nháp", exact: true }).click(); await expect(page.getByRole("dialog")).toContainText("Đã lưu bản nháp thành công."); await choose(page, "Đã hiểu");
-    await page.goto("/"); await page.getByLabel("Tìm tên truyện", { exact: true }).fill(published.title_vi); await expect(page.locator(".bookshelf .story-card")).toHaveCount(1);
+    await page.goto("/tu-sach"); await page.getByLabel("Tìm tên truyện", { exact: true }).fill(published.title_vi); await expect(page.locator(".bookshelf .story-card")).toHaveCount(1);
     await expect(page.getByRole("button", { name: "Chủ đề đang dùng", exact: true })).toHaveCount(0);
     await page.goto("/admin/chu-de"); const unused = page.locator("tbody tr").filter({ hasText: "Chủ đề chưa dùng" });
     await unused.locator(".row-menu-trigger").click(); await page.locator(".row-dropdown").getByRole("button", { name: "Xóa", exact: true }).click();

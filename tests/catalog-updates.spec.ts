@@ -146,7 +146,7 @@ test("cover backgrounds keep banner text on both story pages and the introductio
 test("all main pages have contextual banners and responsive footer navigation", async ({ page }) => {
   test.setTimeout(240_000);
   const errors: string[] = []; page.on("pageerror", error => errors.push(error.message));
-  for (const route of ["/", "/nghe-sach", "/tu-vung", "/thu-tai", "/nhat-ky", "/hanh-trinh"]) {
+  for (const route of ["/", "/tu-sach", "/nghe-sach", "/tu-vung", "/thu-tai", "/nhat-ky", "/hanh-trinh"]) {
     await page.goto(route);
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
     await expect(page.locator(".collection-banner")).toBeVisible();

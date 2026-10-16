@@ -25,7 +25,7 @@ async function Introduction({
   return (
     <article className="reading-width story-introduction">
       <nav className="story-introduction-navigation" aria-label="Điều hướng truyện">
-        <Link className="button secondary" href="/">
+        <Link className="button secondary" href="/tu-sach">
           ← Về tủ sách
         </Link>
       </nav>

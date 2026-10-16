@@ -6,6 +6,8 @@ import type { DeviceData } from "@/lib/device-store";
 import type { Theme } from "@/lib/library";
 import type { JourneyStory } from "@/lib/journey-map";
 import { JourneyMap } from "./journey-map";
+import { learningStars } from "@/lib/daily-learning";
+import { useLearningDay } from "@/lib/use-learning-day";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useState } from "react";
 import { Feedback, useUI } from "./ui-provider";
@@ -31,6 +33,7 @@ export function Journey({ stories, themes, focusSlug }: { stories: JourneyStory[
   const { confirm } = useUI();
   const ready = useHydrated();
   const { data, available } = useDeviceData();
+  const day = useLearningDay(), totalLearningStars = learningStars(data);
   const [message, setMessage] = useState("");
   const [backup, setBackup] = useState<DeviceData | null>(null);
   const [backupName, setBackupName] = useState("");
@@ -66,6 +69,13 @@ export function Journey({ stories, themes, focusSlug }: { stories: JourneyStory[
         <Feedback message="Dữ liệu thiết bị không đọc được. Em có thể xóa dữ liệu cũ để bắt đầu lại." />
       )}
       <JourneyMap key={focusSlug ?? "overview"} stories={stories} themes={themes} data={data} ready={ready} focusSlug={focusSlug} />
+      <section id="sao-hoc-tap" className="journey-learning-stars" aria-labelledby="learning-stars-title">
+        <div className="discovery-star-orbit" aria-hidden="true">★<span>✦</span><span>✧</span></div>
+        <div><h2 id="learning-stars-title">Sao học tập mỗi ngày</h2>
+          <p><strong className="learning-star-total">{totalLearningStars}</strong> ngôi sao đã nhận · {data.daily?.[day]?.awardedAt ? "Hôm nay đã thêm một sao!" : "Một sao mới đang chờ hôm nay."}</p>
+          <p>Đọc truyện, ôn ba từ và trả lời ba câu hỏi ở Khám phá để nhận một sao mỗi ngày. Các địa điểm trên bản đồ vẫn mở theo truyện đã đọc.</p>
+        </div><Link className="button secondary" href="/#goc-hoc-hom-nay">Mở góc học hôm nay <ListeningIcon name="arrow-right" /></Link>
+      </section>
       <div id="journey-summary" className="journey-stats" aria-label="Tiến độ đọc của em">
         {([
           { value: Object.keys(data.started).length, label: "Truyện đã khám phá", icon: "book", tone: "honey" },
@@ -201,7 +211,7 @@ export function Journey({ stories, themes, focusSlug }: { stories: JourneyStory[
             <p>
               Bản sao có {backup.journal.length} sản phẩm,{" "}
               {Object.keys(backup.finished).length} truyện hoàn tất và{" "}
-              {backup.favorites.length} từ yêu thích, {Object.keys(backup.flashcards).length} từ có lịch ôn Flashcard, {Object.keys(backup.matching).length} mục kết quả ghép từ với hình và {Object.keys(backup.sequencing).length} truyện có kết quả xếp tranh.
+              {backup.favorites.length} từ yêu thích, {Object.keys(backup.flashcards).length} từ có lịch ôn Flashcard, {Object.keys(backup.matching).length} mục kết quả ghép từ với hình và {Object.keys(backup.sequencing).length} truyện có kết quả xếp tranh. Góc học có {Object.keys(backup.daily ?? {}).length} ngày học và {learningStars(backup)} sao học tập.
             </p>
             <p>
               Khôi phục sẽ thay thế dữ liệu hiện tại. Em có thể tải bản sao hiện

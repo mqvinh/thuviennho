@@ -7,7 +7,7 @@ async function login(request: APIRequestContext, username = "test-admin") {
 }
 
 test("library shows eight stories per page, topic tabs and search without topic dropdown", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/tu-sach");
   const cards = page.locator(".bookshelf .story-card");
   await expect(cards).toHaveCount(8);
   await expect(page.getByRole("combobox", { name: "Mức đọc", exact: true })).toHaveCount(0);

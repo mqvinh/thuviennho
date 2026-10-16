@@ -2,6 +2,7 @@ import type { DeviceData, JournalEntry } from "./device-store";
 import type { FlashcardHistory } from "./flashcards";
 import type { MatchingHistory } from "./matching";
 import type { SequenceHistory } from "./sequencing";
+import { dailyProgress, learningDate, type DailyHistory } from "./daily-learning";
 const invalid = () => {
   throw Error(
     "Bản sao không đúng định dạng hoặc vượt giới hạn. Dữ liệu hiện tại chưa thay đổi.",
@@ -129,6 +130,27 @@ export function validateDeviceData(value: unknown): DeviceData {
     if (expected !== lastStars || (plays === 1 && bestStars !== lastStars)) return invalid();
     return [slug(key), { plays, bestStars, lastStars, lastAttempts, lastHints, lastPlayed: date(row.lastPlayed) }];
   }));
+  const dailyEntries = Object.entries(object(data.daily === undefined ? {} : data.daily));
+  if (dailyEntries.length > 3660) return invalid();
+  const daily: DailyHistory = Object.fromEntries(dailyEntries.map(([day, value]) => {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day) || !Number.isFinite(Date.parse(`${day}T00:00:00+07:00`)) || learningDate(Date.parse(`${day}T00:00:00+07:00`)) !== day) return invalid();
+    const row = object(value);
+    function list(value: unknown, max: number, check: (value: unknown) => string, exact = false) {
+      if (!Array.isArray(value) || value.length > max || (exact && value.length !== max)) return invalid();
+      const result = value.map(check);
+      if (new Set(result).size !== result.length) return invalid();
+      return result;
+    }
+    const wordKey = (value: unknown) => { const key = text(value, 2000); if (!/^[a-z0-9-]+:[^:\s]+:[^:\s]+$/i.test(key)) return invalid(); return key; };
+    const questionId = (value: unknown) => { const key = text(value, 100); if (!/^[a-z0-9-]+$/i.test(key)) return invalid(); return key; };
+    const plan = {
+      storySlug: slug(row.storySlug), wordKeys: list(row.wordKeys, 3, wordKey, true), questionIds: list(row.questionIds, 3, questionId, true),
+      createdAt: date(row.createdAt), reviewedWords: list(row.reviewedWords, 3, wordKey), answeredQuestions: list(row.answeredQuestions, 3, questionId),
+      ...(row.readAt === undefined ? {} : { readAt: date(row.readAt) }), ...(row.awardedAt === undefined ? {} : { awardedAt: date(row.awardedAt) }),
+    };
+    if (learningDate(Date.parse(plan.createdAt)) !== day || (plan.readAt && learningDate(Date.parse(plan.readAt)) !== day) || (plan.awardedAt && learningDate(Date.parse(plan.awardedAt)) !== day) || plan.reviewedWords.some(key => !plan.wordKeys.includes(key)) || plan.answeredQuestions.some(id => !plan.questionIds.includes(id)) || (dailyProgress(plan) === 3) !== !!plan.awardedAt) return invalid();
+    return [day, plan];
+  }));
   return {
     version: 1,
     favorites,
@@ -136,6 +158,7 @@ export function validateDeviceData(value: unknown): DeviceData {
     flashcards,
     matching,
     sequencing,
+    ...(data.daily === undefined ? {} : { daily }),
     started: records(data.started),
     finished: records(data.finished),
     activities: records(data.activities),

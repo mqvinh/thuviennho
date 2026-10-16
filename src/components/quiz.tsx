@@ -1,5 +1,6 @@
 "use client";
-import { recordActivity } from "@/lib/device-store";
+import { changeDeviceData } from "@/lib/device-store";
+import { learningDate, recordDailyQuiz } from "@/lib/daily-learning";
 import { useState } from "react";
 import { Feedback } from "./ui-provider";
 import { ListeningIcon } from "./listening-icon";
@@ -9,10 +10,12 @@ export function Quiz({
   slug,
   questions,
   title,
+  dailyDay,
 }: {
   slug: string;
   title: string;
   questions: Question[];
+  dailyDay?: string;
 }) {
   const [answers, setAnswers] = useState<Record<string, number | number[]>>({});
   const [feedback, setFeedback] = useState<
@@ -29,6 +32,7 @@ export function Quiz({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           slug,
+          daily: !!dailyDay,
           answers: questions.map((q) => ({
             id: q.id,
             value:
@@ -41,7 +45,9 @@ export function Quiz({
       if (!response.ok) throw Error(result.error);
       setFeedback(result.feedback);
       try {
-        recordActivity("activities", slug, title);
+        changeDeviceData(data => recordDailyQuiz(dailyDay ? data : {
+          ...data, activities: { ...data.activities, [slug]: data.activities[slug] ?? { title, date: new Date().toISOString() } },
+        }, dailyDay ?? learningDate(), slug, result.feedback.map((item: { id: string }) => item.id)));
       } catch (error) {
         setMessage(
           error instanceof Error

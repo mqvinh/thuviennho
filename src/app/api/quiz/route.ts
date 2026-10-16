@@ -24,12 +24,15 @@ export async function POST(request: Request) {
       `select q.id, q.kind, q.options, a.correct_option, a.correct_order, a.explanation_vi from reading_questions q join reading_answers a on a.question_id=q.id join stories s on s.id=q.story_id where s.slug=?1 and s.is_published=true and s.is_visible=true order by q.sequence_no`,
       [body.slug],
     );
-    if (!rows.length || body.answers.length !== rows.length)
+    const daily = body.daily === true;
+    if (!rows.length || (daily ? body.answers.length !== 3 : body.answers.length !== rows.length))
       throw new HttpError(400, "Hãy trả lời đủ câu hỏi.");
     const answers = body.answers as { id?: unknown; value?: unknown }[];
-    if (new Set(answers.map((a) => a?.id)).size !== rows.length)
+    if (new Set(answers.map((a) => a?.id)).size !== answers.length)
       throw new HttpError(400, "Câu hỏi bị trùng.");
-    const feedback = rows.map((q) => {
+    if (answers.some(answer => !rows.some(question => question.id === answer?.id))) throw new HttpError(400, "Câu hỏi không hợp lệ.");
+    const selected = daily ? rows.filter(question => answers.some(answer => answer.id === question.id)) : rows;
+    const feedback = selected.map((q) => {
       const answer = answers.find((a) => a?.id === q.id);
       if (!answer) throw new HttpError(400, "Câu hỏi không hợp lệ.");
       let correct = false;

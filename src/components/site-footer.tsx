@@ -34,7 +34,7 @@ export async function SiteFooter() {
       </nav>
       <nav className="footer-column footer-topics" aria-label="Chủ đề đọc sách">
         <h2><ListeningIcon name="sprout" />Chủ đề</h2>
-        {themes.map(theme => <Link key={theme.slug} href={`/?chu-de=${encodeURIComponent(theme.slug)}#books`}><ThemeIcon path={theme.icon_path} />{theme.name_vi}</Link>)}
+        {themes.map(theme => <Link key={theme.slug} href={`/tu-sach?chu-de=${encodeURIComponent(theme.slug)}#books`}><ThemeIcon path={theme.icon_path} />{theme.name_vi}</Link>)}
       </nav>
       <nav className="footer-column footer-support" aria-label="Hỗ trợ thư viện">
         <h2><span aria-hidden="true">💬</span>Hỗ trợ</h2>

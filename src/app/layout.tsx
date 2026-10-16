@@ -27,6 +27,7 @@ import "./games-theme.css";
 import "./illustration-motion.css";
 import "./mobile-navigation.css";
 import "./support-theme.css";
+import "./discovery-theme.css";
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
@@ -65,7 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </div>
           </div>
           <div className="main-menu-slot"><div className="main-menu"><div className="shell">
-            <Suspense fallback={<nav aria-label="Các khu vực thư viện" className="navigation">{sections.map(s => <Link key={s.href} href={s.href}>{s.icon} {s.title}</Link>)}</nav>}>
+            <Suspense fallback={<nav aria-label="Các khu vực thư viện" className="navigation">{sections.map(s => <Link className={s.href === "/" ? "navigation-discovery" : undefined} key={s.href} href={s.href}>{s.icon} {s.title}</Link>)}</nav>}>
               <Navigation />
             </Suspense>
           </div></div></div>

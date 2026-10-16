@@ -126,7 +126,7 @@ test("visibility preserves publication, restricts public content and media, and 
     await expect(publicPage.getByRole("heading", { name: "Không tìm thấy trang" })).toBeVisible();
     await publicPage.goto(`${origin}/doc/${draft.slug}`);
     await expect(publicPage.getByRole("heading", { name: "Không tìm thấy trang" })).toBeVisible();
-    await publicPage.goto(`${origin}/`);
+    await publicPage.goto(`${origin}/tu-sach`);
     await publicPage.getByLabel("Tìm tên truyện", { exact: true }).fill(draft.title_vi);
     await expect(publicPage.locator(".bookshelf .story-card")).toHaveCount(0);
     await publicPage.goto(`${origin}/tu-vung`);

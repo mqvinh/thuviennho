@@ -4,6 +4,7 @@ import { IllustrationScene } from "./illustration-scene";
 import { BookArtwork, GardenCorners } from "./reading-artwork";
 
 const banners = {
+  discovery: { eyebrow: "Đọc một chút, khám phá thật nhiều", title: "Hôm nay, mình khám phá gì?", description: "Một câu chuyện, ba từ vựng và ba câu hỏi nhỏ. Cùng phụ huynh, giáo viên nuôi dưỡng thói quen đọc và giữ lại những khám phá mỗi ngày.", href: "#goc-hoc-hom-nay", action: "Mở góc học hôm nay", icon: "star", ticket: "Một ngày vui học", goal: "3 nhiệm vụ", benefit: "một ngôi sao!", tip: "Học theo nhịp của mình. Mỗi bước nhỏ đều là một điều đáng quý." },
   support: { eyebrow: "Cùng khám phá, từng bước dễ dàng", title: "Bạn cần hỗ trợ điều gì?", description: "Hướng dẫn chơi, theo dõi hành trình và giữ lại tiến độ. Cùng phụ huynh, giáo viên khám phá từng chức năng của thư viện.", href: "#help-guides", action: "Xem hướng dẫn", icon: "help", ticket: "Có hướng dẫn bên bạn", goal: "Từng bước", benefit: "dễ làm theo!", tip: "Mở hướng dẫn ngay khi cần, thực hành một chút và tiếp tục khám phá theo nhịp của mình." },
   sequencing: { eyebrow: "Mỗi bức tranh, một phần câu chuyện", title: "Cùng em xếp tranh kể chuyện!", description: "Chuyện gì xảy ra đầu tiên, chuyện gì đến sau? Xếp những bức tranh, tìm gợi ý và cùng kể lại câu chuyện theo đúng diễn biến.", href: "#sequence-game", action: "Chọn truyện để chơi", icon: "book", ticket: "Nhớ truyện từng bước", goal: "3–5 phút", benefit: "một câu chuyện hay!", tip: "Không cần vội. Cùng suy nghĩ vì sao sự việc này xảy ra trước sự việc kia nhé!" },
   matching: { eyebrow: "Một từ nhỏ, một hình ảnh thân quen", title: "Cùng em ghép từ với hình!", description: "Chọn một từ rồi chạm vào hình phù hợp, hoặc kéo từ vào hình. Ghép từng cặp, nghe phát âm và cùng khám phá những từ trong câu chuyện.", href: "#matching-game", action: "Bắt đầu ghép từ", icon: "image", ticket: "Một lượt vui học", goal: "2–4 phút", benefit: "khám phá cùng nhau!", tip: "Em cứ chơi theo nhịp của mình. Chưa khớp thì thử lại, mỗi lần ghép là một lần nhớ thêm!" },
@@ -26,7 +27,7 @@ export function CatalogBanner({ kind }: { kind: keyof typeof banners }) {
       <p>{banner.description}</p>
       <div className="hero-actions">
         <Link href={banner.href} className="button"><ListeningIcon name={banner.icon} />{banner.action}<ListeningIcon name="arrow-right" /></Link>
-        <Link href={kind === "library" ? "/nghe-sach" : "/"} className="button secondary"><ListeningIcon name={kind === "library" ? "headphones" : "book"} />{kind === "library" ? "Nghe sách" : "Về tủ sách"}</Link>
+        <Link href={kind === "library" ? "/nghe-sach" : "/tu-sach"} className="button secondary"><ListeningIcon name={kind === "library" ? "headphones" : "book"} />{kind === "library" ? "Nghe sách" : "Khám phá tủ sách"}</Link>
       </div>
     </div>
     <div className="shelf-welcome-art" aria-hidden="true"><BookArtwork /></div>

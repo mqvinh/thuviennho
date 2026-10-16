@@ -109,3 +109,9 @@ export async function getQuestions(slug: string) {
     )
   ).rows;
 }
+
+export async function getDailyQuestions() {
+  return (await (await getDb()).query<Question & { story_slug: string }>(
+    `select q.id, s.slug as story_slug, q.question_vi, q.question_en, q.options, q.kind from reading_questions q join reading_answers a on a.question_id=q.id join stories s on s.id=q.story_id where s.is_published=true and s.is_visible=true order by s.slug, q.sequence_no`,
+  )).rows;
+}

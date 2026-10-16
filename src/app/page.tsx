@@ -1,27 +1,20 @@
-import { LoadingIndicator } from "@/components/loading-indicator";
 import { Suspense } from "react";
 import { io } from "next/cache";
-import { getLibrary } from "@/lib/library";
-import { Library } from "@/components/library";
-import { ListeningIcon } from "@/components/listening-icon";
+import { redirect } from "next/navigation";
 import { CatalogBanner } from "@/components/catalog-banner";
-export default function Home({ searchParams }: PageProps<"/">) {
-  return (
-    <div className="library-page">
-      <CatalogBanner kind="library" />
-      <div className="shelf-heading-row">
-        <h2 id="books" className="shelf-heading"><span aria-hidden="true">📚</span>Tủ sách song ngữ<ListeningIcon name="sprout" /></h2>
-        <p><ListeningIcon name="sprout" />Những câu chuyện hay cho những bạn nhỏ tuyệt vời!</p>
-      </div>
-      <Suspense fallback={<LoadingIndicator label="Đang mở tủ sách" />}>
-        <LibraryContent searchParams={searchParams} />
-      </Suspense>
-    </div>
-  );
+import { DiscoveryHome } from "@/components/discovery-home";
+import { LoadingIndicator } from "@/components/loading-indicator";
+import { getDailyQuestions, getLibrary, getWords } from "@/lib/library";
+
+export const metadata = { title: "Khám phá · Thư Viện Nhỏ" };
+type Search = Promise<Record<string, string | string[] | undefined>>;
+export default function Home({ searchParams }: { searchParams: Search }) {
+  return <div className="library-page discovery-page"><CatalogBanner kind="discovery" /><Suspense fallback={<LoadingIndicator label="Đang chuẩn bị góc học hôm nay" />}><Content searchParams={searchParams} /></Suspense></div>;
 }
-async function LibraryContent({ searchParams }: Pick<PageProps<"/">, "searchParams">) {
+async function Content({ searchParams }: { searchParams: Search }) {
   await io();
-  const [library, query] = await Promise.all([getLibrary(), searchParams]);
-  const theme = typeof query["chu-de"] === "string" ? query["chu-de"] : "";
-  return <Library key={theme} {...library} initialTheme={theme} />;
+  const query = await searchParams;
+  if (typeof query["chu-de"] === "string") redirect(`/tu-sach?chu-de=${encodeURIComponent(query["chu-de"])}#books`);
+  const [{ stories }, words, questions] = await Promise.all([getLibrary(), getWords(), getDailyQuestions()]);
+  return <DiscoveryHome stories={stories} words={words} questions={questions} />;
 }

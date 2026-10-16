@@ -22,7 +22,7 @@ async function Section({ params }: Pick<PageProps<"/[section]">, "params">) {
       <h1>{item.title}</h1>
       <p>Khu vực này đang được chuẩn bị.</p>
       <p>Trong lúc chờ, em có thể khám phá các câu chuyện trong tủ sách nhé!</p>
-      <Link className="button" href="/">
+      <Link className="button" href="/tu-sach">
         Khám phá tủ sách
       </Link>
     </section>
