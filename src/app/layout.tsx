@@ -21,6 +21,7 @@ import "./reading-theme.css";
 import "./library-theme.css";
 import "./site-experience.css";
 import "./journey-theme.css";
+import "./journey-map.css";
 import "./journal-theme.css";
 import "./games-theme.css";
 import "./illustration-motion.css";

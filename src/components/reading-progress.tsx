@@ -1,6 +1,9 @@
 "use client";
 import { useState } from "react";
-import { recordActivity, useDeviceData } from "@/lib/device-store";
+import Link from "next/link";
+import { changeDeviceData, recordActivity, useDeviceData } from "@/lib/device-store";
+import { finishJourneyStory, landmarkFor } from "@/lib/journey-map";
+import { LandmarkArtwork } from "./journey-artwork";
 export function ReadingProgress({
   slug,
   title,
@@ -10,9 +13,14 @@ export function ReadingProgress({
 }) {
   const { data } = useDeviceData();
   const [message, setMessage] = useState("");
+  const [unlocked, setUnlocked] = useState(false);
   function record(kind: "started" | "finished") {
     try {
-      recordActivity(kind, slug, title);
+      if (kind === "finished") {
+        let first = false;
+        changeDeviceData(current => { const result = finishJourneyStory(current, slug, title); first = result.unlocked; return result.data; });
+        if (first) setUnlocked(true);
+      } else recordActivity(kind, slug, title);
       setMessage(
         kind === "started"
           ? "Đã ghi nhận truyện em đang khám phá."
@@ -36,10 +44,7 @@ export function ReadingProgress({
         </button>
         <button
           className="button"
-          onClick={() => {
-            record("started");
-            record("finished");
-          }}
+          onClick={() => record("finished")}
         >
           {Object.hasOwn(data.finished, slug)
             ? "Đã đọc xong 🌟"
@@ -47,6 +52,8 @@ export function ReadingProgress({
         </button>
       </div>
       <p role="status">{message}</p>
+      {unlocked && <div className="journey-unlock" role="status"><LandmarkArtwork kind={landmarkFor(slug).kind} /><div><strong>Một địa điểm mới đã mở!</strong><p>{landmarkFor(slug).name} đang chờ em trên bản đồ khám phá.</p></div></div>}
+      {Object.hasOwn(data.finished, slug) && <Link className="button secondary journey-map-link" href={`/hanh-trinh?truyen=${encodeURIComponent(slug)}#ban-do-kham-pha`}>{unlocked ? "Xem địa điểm vừa mở" : "Xem địa điểm trên bản đồ"} →</Link>}
     </section>
   );
 }

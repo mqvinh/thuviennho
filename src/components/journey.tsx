@@ -3,7 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { parseDeviceBackup } from "@/lib/device-backup";
 import type { DeviceData } from "@/lib/device-store";
-import type { Story } from "@/lib/library";
+import type { Theme } from "@/lib/library";
+import type { JourneyStory } from "@/lib/journey-map";
+import { JourneyMap } from "./journey-map";
 import { useHydrated } from "@/lib/use-hydrated";
 import { useState } from "react";
 import { Feedback, useUI } from "./ui-provider";
@@ -25,7 +27,7 @@ function JourneyMedal({ icon }: { icon: "sprout" | "heart" | "book" | "star" }) 
     <ListeningIcon name={icon} />
   </div>;
 }
-export function Journey({ stories }: { stories: Pick<Story, "slug" | "cover_image_path">[] }) {
+export function Journey({ stories, themes, focusSlug }: { stories: JourneyStory[]; themes: Theme[]; focusSlug?: string }) {
   const { confirm } = useUI();
   const ready = useHydrated();
   const { data, available } = useDeviceData();
@@ -63,6 +65,7 @@ export function Journey({ stories }: { stories: Pick<Story, "slug" | "cover_imag
       {!available && (
         <Feedback message="Dữ liệu thiết bị không đọc được. Em có thể xóa dữ liệu cũ để bắt đầu lại." />
       )}
+      <JourneyMap key={focusSlug ?? "overview"} stories={stories} themes={themes} data={data} ready={ready} focusSlug={focusSlug} />
       <div id="journey-summary" className="journey-stats" aria-label="Tiến độ đọc của em">
         {([
           { value: Object.keys(data.started).length, label: "Truyện đã khám phá", icon: "book", tone: "honey" },
