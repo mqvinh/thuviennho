@@ -40,7 +40,7 @@ test("child-friendly listening has a sentence grid, one play-stop action, button
     Object.defineProperty(window, "speechSynthesis", { configurable: true, value: engine });
     Object.assign(window, { listeningTest: state, finishVoice: () => currentVoice?.onend?.(new Event("end") as SpeechSynthesisEvent), finishRecording: () => finishCurrentAudio?.() });
   });
-  await page.goto("/doc/" + story.slug);
+  await page.goto("/doc/" + story.slug + "#audio");
   const player = page.getByRole("region", { name: "Nghe sách", exact: true });
   const choices = player.getByRole("group", { name: "Chọn câu để nghe", exact: true });
   await expect(choices.getByRole("button")).toHaveCount(3);

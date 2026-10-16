@@ -131,6 +131,7 @@ try {
         await page.goto(`/doc/${plan.storySlug}`);
         await page.getByRole("button", { name: "Đã đọc xong 🌟", exact: true }).click();
         assert.deepEqual((await progress()).daily, earned.daily);
+        await page.getByRole("tab", { name: /^Thử tài/ }).click();
         await expect(page.locator(".quiz-question").first()).toBeVisible();
         for (const fieldset of await page.locator(".quiz-question").all()) { const radio = fieldset.locator('input[type="radio"]'); if (await radio.count()) await radio.first().check(); }
         await page.getByRole("button", { name: "Kiểm tra bài làm", exact: true }).click();

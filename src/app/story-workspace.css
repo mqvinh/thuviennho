@@ -1,0 +1,158 @@
+.story-workspace { display: grid; gap: 24px; max-width: 1180px; margin-inline: auto; }
+.story-workspace [hidden] { display: none !important; }
+.story-breadcrumbs { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; font-size: 14px; }
+.story-breadcrumbs a { padding-block: 5px; color: #85613f; text-underline-offset: 4px; }
+.story-workspace .story-compact-header { display: grid; grid-template-columns: 140px minmax(0, 1fr); align-items: center; gap: 26px; margin: 0; padding: 24px 30px; border-radius: 26px; background: linear-gradient(110deg, #fffefa 35%, #fff1cf); }
+.story-compact-cover { min-width: 0; transform: rotate(-4deg); }
+.story-compact-cover .book-jacket { position: relative; isolation: isolate; --garden-left: -10px; --garden-right: -8px; height: 160px; min-height: 0; padding: 15px 8px; border-radius: 16px; box-shadow: 0 6px 0 #b47c2e16; }
+.story-compact-cover :is(.jacket-imprint, .jacket-title, .jacket-languages) { display: none; }
+.story-compact-cover .jacket-symbol { min-height: 0; width: 100%; }
+.story-compact-cover .jacket-symbol > svg { width: 88px; height: 88px; }
+.story-compact-cover .jacket-generic-art { display: block; width: 100px; aspect-ratio: 1; background: url('/images/listening-books.svg') center / contain no-repeat; }
+.story-compact-cover .garden-corner { width: 65px; }
+.story-compact-intro { min-width: 0; }
+.story-compact-intro .eyebrow { margin: 0 0 7px; }
+.story-compact-intro h1 { margin: 0; font-size: clamp(26px, 3vw, 36px); line-height: 1.2; color: #703f1d; overflow-wrap: anywhere; }
+.story-compact-intro .english { margin: 6px 0 0; font-size: 16px; color: #927451; }
+.story-compact-summary { margin: 12px 0; max-width: 760px; color: #7c6549; font-size: 15px; line-height: 1.65; }
+.story-duration { display: inline-flex; align-items: center; gap: 7px; padding: 6px 11px; border-radius: 12px; background: #fffdf6; color: #8e5f28; font-size: 12px; font-weight: 650; }
+.story-duration .listening-icon { width: 16px; height: 16px; }
+.story-learning-layout { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 26px; align-items: start; }
+.story-activities { position: sticky; top: 90px; min-width: 0; padding: 20px 14px; border: 1px solid #ebdab8; border-radius: 24px; background: #fffdf7; }
+.story-menu-label { margin: 0 8px 15px; color: #977148; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; font-weight: 750; }
+.story-activity-tabs { display: grid; gap: 11px; }
+.story-activity { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; min-height: 83px; padding: 14px 10px; border: 1px solid transparent; border-radius: 17px; background: transparent; color: #755637; text-align: left; cursor: pointer; transition: background 160ms, border-color 160ms; }
+.story-activity:hover { background: #fff3d8; }
+.story-activity[aria-selected="true"] { background: #fff0c2; border-color: #e9c671; box-shadow: 0 3px 0 #eedbb4; }
+.story-activity-icon { display: grid; place-items: center; width: 42px; height: 44px; flex-shrink: 0; border-radius: 13px; background: #f4e6cc; color: #a36425; }
+.story-activity-vocabulary .story-activity-icon { color: #5b853c; background: #e8f1d7; }
+.story-activity-quiz .story-activity-icon { color: #427b9d; background: #dceefa; }
+.story-activity-progress .story-activity-icon { color: #b36a72; background: #fbe5e4; }
+.story-activity-copy { display: grid; gap: 5px; min-width: 0; }
+.story-activity-copy strong { font-size: 16px; }
+.story-activity-copy small { font-size: 11px; color: #927752; }
+.story-activity-done { position: absolute; top: 6px; right: 6px; display: grid; place-items: center; width: 19px; height: 19px; border-radius: 50%; background: #5e8744; color: white; }
+.story-activity-done .listening-icon { width: 12px; height: 12px; }
+.story-menu-tip { margin: 18px 8px 0; font-size: 12px; color: #a18b6b; line-height: 1.65; }
+.story-panel-area { min-width: 0; scroll-margin-top: 90px; }
+.story-activity-panel { display: grid; gap: 20px; min-width: 0; scroll-margin-top: 90px; }
+.story-activity-panel > .panel { margin: 0; }
+.story-activity-panel:focus-visible, .story-activity:focus-visible, .story-mobile-switcher button:focus-visible { outline: 3px solid #4b92b7; outline-offset: 4px; }
+.story-section-caption { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 3px 4px; }
+.story-section-caption > span { display: inline-flex; align-items: center; gap: 8px; color: #815127; font-size: 16px; font-weight: 750; }
+.story-section-caption > span .listening-icon { width: 21px; height: 21px; }
+.story-section-caption > small { color: #9a8568; font-size: 12px; }
+.story-mobile-switcher { display: none; }
+.reader-listening { min-width: 0; border: 1px solid #d6e4e6; border-radius: 20px; background: #f3f9fb; }
+.reader-listening > summary { display: flex; align-items: center; gap: 13px; min-height: 74px; padding: 16px 22px; list-style: none; cursor: pointer; color: #416e82; }
+.reader-listening > summary::-webkit-details-marker { display: none; }
+.reader-listening > summary > .listening-icon { width: 28px; height: 28px; }
+.reader-listening > summary > span:not(.reader-listening-toggle) { display: grid; gap: 4px; }
+.reader-listening summary strong { font-size: 16px; }
+.reader-listening summary small { color: #718996; font-size: 12px; }
+.reader-listening-toggle { margin-left: auto; font-size: 23px; transition: transform 160ms; }
+.reader-listening[open] .reader-listening-toggle { transform: rotate(180deg); }
+.reader-listening > .listening-player { margin: 0; border-width: 1px 0 0; border-radius: 0 0 20px 20px; padding: 24px; box-shadow: none; }
+.story-workspace .listening-art { display: none; }
+.story-workspace .listening-heading { margin-bottom: 18px; }
+.story-workspace .listening-heading h2 { font-size: 24px; }
+.story-workspace .listening-language { min-height: 52px; font-size: 16px; }
+.story-workspace .listening-current { margin-block: 18px; padding: 16px; }
+.story-workspace .listening-current > p { font-size: 18px; }
+.story-workspace .listening-actions { gap: 20px; }
+.story-workspace .listening-sentence { min-height: 48px; font-size: 16px; }
+.story-workspace .listening-sentence-grid { grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; }
+.story-workspace .listening-workspace { gap: 20px; }
+.story-workspace .listening-sentence-picker { padding-inline-end: 18px; }
+.story-workspace .listening-player .listening-play { min-height: 60px; font-size: 16px; }
+.story-workspace .listening-player .listening-replay { font-size: 14px; }
+.story-workspace .story-reading-card { padding: 24px; }
+.story-workspace .story-reading-card .sentence { grid-template-columns: minmax(0, 1fr); min-height: 0; padding: 24px 6px; }
+.story-workspace .sentence-art { display: none; }
+.story-workspace .reading-tools { gap: 18px; padding-bottom: 22px; }
+.story-workspace .reading-control-title { font-size: 17px; }
+.story-workspace .reading-tools .button { min-height: 42px; padding: 8px 12px; font-size: 14px; }
+.story-workspace .reading-section .vocabulary .story-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.story-workspace .reading-section .vocabulary .story-grid:has(> :only-child) { grid-template-columns: minmax(0, 1fr); max-width: 560px; margin-inline: auto; }
+.story-workspace .vocabulary-heading { grid-template-columns: 60px minmax(0, 1fr); gap: 14px; }
+.story-workspace .vocabulary-heading-art { display: none; }
+.story-workspace .vocabulary-heading h2 { font-size: 27px; }
+.story-workspace .reading-section .word-card h3 { font-size: 24px; }
+.story-workspace .vocabulary-tabs button { min-height: 52px; font-size: 15px; }
+.story-next { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 14px; padding: 20px 22px; border: 1px dashed #ddc896; border-radius: 20px; background: #fff7df; }
+.story-next > span { color: #9a7953; font-size: 13px; }
+.story-next .button { gap: 10px; font-size: 15px; }
+.story-progress-summary { position: relative; overflow: hidden; background: linear-gradient(135deg, #fffef8, #f3f6e8); }
+.story-progress-summary h2 { position: relative; margin: 0; max-width: 85%; font-size: 27px; line-height: 1.3; }
+.story-progress-summary > p { position: relative; color: #8b765b; font-size: 14px; line-height: 1.6; }
+.story-progress-art { position: absolute; right: 24px; top: 20px; color: #b9ce94; transform: rotate(15deg); }
+.story-progress-art .listening-icon { width: 66px; height: 66px; }
+.story-progress-summary ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 22px 0 0; padding: 0; list-style: none; }
+.story-progress-summary li { display: flex; align-items: start; gap: 12px; padding: 18px 14px; border-radius: 16px; border: 1px solid #e5e3ce; background: #ffffffb0; }
+.story-progress-summary li > .listening-icon { color: #a38c52; }
+.story-progress-summary li > span { display: grid; gap: 8px; color: #948066; font-size: 13px; line-height: 1.5; }
+.story-progress-summary li strong { font-size: 15px; color: #705438; }
+.story-progress-links { display: flex; flex-wrap: wrap; gap: 12px; }
+.story-progress-links .button { gap: 9px; font-size: 15px; }
+@media (max-width: 1020px) {
+  .story-learning-layout { grid-template-columns: 200px minmax(0, 1fr); gap: 18px; }
+  .story-activities { padding-inline: 8px; }
+  .story-activity { gap: 9px; padding-inline: 8px; }
+  .story-activity-copy strong { font-size: 15px; }
+  .story-workspace .reading-section .vocabulary .story-grid { grid-template-columns: 1fr; }
+  .story-workspace .listening-workspace { grid-template-columns: 1fr; }
+  .story-workspace .listening-sentence-picker { padding: 0 0 18px; border-right: 0; border-bottom: 1px solid #e7dbbf; }
+}
+@media (max-width: 760px) {
+  .story-workspace { gap: 18px; }
+  .story-workspace .story-compact-header { grid-template-columns: 86px minmax(0, 1fr); gap: 16px; padding: 20px; border-radius: 22px; }
+  .story-compact-cover { align-self: start; padding-top: 10px; }
+  .story-compact-cover .book-jacket { height: 112px; padding-inline: 4px; }
+  .story-compact-cover .jacket-symbol > svg { width: 62px; height: 62px; }
+  .story-compact-cover .jacket-generic-art { width: 68px; }
+  .story-compact-intro h1 { font-size: 25px; }
+  .story-compact-intro .english { font-size: 13px; }
+  .story-compact-intro .eyebrow { font-size: 11px; }
+  .story-compact-summary { font-size: 13px; margin-block: 9px; }
+  .story-duration { font-size: 11px; padding: 5px 8px; }
+  .story-learning-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .story-activities { position: static; padding: 0; border: 0; background: transparent; }
+  .story-menu-label { margin: 0 3px 10px; font-size: 11px; }
+  .story-activity-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .story-activity { min-height: 85px; gap: 11px; padding: 14px 12px; border-color: #eaddbe; background: #fffdf7; border-radius: 18px; }
+  .story-activity-copy strong { font-size: 16px; }
+  .story-menu-tip { margin: 12px 3px 0; font-size: 12px; }
+  .story-panel-area { scroll-margin-top: 0; }
+  .story-activity-panel, .story-workspace #audio { scroll-margin-top: 82px; }
+  .story-mobile-switcher { position: sticky; top: 8px; z-index: 50; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; padding: 6px; margin-bottom: 18px; border: 1px solid #e4d3ab; border-radius: 18px; background: #fffdf5f5; box-shadow: 0 5px 20px #6742151c; backdrop-filter: blur(12px); }
+  .story-mobile-switcher button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 52px; padding: 6px 2px; border: 0; border-radius: 12px; background: transparent; color: #8f7753; font-size: 11px; cursor: pointer; }
+  .story-mobile-switcher button[aria-pressed="true"] { color: #804714; background: #ffedb7; font-weight: 750; }
+  .story-mobile-switcher .listening-icon { width: 20px; height: 20px; }
+  .story-section-caption { gap: 6px; }
+  .story-section-caption > small { font-size: 11px; }
+  .story-workspace .reading-tools { gap: 14px; }
+  .story-workspace .story-reading-card { padding: 20px 16px; }
+  .story-workspace .vocabulary-heading h2 { font-size: 24px; }
+  .story-next { padding: 18px; gap: 12px; }
+  .story-next > .button { width: 100%; justify-content: center; }
+  .story-progress-summary ul { grid-template-columns: 1fr; gap: 10px; }
+}
+@media (max-width: 400px) {
+  .story-workspace .story-compact-header { grid-template-columns: 62px minmax(0, 1fr); padding: 17px 14px; gap: 12px; }
+  .story-compact-cover .book-jacket { height: 88px; padding: 7px 0; border-radius: 12px; }
+  .story-compact-cover .jacket-symbol > svg { width: 50px; height: 50px; }
+  .story-compact-cover .jacket-generic-art { width: 54px; }
+  .story-compact-intro h1 { font-size: 22px; }
+  .story-activity { gap: 7px; padding: 12px 8px; }
+  .story-activity-icon { width: 33px; height: 38px; border-radius: 11px; }
+  .story-activity-copy strong { font-size: 14px; }
+  .story-activity-copy small { font-size: 10px; }
+  .reader-listening > summary { padding-inline: 16px; }
+  .reader-listening > summary > .listening-icon { width: 24px; height: 24px; }
+  .reader-listening summary small { font-size: 11px; }
+  .reader-listening > .listening-player { padding: 18px 14px; }
+  .story-progress-links > .button { width: 100%; justify-content: center; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .story-activity, .reader-listening-toggle { transition: none; }
+}

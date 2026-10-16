@@ -1,15 +1,18 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
 import { LoadingIndicator } from "./loading-indicator";
 import { ListeningIcon } from "./listening-icon";
 import type { Sentence } from "@/lib/library";
 import { waitForVoice } from "@/lib/browser-voice";
+export type AudioPlayerHandle = { stop: () => void };
 export function AudioPlayer({
   sentences,
   onActive,
+  controlRef,
 }: {
   sentences: Sentence[];
   onActive: (index: number | null) => void;
+  controlRef?: Ref<AudioPlayerHandle>;
 }) {
   const [source, setSource] = useState<"auto" | "recorded" | "browser">("auto");
   const sourceRef = useRef(source);
@@ -64,6 +67,7 @@ export function AudioPlayer({
     setDuration(0);
     activeRef.current(null);
   }
+  useImperativeHandle(controlRef, () => ({ stop: clear }));
   async function play(selected: number) {
     clear();
     const current = generation.current;

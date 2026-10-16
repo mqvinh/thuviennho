@@ -28,6 +28,7 @@ import "./illustration-motion.css";
 import "./mobile-navigation.css";
 import "./support-theme.css";
 import "./discovery-theme.css";
+import "./story-workspace.css";
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();

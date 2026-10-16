@@ -80,7 +80,7 @@ test("published quiz grades on server, rejects malformed answers, and keeps answ
   page,
   request,
 }) => {
-  await page.goto("/doc/tho-con-biet-se-chia");
+  await page.goto("/doc/tho-con-biet-se-chia#quiz");
   await expect(
     page.getByRole("button", { name: "Kiểm tra bài làm" }),
   ).toBeVisible();
@@ -135,7 +135,7 @@ test("local favorites, reading progress and drawing journal persist and can be d
 }) => {
   test.setTimeout(240_000);
   page.setDefaultNavigationTimeout(120_000);
-  await page.goto("/doc/tho-con-biet-se-chia");
+  await page.goto("/doc/tho-con-biet-se-chia#vocabulary");
   await page
     .getByRole("button", { name: "Yêu thích từ", exact: false })
     .click();
@@ -143,6 +143,7 @@ test("local favorites, reading progress and drawing journal persist and can be d
   await expect(
     page.getByRole("button", { name: "Đã yêu thích", exact: false }),
   ).toBeVisible();
+  await page.getByRole("tab", { name: /^Đọc truyện/ }).click();
   await page
     .getByRole("button", { name: "Em đã đọc xong", exact: true })
     .click();
@@ -338,7 +339,7 @@ test("teacher ownership, review workflow, draft isolation, uploads and AI config
   ).toBe(200);
   expect((await anon.get(media)).status()).toBe(200);
   await anon.dispose();
-  await page.goto("/doc/test-story");
+  await page.goto("/doc/test-story#audio");
   await page.getByRole("button", { name: "Bản thu âm", exact: true }).click();
   await page.getByRole("button", { name: "Nghe truyện" }).click();
   await expect(page.locator(".sentence.active").first()).toBeVisible();
@@ -507,7 +508,7 @@ test("browser speech waits for voices, stops playback and cancels pending reques
         current?.onend?.(new Event("end") as SpeechSynthesisEvent),
     });
   });
-  await page.goto("/doc/tho-con-biet-se-chia");
+  await page.goto("/doc/tho-con-biet-se-chia#audio");
   await page.getByRole("button", { name: "Nghe truyện" }).click();
   await expect(
     page.getByRole("status", { name: "Đang tải giọng đọc trên thiết bị" }),

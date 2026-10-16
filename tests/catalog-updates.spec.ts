@@ -118,27 +118,31 @@ test("global vocabulary combines word search, story and favorites with six equal
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
   }
-  await page.goto("/doc/catalog-words");
+  await page.goto("/doc/catalog-words#vocabulary");
   await expect(page.locator("#vocabulary .word-card")).toHaveCount(8);
   await expect(page.getByLabel("Chọn truyện", { exact: true })).toHaveCount(0);
   await expect(page.getByLabel("Tìm tên từ vựng", { exact: true })).toHaveCount(0);
 });
 
-test("cover backgrounds keep banner text on both story pages and the introduction button is compact", async ({ page }) => {
+test("story introduction keeps its banner and the reading workspace keeps a compact cover", async ({ page }) => {
   await login(page.request);
   const image = await upload(page.request, png, "image/png");
   await save(page.request, { slug: "catalog-cover", title_vi: "Truyện có nền ảnh", title_en: "Picture background", cover_image_path: image, sentences: [{ text_vi: "Em đọc sách.", text_en: "I read a book." }] });
   for (const route of ["/truyen/catalog-cover", "/doc/catalog-cover"]) {
     await page.goto(route);
-    const cover = page.locator(".story-cover-hero");
-    await expect(cover.locator(".story-banner-background")).toHaveAttribute("src", image);
-    await expect(cover.locator(".jacket-title")).toHaveText("Truyện có nền ảnh");
-    await expect(cover.locator(".jacket-imprint")).toBeVisible();
-    await expect(cover.locator(".jacket-languages")).toBeVisible();
+    const introduction = route.startsWith("/truyen/");
+    const cover = page.locator(introduction ? ".story-cover-hero" : ".story-compact-cover");
+    await expect(cover.locator("img")).toHaveAttribute("src", image);
     expect(await cover.locator("img").evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
-    if (route.startsWith("/truyen/")) {
+    if (introduction) {
+      await expect(cover.locator(".jacket-title")).toHaveText("Truyện có nền ảnh");
+      await expect(cover.locator(".jacket-imprint")).toBeVisible();
+      await expect(cover.locator(".jacket-languages")).toBeVisible();
       const button = await page.getByRole("link", { name: "Bắt đầu đọc", exact: true }).boundingBox();
       expect(button?.width).toBeLessThanOrEqual(220); expect(button?.height).toBeLessThan(65);
+    } else {
+      expect((await cover.boundingBox())!.height).toBeLessThan(200);
+      await expect(page.getByRole("heading", { name: "Truyện có nền ảnh", exact: true })).toBeVisible();
     }
   }
 });

@@ -1,19 +1,30 @@
 "use client";
-import { useRef, useState } from "react";
-import { AudioPlayer } from "./audio-player";
+import { useImperativeHandle, useRef, useState, type Ref } from "react";
+import { AudioPlayer, type AudioPlayerHandle } from "./audio-player";
 import { ListeningIcon } from "./listening-icon";
 import { WordCard } from "./vocabulary";
 import type { Word, Sentence } from "@/lib/library";
 type Mode = "both" | "vi" | "en";
+export type ReaderHandle = { stop: () => void; openAudio: () => void };
 export function Reader({
   sentences,
   words,
   preview = false,
+  compact = false,
+  controlRef,
 }: {
   sentences: Sentence[];
   words: Word[];
   preview?: boolean;
+  compact?: boolean;
+  controlRef?: Ref<ReaderHandle>;
 }) {
+  const player = useRef<AudioPlayerHandle>(null);
+  const listeningDetails = useRef<HTMLDetailsElement>(null);
+  useImperativeHandle(controlRef, () => ({
+    stop: () => player.current?.stop(),
+    openAudio: () => { if (listeningDetails.current) listeningDetails.current.open = true; },
+  }));
   const [mode, setMode] = useState<Mode>("both");
   const [size, setSize] = useState(22);
   const [active, setActive] = useState<number | null>(null);
@@ -77,7 +88,12 @@ export function Reader({
   }
   return (
     <>
-      <AudioPlayer sentences={sentences} onActive={setActive} />
+      {compact ? <details className="reader-listening" ref={listeningDetails} onToggle={event => {
+        if (!event.currentTarget.open) player.current?.stop();
+      }}>
+        <summary><ListeningIcon name="headphones" /><span><strong>Nghe truyện</strong><small>Giọng đọc tiếng Việt và tiếng Anh</small></span><span className="reader-listening-toggle" aria-hidden="true">⌄</span></summary>
+        <AudioPlayer sentences={sentences} onActive={setActive} controlRef={player} />
+      </details> : <AudioPlayer sentences={sentences} onActive={setActive} controlRef={player} />}
       <section className="panel story-reading-card" aria-label="Đọc truyện">
         <section className="reader-controls reading-tools" aria-label="Tùy chỉnh đọc">
           <fieldset>
