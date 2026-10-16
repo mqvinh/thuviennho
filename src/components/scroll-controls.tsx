@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { cancelScrollToTop, scrollToTop } from "@/lib/scroll-to-top";
 import { mobileNavigationQuery } from "@/lib/sections";
+import { helpForPath } from "@/lib/help-guides";
+import { ContextualHelp } from "./contextual-help";
 export function ScrollControls() {
   const pathname = usePathname();
+  const guide = helpForPath(pathname);
   const [showTop, setShowTop] = useState(false);
   useEffect(() => {
     const management = pathname === "/admin" || pathname.startsWith("/admin/");
@@ -40,7 +43,10 @@ export function ScrollControls() {
     update();
     return () => { window.removeEventListener("scroll", scroll); mobile.removeEventListener("change", resize); window.removeEventListener("wheel", cancelScroll); window.removeEventListener("touchstart", cancelScroll); window.removeEventListener("keydown", keyboard); cancelScroll(); cancelAnimationFrame(frame); observer.disconnect(); menu.classList.remove("is-floating"); slot.style.minHeight = ""; };
   }, [pathname]);
-  return <button className={`back-to-top${showTop ? " visible" : ""}`} aria-label="Lên đầu trang" disabled={!showTop} tabIndex={showTop ? 0 : -1} onClick={scrollToTop}>
+  return <div className="floating-controls">
+    <button className={`back-to-top${showTop ? " visible" : ""}`} aria-label="Lên đầu trang" disabled={!showTop} tabIndex={showTop ? 0 : -1} onClick={scrollToTop}>
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M5 5h14M6 13l6-6 6 6M12 7v14" /></svg>
-  </button>;
+    </button>
+    {guide && <ContextualHelp key={pathname} guide={guide} />}
+  </div>;
 }

@@ -6,6 +6,7 @@ export const sections = [
   { href: "/tro-choi", title: "Khu trò chơi", icon: "🎮" },
   { href: "/nhat-ky", title: "Nhật ký đọc sách", icon: "✏️" },
   { href: "/hanh-trinh", title: "Hành trình đọc sách", icon: "🌟" },
+  { href: "/ho-tro", title: "Hỗ trợ", icon: "❔" },
 ];
 
 export const mobileNavigationQuery = "(max-width: 760px)";

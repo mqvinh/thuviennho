@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, type KeyboardEvent, type Ref } from "react";
-import { isSectionActive, mobileNavigationQuery } from "@/lib/sections";
+import { isSectionActive, mobileNavigationQuery, sections } from "@/lib/sections";
 
 const primaryItems = [
   { href: "/", label: "Tủ sách", icon: "book" },
@@ -12,11 +12,17 @@ const primaryItems = [
   { href: "/nhat-ky", label: "Nhật ký", icon: "pencil" },
 ] as const;
 
-const moreItems = [
-  { href: "/tro-choi", label: "Khu trò chơi", description: "Học từ mới qua những trò chơi thú vị", icon: "game" },
-  { href: "/thu-tai", label: "Đọc vui thử tài", description: "Kiểm tra hiểu biết qua những câu hỏi thú vị", icon: "trophy" },
-  { href: "/hanh-trinh", label: "Hành trình đọc sách", description: "Theo dõi và lưu giữ hành trình của bạn", icon: "sun" },
-] as const;
+const moreDetails: Record<string, { description: string; icon: string }> = {
+  "/tro-choi": { description: "Học từ mới qua những trò chơi thú vị", icon: "game" },
+  "/thu-tai": { description: "Kiểm tra hiểu biết qua những câu hỏi thú vị", icon: "trophy" },
+  "/hanh-trinh": { description: "Theo dõi và lưu giữ hành trình của bạn", icon: "sun" },
+  "/ho-tro": { description: "Hướng dẫn trò chơi, hành trình và cách sao lưu", icon: "help" },
+};
+const primaryHrefs = new Set<string>(primaryItems.map(item => item.href));
+const moreItems = sections.filter(section => !primaryHrefs.has(section.href)).map(section => ({
+  href: section.href, label: section.title,
+  ...(moreDetails[section.href] ?? { description: `Khám phá ${section.title.toLocaleLowerCase("vi")}`, icon: "book" }),
+}));
 
 function NavigationIcon({ name }: { name: string }) {
   return <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -28,6 +34,7 @@ function NavigationIcon({ name }: { name: string }) {
     {name === "trophy" && <><path d="M8 3h8v8a4 4 0 0 1-8 0V3ZM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 15v6M8 21h8" /></>}
     {name === "sun" && <><circle cx="12" cy="12" r="4" fill="currentColor" stroke="none" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5" /></>}
     {name === "game" && <><path d="M7 7h10a4 4 0 0 1 4 3l1 7a2 2 0 0 1-3 2l-4-3H9l-4 3a2 2 0 0 1-3-2l1-7a4 4 0 0 1 4-3Z" /><path d="M7 10v5M4.5 12.5h5M16 11h.01M19 14h.01" /></>}
+    {name === "help" && <><circle cx="12" cy="12" r="9" /><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4M12 17h.01" /></>}
   </svg>;
 }
 
@@ -82,7 +89,7 @@ function MobileNavigationContent({ pathname }: { pathname: string }) {
     const shellElement = shell.current;
     const trigger = moreButton.current;
     const previousOverflow = document.body.style.overflow;
-    const background = [...document.querySelectorAll<HTMLElement>(".site-header, #main-content, .site-footer, .back-to-top, .skip-link")];
+    const background = [...document.querySelectorAll<HTMLElement>(".site-header, #main-content, .site-footer, .floating-controls, .skip-link")];
     const inertStates = background.map(element => element.inert);
     background.forEach(element => { element.inert = true; });
     document.body.style.overflow = "hidden";

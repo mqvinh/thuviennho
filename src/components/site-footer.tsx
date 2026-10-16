@@ -8,6 +8,7 @@ import { ThemeIcon } from "./theme-icon";
 import { ListeningIcon } from "./listening-icon";
 
 const support = [
+  { href: "/ho-tro", icon: "📖", title: "Hướng dẫn sử dụng" },
   { href: "/huong-dan#cau-hoi", icon: "❔", title: "Câu hỏi thường gặp" },
   { href: "/huong-dan#lien-he", icon: "✉️", title: "Liên hệ với chúng tôi" },
   { href: "/huong-dan#phu-huynh", icon: "👥", title: "Dành cho phụ huynh" },

@@ -25,6 +25,7 @@ import "./journal-theme.css";
 import "./games-theme.css";
 import "./illustration-motion.css";
 import "./mobile-navigation.css";
+import "./support-theme.css";
 export const viewport: Viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" };
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSiteSettings();
